@@ -1,14 +1,112 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>HTML</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="estilo.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal RobCo - Fallout Fan Page</title>
+    <style>
+        /* Estilo General Retro de Fallout */
+        body {
+            background-color: #000;
+            color: #1aff1a; /* Verde fósforo clásico */
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
+        /* Efecto de parpadeo y líneas de escaneo */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .container {
+            padding: 40px;
+            z-index: 5;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 3rem;
+            border-bottom: 2px solid #1aff1a;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px #1aff1a;
+        }
+
+        .menu-item {
+            margin: 15px 0;
+            cursor: pointer;
+            transition: 0.3s;
+            display: block;
+        }
+
+        .menu-item:hover {
+            background-color: #1aff1a;
+            color: #000;
+            box-shadow: 0 0 20px #1aff1a;
+        }
+
+        .stats {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(2, 200px);
+            gap: 10px;
+        }
+
+        .vault-boy {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            opacity: 0.7;
+        }
+
+        /* Animación de escribir */
+        .typing {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: .15em solid #1aff1a;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #1aff1a; } }
+    </style>
+</head>
 <body>
-  <p>Esta página web es una página HTML válida.</p>
+
+    <div class="overlay"></div>
+
+    <div class="container">
+        <h1 class="typing">ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</h1>
+        <p>COPYRIGHT 2075-2077 ROBCO INDUSTRIES</p>
+        <p>- SERVIDOR ACTIVO: VAULT-TEC NET -</p>
+        
+        <nav style="margin-top: 40px;">
+            <div class="menu-item">> [ VER ESTADO DEL REFUGIO ]</div>
+            <div class="menu-item">> [ MAPA DEL YERMO ]</div>
+            <div class="menu-item">> [ INVENTARIO DE CHAPA ]</div>
+            <div class="menu-item">> [ LOGS DEL SUPERVISOR ]</div>
+        </nav>
+
+        <div class="stats">
+            <div>S.P.E.C.I.A.L.</div>
+            <div>STATUS: OK</div>
+            <div>RADS: 0.01/s</div>
+            <div>HP: 100%</div>
+        </div>
+    </div>
+
+    <!-- Imagen de referencia de Vault Boy (puedes cambiar el link) -->
+    <img src="upload.wikimedia.org" class="vault-boy" alt="Vault Boy">
+
 </body>
 </html>
-
