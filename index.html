@@ -3,309 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fallout Fan Universe | Crónicas del Yermo</title>
+    <title>FALLOUT | Hub Oficial Fans</title>
     <style>
-        /* --- ESTILOS GENERALES (Fusión Nike/Steam/Fallout) --- */
+        /* --- ESTÉTICA PREMIUM (NIKE/EPIC/STEAM) --- */
         :root {
             --fallout-green: #18f12c;
-            --dark-bg: #0d0d0d;
-            --steam-gray: #1b2838;
-            --accent-orange: #ff4a02; /* Color Nike/Explosión */
+            --steam-dark: #1b2838;
+            --epic-black: #121212;
+            --nike-white: #ffffff;
+            --accent: #ff4a02;
         }
 
+        * { box-sizing: border-box; }
         body {
-            background-color: var(--dark-bg);
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--epic-black);
+            color: var(--nike-white);
+            font-family: 'Inter', sans-serif; /* Estilo Nike */
             margin: 0;
-            padding: 0;
             overflow-x: hidden;
-            line-height: 1.6;
         }
 
-        /* --- ANIMACIÓN DE EXPLOSIÓN INICIAL --- */
-        #explosion-overlay {
+        /* --- EXPLOSIÓN NUCLEAR (RÁPIDA E IMPACTANTE) --- */
+        #explosion-layer {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            z-index: 9999;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 10000;
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: fadeOut 1.2s forwards;
+            animation: fastFade 1.2s forwards;
             pointer-events: none;
         }
-
-        .mushroom-cloud {
-            width: 20px;
-            height: 20px;
-            background: var(--accent-orange);
+        .flash {
+            width: 100px; height: 100px;
+            background: orange;
             border-radius: 50%;
-            box-shadow: 0 0 50px 20px var(--accent-orange);
-            animation: expand 0.8s ease-out;
+            box-shadow: 0 0 100px 50px orange;
+            animation: shockwave 0.7s ease-out;
         }
-
-        @keyframes expand {
+        @keyframes shockwave {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(300); opacity: 0; }
+            100% { transform: scale(50); opacity: 0; }
         }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
+        @keyframes fastFade {
             80% { opacity: 1; }
             100% { opacity: 0; visibility: hidden; }
         }
 
-        /* --- NAVEGACIÓN --- */
-        nav {
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
+        /* --- HERO SECTION (ESTILO NIKE) --- */
+        .hero {
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            border-bottom: 2px solid var(--fallout-green);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('tu-fondo-fallout.jpg');
+            background-size: cover;
+            padding: 20px;
         }
-
-        nav a {
-            color: var(--fallout-green);
-            text-decoration: none;
-            margin: 0 20px;
-            font-weight: bold;
+        .hero h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            margin: 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* --- SECCIONES --- */
-        section {
-            padding: 60px 10%;
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        h1, h2 {
+            letter-spacing: -2px;
             color: var(--fallout-green);
-            text-transform: uppercase;
-            font-size: 2.5rem;
-            letter-spacing: 4px;
-            border-left: 5px solid var(--fallout-green);
-            padding-left: 15px;
+        }
+        .hero p {
+            max-width: 600px;
+            font-size: 1.2rem;
+            color: #ccc;
         }
 
-        /* --- INTRODUCCIÓN --- */
-        .intro-images {
+        /* --- GALERÍA DE INICIO (ESTILO STEAM) --- */
+        .intro-gallery {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
+            padding: 0 10%;
+            margin-top: 20px;
         }
-
-        .intro-images img {
+        .intro-gallery img {
             width: 100%;
-            height: 250px;
+            height: 200px;
             object-fit: cover;
             border: 1px solid #333;
+            transition: 0.3s;
+        }
+        .intro-gallery img:hover { border-color: var(--fallout-green); }
+
+        /* --- HISTORIA (ESTILO EPIC GAMES) --- */
+        .section-padding { padding: 80px 10%; }
+        .history-card {
+            background: var(--steam-dark);
+            padding: 40px;
+            border-radius: 8px;
+            border-left: 10px solid var(--fallout-green);
+        }
+        details summary {
+            background: var(--nike-white);
+            color: black;
+            padding: 15px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        /* --- GRID DE JEFES Y MODS (ESTILO NIKE/ADIDAS) --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .card {
+            background: #1a1a1a;
+            position: relative;
+            cursor: pointer;
             transition: transform 0.3s;
         }
+        .card:hover { transform: translateY(-10px); }
+        .card img { width: 100%; height: 400px; object-fit: cover; }
+        .card-info { padding: 20px; text-align: left; }
+        .card-info h3 { margin: 0; text-transform: uppercase; font-size: 1.5rem; }
 
-        .intro-images img:hover { transform: scale(1.05); }
-
-        /* --- HISTORIA (Estilo Expandible) --- */
-        .historia-box {
-            background: var(--steam-gray);
-            padding: 30px;
-            border-radius: 4px;
+        /* --- MODAL (PARA ARREGLAR ERROR 404) --- */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none; /* Oculto por defecto */
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-
-        details summary {
-            background: var(--fallout-green);
-            color: black;
-            padding: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            list-style: none;
-            text-align: center;
-            margin-top: 20px;
-            transition: 0.3s;
-        }
-
-        details summary:hover { background: #12b321; }
-
-        .historia-extra img {
+        .modal-content {
+            background: var(--epic-black);
+            max-width: 800px;
             width: 100%;
-            margin-top: 20px;
-            border: 2px solid var(--fallout-green);
-        }
-
-        /* --- PERSONAJES/JEFES (Estilo Nike/Grid) --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            background: #111;
-            border: 1px solid #222;
-            overflow: hidden;
-            transition: 0.4s;
-            position: relative;
-        }
-
-        .card:hover { border-color: var(--fallout-green); }
-
-        .card img { width: 100%; height: 350px; object-fit: cover; }
-
-        .card-info { padding: 20px; }
-
-        .btn-view {
-            display: block;
-            background: white;
-            color: black;
-            text-align: center;
-            padding: 12px;
-            text-decoration: none;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-top: 10px;
-        }
-
-        /* --- MODS (Estilo Tienda Epic/Steam) --- */
-        .mod-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .mod-item {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .mod-item img { width: 100%; border-radius: 8px; }
-
-        .download-huge {
-            display: block;
-            background: var(--accent-orange);
-            color: white;
             padding: 40px;
+            border: 1px solid var(--fallout-green);
+            position: relative;
             text-align: center;
-            font-size: 2.5rem;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 20px;
-            border-radius: 10px;
-            transition: 0.3s;
         }
-
-        .download-huge:hover { transform: scale(1.02); filter: brightness(1.2); }
+        .btn-download {
+            display: block;
+            background: var(--accent);
+            color: white;
+            padding: 25px;
+            font-size: 2rem;
+            font-weight: 900;
+            text-decoration: none;
+            margin-top: 30px;
+            border-radius: 5px;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px; right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--fallout-green);
+        }
 
     </style>
 </head>
 <body>
 
-    <!-- Explosión Nuclear de Entrada -->
-    <div id="explosion-overlay">
-        <div class="mushroom-cloud"></div>
+    <!-- 1. EXPLOSIÓN -->
+    <div id="explosion-layer">
+        <div class="flash"></div>
     </div>
 
-    <nav>
-        <a href="#inicio">Inicio</a>
-        <a href="#historia">Historia</a>
-        <a href="#personajes">Jefes</a>
-        <a href="#mods">Mods</a>
-    </nav>
-
-    <!-- INTRODUCCIÓN -->
-    <section id="inicio">
-        <h1>[ PON AQUÍ TU TÍTULO ]</h1>
-        <p>AQUÍ VA TU DESCRIPCIÓN: Bienvenido al portal definitivo del Yermo. Explora la cronología, los enemigos más peligrosos y los mejores suministros (mods) para tu supervivencia.</p>
+    <!-- 2. INICIO (INTRODUCCIÓN) -->
+    <section class="hero">
+        <h1>TU TÍTULO AQUÍ</h1>
+        <p>Introduce aquí tu descripción personalizada. Esta página mezcla la brutalidad del Yermo con el diseño moderno de las mejores tiendas de deportes y gaming.</p>
         
-        <div class="intro-images">
-            <img src="intro1.jpg" alt="Imagen 1">
-            <img src="intro2.jpg" alt="Imagen 2">
-            <img src="intro3.jpg" alt="Imagen 3">
+        <div class="intro-gallery">
+            <img src="img1.jpg" alt="Fallout 1">
+            <img src="img2.jpg" alt="Fallout 2">
+            <img src="img3.jpg" alt="Fallout 3">
         </div>
     </section>
 
-    <!-- HISTORIA -->
-    <section id="historia">
-        <div class="historia-box">
-            <h2>Crónicas de la Gran Guerra</h2>
-            <p>La historia de Fallout comienza con la paranoia de la Guerra Fría y la crisis energética del siglo XXI. El 23 de octubre de 2077, las bombas cayeron...</p>
-            
+    <!-- 3. HISTORIA -->
+    <section class="section-padding">
+        <div class="history-card">
+            <h2>ARCHIVO HISTÓRICO</h2>
+            <p>El fin del mundo fue solo el comienzo. Tras el 2077, la humanidad tuvo que aprender a vivir bajo la radiación...</p>
             <details>
-                <summary>DESPLEGAR ARCHIVOS DE LA HISTORIA (LEER MÁS)</summary>
-                <div class="historia-extra">
-                    <p>Aquí pones toda tu explicación larga. Habla de las facciones como la Hermandad del Acero, la Enclave y cómo los Vaults (Refugios) de Vault-Tec no eran lo que parecían.</p>
-                    <img src="historia-grande.jpg" alt="Mapa del Yermo">
-                </div>
+                <summary>Seguir leyendo</summary>
+                <p>Aquí pones el resto de tu historia detallada. Puedes añadir lo que quieras. Las facciones, los refugios y el destino del mundo.</p>
+                <img src="historia-img.jpg" style="width:100%; margin-top:20px;" alt="Historia">
             </details>
         </div>
     </section>
 
-    <!-- JEFES -->
-    <section id="personajes">
-        <h2>Jefes Legendarios</h2>
-        <div class="grid-container">
-            <!-- Jefe 1 -->
-            <div class="card">
-                <img src="jefe1.jpg" alt="Jefe 1">
-                <div class="card-info">
-                    <h3>EL MAESTRO</h3>
-                    <a href="historia-jefe-1.html" class="btn-view">VER EXPEDIENTE</a>
-                </div>
+    <!-- 4. JEFES -->
+    <section class="section-padding">
+        <h2>JEFES DE NIVEL</h2>
+        <div class="grid">
+            <div class="card" onclick="openModal('Frank Horrigan', 'El arma definitiva de la Enclave. Mitad máquina, mitad supermutante.', 'jefe1.jpg', '#')">
+                <img src="jefe1.jpg" alt="Jefe">
+                <div class="card-info"><h3>Frank Horrigan</h3><p>Ver Historia</p></div>
             </div>
-            <!-- Jefe 2 -->
-            <div class="card">
-                <img src="jefe2.jpg" alt="Jefe 2">
-                <div class="card-info">
-                    <h3>FRANK HORRIGAN</h3>
-                    <a href="historia-jefe-2.html" class="btn-view">VER EXPEDIENTE</a>
-                </div>
+            <div class="card" onclick="openModal('El Maestro', 'Líder de la Unidad y creador de los Supermutantes.', 'jefe2.jpg', '#')">
+                <img src="jefe2.jpg" alt="Jefe">
+                <div class="card-info"><h3>El Maestro</h3><p>Ver Historia</p></div>
             </div>
-            <!-- Jefe 3 -->
-            <div class="card">
-                <img src="jefe3.jpg" alt="Jefe 3">
-                <div class="card-info">
-                    <h3>LEGADO LANIUS</h3>
-                    <a href="historia-jefe-3.html" class="btn-view">VER EXPEDIENTE</a>
-                </div>
+            <div class="card" onclick="openModal('Lanius', 'El terror del Este. Comandante de la Legión de César.', 'jefe3.jpg', '#')">
+                <img src="jefe3.jpg" alt="Jefe">
+                <div class="card-info"><h3>Legado Lanius</h3><p>Ver Historia</p></div>
             </div>
         </div>
     </section>
 
-    <!-- MODS -->
-    <section id="mods">
-        <h2>Zona de Modding</h2>
-        <div class="mod-grid">
-            <div class="mod-item">
-                <a href="detalle-mod-1.html"><img src="mod1.jpg" alt="Mod 1"></a>
+    <!-- 5. MODS -->
+    <section class="section-padding">
+        <h2>SUMINISTROS (MODS)</h2>
+        <div class="grid">
+            <!-- Mod 1 -->
+            <div class="card" onclick="openModal('Mod Gráfico 4K', 'Mejora todas las texturas del juego a máxima resolución.', 'mod1.jpg', 'https://www.nexusmods.com')">
+                <img src="mod1.jpg" alt="Mod">
+                <div class="card-info"><h3>Gráficos Ultra</h3></div>
             </div>
-            <div class="mod-item">
-                <a href="detalle-mod-2.html"><img src="mod2.jpg" alt="Mod 2"></a>
+            <!-- Mod 2 -->
+            <div class="card" onclick="openModal('Nuevas Armas', 'Añade 50 armas inspiradas en los juegos clásicos.', 'mod2.jpg', 'https://www.nexusmods.com')">
+                <img src="mod2.jpg" alt="Mod">
+                <div class="card-info"><h3>Pack de Armas</h3></div>
             </div>
-            <div class="mod-item">
-                <a href="detalle-mod-3.html"><img src="mod3.jpg" alt="Mod 3"></a>
+            <!-- Mod 3 -->
+            <div class="card" onclick="openModal('Clima Realista', 'Tormentas de arena y lluvia ácida dinámica.', 'mod3.jpg', 'https://www.nexusmods.com')">
+                <img src="mod3.jpg" alt="Mod">
+                <div class="card-info"><h3>Clima Extremo</h3></div>
             </div>
-            <div class="mod-item">
-                <a href="detalle-mod-4.html"><img src="mod4.jpg" alt="Mod 4"></a>
+            <!-- Mod 4 -->
+            <div class="card" onclick="openModal('Expansión de Mapa', 'Nuevas zonas explorables fuera de la ciudad.', 'mod4.jpg', 'https://www.nexusmods.com')">
+                <img src="mod4.jpg" alt="Mod">
+                <div class="card-info"><h3>New Territory</h3></div>
             </div>
         </div>
-
-        <!-- Ejemplo del botón que iría dentro de la página del mod -->
-        <p style="text-align: center; margin-top: 50px; color: var(--fallout-green);">Ejemplo de botón de descarga dentro de cada mod:</p>
-        <a href="https://www.nexusmods.com" class="download-huge">DESCARGAR MOD</a>
     </section>
 
-    <footer style="text-align: center; padding: 40px; color: #555;">
-        &copy; 2026 Antonio Aznar Albaladejo  Fan de Fallout - Desarrollado para el Yermo.
-    </footer>
+    <!-- VENTANA MODAL (EL ARREGLO PARA EL 404) -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <img id="modalImg" src="" style="width:100%; height:300px; object-fit:cover;">
+            <h2 id="modalTitle">Título</h2>
+            <p id="modalDesc">Descripción</p>
+            <a id="modalDownload" href="#" class="btn-download" target="_blank">DESCARGAR</a>
+        </div>
+    </div>
+
+    <script>
+        function openModal(title, desc, img, link) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('modalImg').src = img;
+            document.getElementById('modalDownload').href = link;
+            
+            // Si es un JEFE, ocultamos el botón de descargar, si es un MOD lo mostramos
+            if(link === "#") {
+                document.getElementById('modalDownload').style.display = "none";
+            } else {
+                document.getElementById('modalDownload').style.display = "block";
+            }
+
+            document.getElementById('infoModal').style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = "none";
+        }
+
+        // Cerrar al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('infoModal')) {
+                closeModal();
+            }
+        }
+    </script>
 
 </body>
 </html>
-
