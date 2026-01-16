@@ -3,172 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARCHIVO ALPHA 2026</title>
-    <link href="fonts.googleapis.com" rel="stylesheet">
+    <title>Fallout Fan Universe | Crónicas del Yermo</title>
     <style>
-        :root { --accent: #ff4500; --bg: #000; --gray: #111; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: #fff; overflow-x: hidden; scroll-behavior: smooth; }
+        /* --- ESTILOS GENERALES (Fusión Nike/Steam/Fallout) --- */
+        :root {
+            --fallout-green: #18f12c;
+            --dark-bg: #0d0d0d;
+            --steam-gray: #1b2838;
+            --accent-orange: #ff4a02; /* Color Nike/Explosión */
+        }
 
-        /* --- EXPLOSIÓN NUCLEAR RÁPIDA (3 seg) --- */
-        #nuke-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; display: flex; justify-content: center; align-items: center;
-            animation: fadeOut 0.5s forwards 3s;
+        body {
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
-        .flash {
-            position: absolute; width: 100%; height: 100%; background: #fff;
-            opacity: 0; animation: nuke-flash 2.5s forwards;
+
+        /* --- ANIMACIÓN DE EXPLOSIÓN INICIAL --- */
+        #explosion-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeOut 1.2s forwards;
+            pointer-events: none;
         }
-        .mushroom {
-            width: 20px; height: 20px; background: #fff; border-radius: 50%;
-            box-shadow: 0 0 150px 100px #ff4500; animation: grow-nuke 2.5s ease-out forwards;
+
+        .mushroom-cloud {
+            width: 20px;
+            height: 20px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            box-shadow: 0 0 50px 20px var(--accent-orange);
+            animation: expand 0.8s ease-out;
         }
-        @keyframes nuke-flash { 0% {opacity:0} 5% {opacity:1} 15% {opacity:0.6} 100% {opacity:0} }
-        @keyframes grow-nuke { 0% {transform:scale(1)} 100% {transform:scale(300); opacity:0} }
-        @keyframes fadeOut { to { visibility: hidden; opacity: 0; } }
+
+        @keyframes expand {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(300); opacity: 0; }
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
 
         /* --- NAVEGACIÓN --- */
-        nav { position: fixed; width: 100%; padding: 25px 5%; display: flex; justify-content: space-between; z-index: 100; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
-        nav a { color: #fff; text-decoration: none; font-family: 'Oswald'; font-size: 0.9rem; letter-spacing: 2px; margin-left: 25px; transition: 0.3s; }
-        nav a:hover { color: var(--accent); }
-
-        /* --- SECCIONES GIGANTES --- */
-        section { min-height: 100vh; padding: 120px 8%; position: relative; border-bottom: 1px solid #222; }
-
-        /* SECCIÓN INICIO LARGA */
-        .hero-long { min-height: 180vh; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .hero-long h1 { font-family: 'Montserrat'; font-size: 12vw; line-height: 0.8; text-transform: uppercase; margin: 100px 0; }
-        .intro-text { max-width: 800px; font-size: 1.5rem; color: #888; line-height: 1.6; margin-bottom: 200px; }
-
-        /* TÍTULOS DE SECCIÓN */
-        .section-title { font-family: 'Montserrat'; font-size: 4rem; color: var(--accent); margin-bottom: 50px; text-transform: uppercase; }
-
-        /* GRID DE CONTENIDO */
-        .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
-        .card { 
-            background: var(--gray); height: 600px; padding: 40px; display: flex; flex-direction: column; justify-content: flex-end;
-            border: 1px solid #333; cursor: pointer; transition: 0.4s; background-size: cover; background-position: center; filter: grayscale(1);
+        nav {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid var(--fallout-green);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .card:hover { filter: grayscale(0); border-color: var(--accent); transform: translateY(-10px); }
-        .card h3 { font-family: 'Oswald'; font-size: 2.5rem; text-transform: uppercase; }
 
-        /* --- MODAL DE JEFE (PÁGINA APARTE) --- */
-        #boss-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000;
-            z-index: 20000; display: none; overflow-y: auto; padding: 80px 10%;
+        nav a {
+            color: var(--fallout-green);
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
-        .close-btn { position: fixed; top: 30px; right: 5%; font-size: 3rem; color: var(--accent); cursor: pointer; }
-        .modal-body h2 { font-family: 'Montserrat'; font-size: 6rem; line-height: 1; }
-        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 50px 0; }
-        .gallery img { width: 100%; height: 400px; object-fit: cover; border: 1px solid #444; }
-        .boss-info { font-size: 1.4rem; color: #ccc; max-width: 900px; line-height: 1.8; }
 
-        /* SCROLL ETERNO TEXTOS */
-        .bg-text { position: absolute; font-size: 20vw; font-family: 'Montserrat'; color: #080808; z-index: -1; pointer-events: none; }
+        /* --- SECCIONES --- */
+        section {
+            padding: 60px 10%;
+            max-width: 1200px;
+            margin: auto;
+        }
 
-        footer { padding: 100px; text-align: center; color: #444; background: #000; border-top: 1px solid #222; }
+        h1, h2 {
+            color: var(--fallout-green);
+            text-transform: uppercase;
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            border-left: 5px solid var(--fallout-green);
+            padding-left: 15px;
+        }
+
+        /* --- INTRODUCCIÓN --- */
+        .intro-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .intro-images img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border: 1px solid #333;
+            transition: transform 0.3s;
+        }
+
+        .intro-images img:hover { transform: scale(1.05); }
+
+        /* --- HISTORIA (Estilo Expandible) --- */
+        .historia-box {
+            background: var(--steam-gray);
+            padding: 30px;
+            border-radius: 4px;
+        }
+
+        details summary {
+            background: var(--fallout-green);
+            color: black;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            list-style: none;
+            text-align: center;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        details summary:hover { background: #12b321; }
+
+        .historia-extra img {
+            width: 100%;
+            margin-top: 20px;
+            border: 2px solid var(--fallout-green);
+        }
+
+        /* --- PERSONAJES/JEFES (Estilo Nike/Grid) --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: #111;
+            border: 1px solid #222;
+            overflow: hidden;
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .card:hover { border-color: var(--fallout-green); }
+
+        .card img { width: 100%; height: 350px; object-fit: cover; }
+
+        .card-info { padding: 20px; }
+
+        .btn-view {
+            display: block;
+            background: white;
+            color: black;
+            text-align: center;
+            padding: 12px;
+            text-decoration: none;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        /* --- MODS (Estilo Tienda Epic/Steam) --- */
+        .mod-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .mod-item {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .mod-item img { width: 100%; border-radius: 8px; }
+
+        .download-huge {
+            display: block;
+            background: var(--accent-orange);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            font-size: 2.5rem;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .download-huge:hover { transform: scale(1.02); filter: brightness(1.2); }
+
     </style>
 </head>
 <body>
 
-    <!-- EXPLOSIÓN INICIAL RÁPIDA -->
-    <div id="nuke-container">
-        <div class="flash"></div>
-        <div class="mushroom"></div>
+    <!-- Explosión Nuclear de Entrada -->
+    <div id="explosion-overlay">
+        <div class="mushroom-cloud"></div>
     </div>
 
     <nav>
-        <div class="logo" style="font-family:'Oswald'; font-size:1.5rem;">VAULT.DATABASE</div>
-        <div>
-            <a href="#inicio">INICIO</a>
-            <a href="#historia">HISTORIA</a>
-            <a href="#jefes">JEFES</a>
-            <a href="#juegos">JUEGOS</a>
-            <a href="#complementos">EXTRAS</a>
-        </div>
+        <a href="#inicio">Inicio</a>
+        <a href="#historia">Historia</a>
+        <a href="#personajes">Jefes</a>
+        <a href="#mods">Mods</a>
     </nav>
 
-    <!-- INICIO LARGO -->
-    <section class="hero-long" id="inicio">
-        <h1>THE<br>END</h1>
-        <div class="intro-text">
-            <p>Bienvenido al registro histórico definitivo. Esta plataforma ha sido diseñada para documentar cada rincón del Yermo, desde las mutaciones más grotescas hasta la tecnología recuperada de los antiguos refugios.</p>
-            <p style="margin-top: 50px;">Desliza para entrar en las profundidades del archivo. Todo el conocimiento post-nuclear en un solo lugar.</p>
+    <!-- INTRODUCCIÓN -->
+    <section id="inicio">
+        <h1>[ PON AQUÍ TU TÍTULO ]</h1>
+        <p>AQUÍ VA TU DESCRIPCIÓN: Bienvenido al portal definitivo del Yermo. Explora la cronología, los enemigos más peligrosos y los mejores suministros (mods) para tu supervivencia.</p>
+        
+        <div class="intro-images">
+            <img src="intro1.jpg" alt="Imagen 1">
+            <img src="intro2.jpg" alt="Imagen 2">
+            <img src="intro3.jpg" alt="Imagen 3">
         </div>
-        <div class="bg-text" style="top: 80vh;">VOID</div>
     </section>
 
     <!-- HISTORIA -->
     <section id="historia">
-        <h2 class="section-title">01. HISTORIA</h2>
-        <div style="max-width: 800px; font-size: 1.2rem; color: #aaa;">
-            <p>El mundo cambió en 2077. Aquí puedes explicar los eventos que llevaron al colapso, el papel de Vault-Tec y el surgimiento de las nuevas facciones.</p>
+        <div class="historia-box">
+            <h2>Crónicas de la Gran Guerra</h2>
+            <p>La historia de Fallout comienza con la paranoia de la Guerra Fría y la crisis energética del siglo XXI. El 23 de octubre de 2077, las bombas cayeron...</p>
+            
+            <details>
+                <summary>DESPLEGAR ARCHIVOS DE LA HISTORIA (LEER MÁS)</summary>
+                <div class="historia-extra">
+                    <p>Aquí pones toda tu explicación larga. Habla de las facciones como la Hermandad del Acero, la Enclave y cómo los Vaults (Refugios) de Vault-Tec no eran lo que parecían.</p>
+                    <img src="historia-grande.jpg" alt="Mapa del Yermo">
+                </div>
+            </details>
         </div>
     </section>
 
     <!-- JEFES -->
-    <section id="jefes">
-        <h2 class="section-title">02. JEFES</h2>
-        <div class="content-grid">
-            <div class="card" style="background-image: url('via.placeholder.com')" 
-                 onclick="openBoss('SANGUINARIO ALFA', 'Es la cima de la cadena alimenticia. Su piel es inmune a balas de calibre pequeño y su velocidad es letal. Habita en las zonas más irradiadas del mapa.')">
-                <h3>Sanguinario Alfa</h3>
+    <section id="personajes">
+        <h2>Jefes Legendarios</h2>
+        <div class="grid-container">
+            <!-- Jefe 1 -->
+            <div class="card">
+                <img src="jefe1.jpg" alt="Jefe 1">
+                <div class="card-info">
+                    <h3>EL MAESTRO</h3>
+                    <a href="historia-jefe-1.html" class="btn-view">VER EXPEDIENTE</a>
+                </div>
             </div>
-            <div class="card" style="background-image: url('via.placeholder.com')"
-                 onclick="openBoss('EL SUPERVISOR', 'Una IA corrupta que controla los sistemas de defensa del Refugio 0. No tiene piedad con los intrusos.')">
-                <h3>El Supervisor</h3>
+            <!-- Jefe 2 -->
+            <div class="card">
+                <img src="jefe2.jpg" alt="Jefe 2">
+                <div class="card-info">
+                    <h3>FRANK HORRIGAN</h3>
+                    <a href="historia-jefe-2.html" class="btn-view">VER EXPEDIENTE</a>
+                </div>
+            </div>
+            <!-- Jefe 3 -->
+            <div class="card">
+                <img src="jefe3.jpg" alt="Jefe 3">
+                <div class="card-info">
+                    <h3>LEGADO LANIUS</h3>
+                    <a href="historia-jefe-3.html" class="btn-view">VER EXPEDIENTE</a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- JUEGOS -->
-    <section id="juegos">
-        <h2 class="section-title">03. JUEGOS</h2>
-        <div class="content-grid">
-            <div class="card"><h3>Fallout 4</h3></div>
-            <div class="card"><h3>Fallout New Vegas</h3></div>
-        </div>
-    </section>
-
-    <!-- COMPLEMENTOS -->
-    <section id="complementos" style="background: #050505;">
-        <h2 class="section-title">04. COMPLEMENTOS</h2>
-        <p>Mods, guías de supervivencia y equipamiento especial.</p>
-    </section>
-
-    <!-- MODAL "PÁGINA APARTE" -->
-    <div id="boss-modal">
-        <span class="close-btn" onclick="closeBoss()">&times;</span>
-        <div class="modal-body">
-            <h2 id="m-title">NOMBRE</h2>
-            <div class="gallery">
-                <img src="via.placeholder.com" alt="1">
-                <img src="via.placeholder.com" alt="2">
+    <!-- MODS -->
+    <section id="mods">
+        <h2>Zona de Modding</h2>
+        <div class="mod-grid">
+            <div class="mod-item">
+                <a href="detalle-mod-1.html"><img src="mod1.jpg" alt="Mod 1"></a>
             </div>
-            <div class="boss-info">
-                <h3>ARCHIVO DE INTELIGENCIA</h3>
-                <p id="m-desc">Descripción detallada...</p>
+            <div class="mod-item">
+                <a href="detalle-mod-2.html"><img src="mod2.jpg" alt="Mod 2"></a>
+            </div>
+            <div class="mod-item">
+                <a href="detalle-mod-3.html"><img src="mod3.jpg" alt="Mod 3"></a>
+            </div>
+            <div class="mod-item">
+                <a href="detalle-mod-4.html"><img src="mod4.jpg" alt="Mod 4"></a>
             </div>
         </div>
-    </div>
 
-    <footer>
-        <p>2026 - ARCHIVO CENTRALIZADO - SIN CONEXIÓN A VAULT-TEC</p>
+        <!-- Ejemplo del botón que iría dentro de la página del mod -->
+        <p style="text-align: center; margin-top: 50px; color: var(--fallout-green);">Ejemplo de botón de descarga dentro de cada mod:</p>
+        <a href="https://www.nexusmods.com" class="download-huge">DESCARGAR MOD</a>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; color: #555;">
+        &copy; 2026 Tu Nombre de Fan de Fallout - Desarrollado para el Yermo.
     </footer>
 
-    <script>
-        function openBoss(name, desc) {
-            document.getElementById('m-title').innerText = name;
-            document.getElementById('m-desc').innerText = desc;
-            document.getElementById('boss-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-        function closeBoss() {
-            document.getElementById('boss-modal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        setTimeout(() => { document.getElementById('nuke-container').style.display = 'none'; }, 3500);
-    </script>
 </body>
 </html>
