@@ -24,7 +24,7 @@
             text-transform: uppercase;
         }
 
-        /* --- EXPLOSIÓN NUCLEAR (RÁPIDA Y LIMPIA) --- */
+        /* --- EXPLOSIÓN NUCLEAR --- */
         #explosion-layer {
             position: fixed; inset: 0; background: white; z-index: 10000;
             display: flex; justify-content: center; align-items: center;
@@ -37,7 +37,7 @@
         @keyframes blast { 0% { transform: scale(1); } 100% { transform: scale(500); opacity: 0; } }
         @keyframes fadeOut { 100% { opacity: 0; visibility: hidden; } }
 
-        /* --- NAVEGACIÓN FIJA --- */
+        /* --- NAVEGACIÓN --- */
         nav {
             position: fixed; top: 0; width: 100%; padding: 20px 5%;
             background: rgba(0, 0, 0, 0.9); border-bottom: 2px solid var(--fallout-green);
@@ -45,15 +45,8 @@
         }
         nav a { color: var(--fallout-green); text-decoration: none; font-size: 0.8rem; margin-left: 20px; letter-spacing: 2px; }
 
-        /* --- SECCIONES (TODO HACIA ABAJO) --- */
-        section {
-            width: 100%;
-            padding: 120px 8%;
-            border-bottom: 1px solid #111;
-            overflow: hidden;
-        }
-
-        /* Títulos que resaltan */
+        /* --- SECCIONES --- */
+        section { width: 100%; padding: 120px 8%; border-bottom: 1px solid #111; overflow: hidden; }
         h1 { font-size: 8vw; line-height: 0.8; margin: 0; color: white; text-shadow: 0 0 20px rgba(24, 241, 44, 0.3); }
         h2 { font-size: 4vw; color: var(--fallout-green); margin-bottom: 30px; border-left: 10px solid var(--fallout-green); padding-left: 20px; }
 
@@ -64,58 +57,38 @@
         .intro-gallery img { width: 100%; height: 350px; object-fit: cover; border: 2px solid var(--card-border); transition: 0.4s; }
         .intro-gallery img:hover { border-color: var(--fallout-green); box-shadow: 0 0 30px var(--fallout-green); }
 
-        /* --- HISTORIA (DISEÑO AMPLIABLE) --- */
-        .history-box { background: #0a0a0a; border: 2px solid #1a1a1a; padding: 50px; position: relative; }
+        /* --- HISTORIA --- */
+        .history-box { background: #0a0a0a; border: 2px solid #1a1a1a; padding: 50px; }
         .history-box p { font-size: 1.2rem; text-transform: none; color: var(--text-gray); line-height: 1.8; }
-        
-        details summary {
-            background: var(--fallout-green); color: black; padding: 20px;
-            font-weight: 900; cursor: pointer; text-align: center; list-style: none; margin-top: 30px;
-        }
-        details[open] summary { background: white; }
+        details summary { background: var(--fallout-green); color: black; padding: 20px; font-weight: 900; cursor: pointer; text-align: center; list-style: none; margin-top: 30px; }
 
-        /* --- JEFES (IMÁGENES AMPLIADAS Y POP-OUT) --- */
-        .boss-item { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 150px; align-items: center; 
-            background: linear-gradient(90deg, #0a0a0a 0%, #000 100%); padding: 40px; border-radius: 10px;
-        }
-        .boss-visual { position: relative; }
-        /* Imagen principal ampliada que sale del cuadro */
-        .boss-visual .main-boss-img { 
-            width: 120%; margin-left: -10%; transform: scale(1.1); 
-            filter: drop-shadow(0 0 50px rgba(0,0,0,1)); transition: 0.5s;
-        }
+        /* --- JEFES --- */
+        .boss-item { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 150px; align-items: center; background: linear-gradient(90deg, #0a0a0a 0%, #000 100%); padding: 40px; border-radius: 10px; }
+        .boss-visual .main-boss-img { width: 120%; margin-left: -10%; transform: scale(1.1); filter: drop-shadow(0 0 50px rgba(0,0,0,1)); transition: 0.5s; }
         .boss-visual:hover .main-boss-img { transform: scale(1.2) rotate(2deg); filter: drop-shadow(0 0 30px var(--fallout-green)); }
-        
         .boss-screenshots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
         .boss-screenshots img { width: 100%; height: 120px; object-fit: cover; border: 1px solid var(--fallout-green); }
 
-        /* --- MODS (ESTILO PREMIUM NIKE) --- */
+        /* --- MODS --- */
         .mod-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
-        .mod-card { 
-            background: #0a0a0a; border: 2px solid #1a1a1a; padding: 30px; 
-            transition: 0.4s; display: flex; flex-direction: column; align-items: center;
-        }
+        .mod-card { background: #0a0a0a; border: 2px solid #1a1a1a; padding: 30px; transition: 0.4s; display: flex; flex-direction: column; align-items: center; }
         .mod-card:hover { border-color: white; background: #111; }
         .mod-card img { width: 100%; height: 300px; object-fit: cover; margin-bottom: 20px; }
-        
-        .download-btn {
-            width: 100%; background: white; color: black; padding: 25px;
-            font-size: 1.5rem; font-weight: 900; text-decoration: none; text-align: center;
-            margin-top: 20px; transition: 0.3s;
-        }
+        .download-btn { width: 100%; background: white; color: black; padding: 25px; font-size: 1.5rem; font-weight: 900; text-decoration: none; text-align: center; margin-top: 20px; transition: 0.3s; }
         .download-btn:hover { background: var(--fallout-green); transform: translateY(-5px); }
 
+        /* CRÉDITO FINAL */
+        .credits-footer { padding: 20px; text-align: center; background: #000; border-top: 1px solid #111; }
+        .credits-footer p { font-size: 0.6rem; color: #444; letter-spacing: 1px; margin: 0; font-family: sans-serif; text-transform: none; }
+        .credits-footer a { color: #555; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <!-- 1. EXPLOSIÓN -->
     <div id="explosion-layer"><div class="shockwave"></div></div>
 
-    <!-- 2. NAVEGACIÓN -->
     <nav>
-        <div style="font-weight: 900; color: white;">FALLOUT HUB</div>
+        <div style="font-weight: 900; color: white;">FALLOUT HUB 2026</div>
         <div class="nav-links">
             <a href="#inicio">INICIO</a>
             <a href="#historia">HISTORIA</a>
@@ -124,138 +97,83 @@
         </div>
     </nav>
 
-    <!-- 3. SECCIÓN INICIO -->
     <section id="inicio">
         <h1>THE ATOMIC<br><span style="color: var(--fallout-green);">LEGEND</span></h1>
         <div class="intro-container">
-            <p class="intro-text">
-                Bienvenido al portal definitivo. Esta página ha sido diseñada para no tener fin, 
-                mostrando la gloria del Yermo con la estética de las marcas más grandes del mundo.
-            </p>
+            <p class="intro-text">Bienvenido al portal definitivo del Yermo. Rediseñado en 2026 para la gloria de la Hermandad.</p>
             <div class="intro-gallery">
-                <img src="intro1.jpg" alt="Fallout 1">
-                <img src="intro2.jpg" alt="Fallout 2">
-                <img src="intro3.jpg" alt="Fallout 3">
+                <img src="https://images.unsplash.com" alt="Fallout 1">
+                <img src="https://images.unsplash.com" alt="Fallout 2">
+                <img src="https://images.unsplash.com" alt="Fallout 3">
             </div>
         </div>
     </section>
 
-    <!-- 4. SECCIÓN HISTORIA -->
     <section id="historia">
         <h2>RECORDS DEL PASADO</h2>
         <div class="history-box">
-            <p>El 23 de octubre de 2077, el mundo se sumergió en el fuego atómico. Lo que quedó fue un Yermo implacable donde la humanidad lucha por su último aliento.</p>
+            <p>El 23 de octubre de 2077, el mundo se sumergió en el fuego atómico. Lo que quedó fue un Yermo implacable.</p>
             <details>
                 <summary>DESPLEGAR ARCHIVOS COMPLETOS</summary>
                 <div style="padding-top: 20px;">
-                    <p>El conflicto fue el clímax de las Guerras de Recursos, un periodo de décadas donde las naciones del mundo se despedazaron por el control del petróleo y el uranio restantes. El epicentro de esta tensión fue la guerra entre Estados Unidos y China, que comenzó en 2066 cuando las fuerzas chinas invadieron Alaska para asegurar sus reservas de combustible. Tras años de lucha brutal, los estadounidenses lograron expulsar a los invasores gracias al despliegue de las servoarmaduras y llevaron la guerra a suelo chino, dejando al gobierno de Pekín al borde del colapso total.</p>
-                    <img src="historia-full.jpg" style="width: 100%; border: 2px solid var(--fallout-green); margin-top: 20px;">
+                    <p>Las Guerras de Recursos terminaron en el Gran Diluvio de fuego. El resto es solo supervivencia.</p>
+                    <img src="https://images.unsplash.com" style="width: 100%; border: 2px solid var(--fallout-green); margin-top: 20px;">
                 </div>
             </details>
         </div>
     </section>
 
-    <!-- 5. SECCIÓN JEFES (IMÁGENES AMPLIADAS) -->
     <section id="jefes">
         <h2>ENEMIGOS DE ÉLITE</h2>
-
-        <!-- Jefe 1 -->
         <div class="boss-item">
             <div class="boss-visual">
-                <img src="special_agent_frank_horrigan__fallout_2__by_captainjuan279_djemv1y-fullview.jpg" class="main-boss-img" alt="Frank Horrigan" width="300">
+                <img src="https://images.unsplash.com" class="main-boss-img" alt="Frank Horrigan">
             </div>
             <div class="boss-info">
                 <h3 style="font-size: 3rem; margin: 0;">FRANK HORRIGAN</h3>
-                <p style="text-transform: none; color: var(--text-gray); font-size: 1.1rem; margin: 20px 0;">
-                    El arma definitiva del Enclave. Un supermutante con armadura asistida que no conoce el miedo ni la derrota.
-                </p>
+                <p style="color: var(--fallout-green); letter-spacing: 5px;">ESTADO: CRÍTICO</p>
                 <div class="boss-screenshots">
-                    <img src="juego1-1.jpg" alt="Captura 1">
-                    <img src="juego1-2.jpg" alt="Captura 2">
-                    <img src="juego1-3.jpg" alt="Captura 3">
-                </div>
-            </div>
-        </div>
-
-        <!-- Jefe 2 -->
-        <div class="boss-item">
-            <div class="boss-visual">
-                <img src="jefe2.png" class="main-boss-img" alt="The Master">
-            </div>
-            <div class="boss-info">
-                <h3 style="font-size: 3rem; margin: 0;">EL MAESTRO</h3>
-                <p style="text-transform: none; color: var(--text-gray); font-size: 1.1rem; margin: 20px 0;">
-                    El creador de la Unidad. Una masa de carne y máquinas que planea "evolucionar" a toda la humanidad.
-                </p>
-                <div class="boss-screenshots">
-                    <img src="juego2-1.jpg" alt="Captura 1">
-                    <img src="juego2-2.jpg" alt="Captura 2">
-                    <img src="juego2-3.jpg" alt="Captura 3">
-                </div>
-            </div>
-        </div>
-
-        <!-- Jefe 3 -->
-        <div class="boss-item">
-            <div class="boss-visual">
-                <img src="jefe3.png" class="main-boss-img" alt="Lanius">
-            </div>
-            <div class="boss-info">
-                <h3 style="font-size: 3rem; margin: 0;">LEGADO LANIUS</h3>
-                <p style="text-transform: none; color: var(--text-gray); font-size: 1.1rem; margin: 20px 0;">
-                    El terror de la Legión de César. Un guerrero cuya espada ha conquistado cientos de tribus.
-                </p>
-                <div class="boss-screenshots">
-                    <img src="juego3-1.jpg" alt="Captura 1">
-                    <img src="juego3-2.jpg" alt="Captura 2">
-                    <img src="juego3-3.jpg" alt="Captura 3">
+                    <img src="https://images.unsplash.com" alt="1">
+                    <img src="https://images.unsplash.com" alt="2">
+                    <img src="https://images.unsplash.com" alt="3">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 6. SECCIÓN MODS -->
     <section id="mods">
-        <h2>SUMINISTROS TÁCTICOS (MODS)</h2>
+        <h2>REPARACIONES DE ELITE</h2>
         <div class="mod-container">
-            <!-- Mod 1 -->
             <div class="mod-card">
-                <img src="mod1.jpg" alt="Mod">
-                <h3>TEXTURAS 4K REBORN</h3>
-                <p style="text-transform: none; color: #888; text-align: center;">Mejora visual absoluta para todas las superficies del juego.</p>
-                <a href="https://nexusmods.com" class="download-btn">DESCARGAR</a>
+                <img src="https://images.unsplash.com" alt="4K Textures">
+                <h4 style="font-size: 1.5rem; margin: 10px 0;">4K WASTELAND</h4>
+                <a href="https://www.nexusmods.com" class="download-btn">OBTENER</a>
             </div>
-            <!-- Mod 2 -->
             <div class="mod-card">
-                <img src="mod2.jpg" alt="Mod">
-                <h3>ARSENAL MILITAR</h3>
-                <p style="text-transform: none; color: #888; text-align: center;">Añade más de 50 armas con físicas de disparo realistas.</p>
-                <a href="https://nexusmods.com" class="download-btn">DESCARGAR</a>
-            </div>
-            <!-- Mod 3 -->
-            <div class="mod-card">
-                <img src="mod3.jpg" alt="Mod">
-                <h3>CLIMA DINÁMICO</h3>
-                <p style="text-transform: none; color: #888; text-align: center;">Tormentas radioactivas y lluvia ácida con efectos visuales.</p>
-                <a href="https://nexusmods.com" class="download-btn">DESCARGAR</a>
-            </div>
-            <!-- Mod 4 -->
-            <div class="mod-card">
-                <img src="mod4.jpg" alt="Mod">
-                <h3>IA MEJORADA</h3>
-                <p style="text-transform: none; color: #888; text-align: center;">Los enemigos ahora flanquean y usan coberturas de forma inteligente.</p>
-                <a href="https://nexusmods.com" class="download-btn">DESCARGAR</a>
+                <img src="https://images.unsplash.com" alt="Project">
+                <h4 style="font-size: 1.5rem; margin: 10px 0;">PROJECT WEAPONRY</h4>
+                <a href="https://www.nexusmods.com" class="download-btn">DESBLOQUEAR</a>
             </div>
         </div>
     </section>
 
-    <footer style="padding: 100px; text-align: center; color: #222; font-size: 5vw;">
-        WAR NEVER CHANGES
+    <footer style="padding: 60px 5%; text-align: center; border-top: 1px solid #111;">
+        <h2 style="border: none; padding: 0; font-size: 1.5rem;">WAR NEVER CHANGES</h2>
     </footer>
 
+    <div class="credits-footer">
+        <p>planilla: <a href="https://templatemo.com" target="_blank">https://templatemo.com</a></p>
+    </div>
+
+    <script>
+        const flickerTitles = document.querySelectorAll('h1, h2');
+        setInterval(() => {
+            const target = flickerTitles[Math.floor(Math.random() * flickerTitles.length)];
+            target.style.opacity = '0.5';
+            setTimeout(() => target.style.opacity = '1', 50);
+        }, 3000);
+    </script>
 </body>
 </html>
-
-
 
 
