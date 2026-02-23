@@ -1,80 +1,102 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<title>Fallout 1 - Vault-Tec Terminal</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Enlaces a estilos externos (Requieren internet) -->
-<link rel="stylesheet" href="https://www.w3schools.com">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com">
-<style>
-  body, h1, h2, h3, p { font-family: "Courier New", Courier, monospace; }
-  body { background-color: #0a0a0a; color: #33ff33; }
-  .w3-black { background-color: #000 !important; border: 1px solid #33ff33; }
-  .btn-mod { background-color: #33ff33; color: black; padding: 12px 24px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }
-  .btn-mod:hover { background-color: #00cc00; color: white; }
-  img { border: 2px solid #33ff33; filter: grayscale(20%) brightness(90%); width: 100%; }
-  .historia-section { border-bottom: 1px solid #33ff33; padding-bottom: 40px; }
-</style>
+    <title>Fallout 1 Terminal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Cargando estilos de W3Schools -->
+    <link rel="stylesheet" href="https://www.w3schools.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
+    <style>
+        body, h1, h2, h3, p { font-family: "Courier New", Courier, monospace; }
+        body { background-color: #0d0d0d; color: #33ff33; margin: 0; }
+        .w3-content { max-width: 1200px; margin: auto; }
+        .hero-image { 
+            width: 100%; 
+            height: auto; 
+            border-bottom: 3px solid #33ff33;
+            filter: brightness(0.8) sepia(0.3);
+        }
+        .section-border { border: 1px solid #33ff33; padding: 20px; margin: 20px 0; background: #000; }
+        .btn-download { 
+            background-color: #33ff33; 
+            color: #000; 
+            padding: 15px; 
+            text-decoration: none; 
+            display: inline-block; 
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn-download:hover { background-color: #1aff1a; color: #000; }
+        a { color: #33ff33; }
+        .footer-small { font-size: 10px; color: #1a661a; margin-top: 50px; }
+    </style>
 </head>
-<body class="w3-content" style="max-width:1200px">
+<body>
 
-<!-- INICIO: Imagen principal y Título -->
-<header class="w3-container w3-center w3-padding-64">
-  <img src="https://gaming-cdn.com" style="max-width:500px;" alt="Fallout 1">
-  <h1 class="w3-jumbo"><b>FALLOUT 1</b></h1>
-  <p class="w3-xlarge">BIENVENIDO AL YERMO</p>
-</header>
+<div class="w3-content">
 
-<!-- SECCIÓN 1: La Historia -->
-<div class="w3-row w3-padding-64 historia-section">
-  <div class="w3-container w3-half">
-    <h2 class="w3-border-bottom w3-border-green">LA HISTORIA</h2>
-    <p class="w3-large">Eres un habitante del <b>Refugio 13</b>. Tras el fallo del chip de agua, debes abandonar la seguridad del búnker para salvar a tu gente. Tienes un tiempo limitado antes de que el agua se agote para siempre.</p>
-  </div>
-  <div class="w3-container w3-half w3-center">
-    <i class="fa fa-warning w3-jumbo w3-text-yellow"></i>
-    <p><i>"La guerra... la guerra no cambia nunca."</i></p>
-  </div>
-</div>
+    <!-- Pantalla de Inicio -->
+    <header class="w3-container w3-center w3-padding-48">
+        <img src="https://images.fineartamerica.com" class="hero-image" alt="Fallout 1 Header">
+        <h1 class="w3-jumbo">FALLOUT 1</h1>
+        <p class="w3-xlarge">INICIALIZANDO SISTEMA VAULT-TEC...</p>
+    </header>
 
-<!-- SECCIÓN 2: El Jefe (The Master) -->
-<div class="w3-row w3-padding-64">
-  <div class="w3-container w3-half">
-    <img src="https://images.squarespace-cdn.com" alt="The Master">
-  </div>
-  <div class="w3-container w3-half">
-    <h2 class="w3-text-white">EL MAESTRO</h2>
-    <p>El antagonista principal. Una masa de carne fusionada con computadoras que busca la "Unidad" mediante el virus FEV. Su objetivo es convertir a toda la humanidad en Supermutantes para acabar con el conflicto humano.</p>
-  </div>
-</div>
-
-<!-- SECCIÓN 3: Los Mods -->
-<div class="w3-container w3-padding-32">
-  <h2 class="w3-center">EXPANSIONES RECOMENDADAS</h2>
-  <div class="w3-row-padding w3-margin-top">
-    <!-- Mod 1 -->
-    <div class="w3-half w3-margin-bottom">
-      <div class="w3-black w3-padding-large w3-center">
-        <h3>Fallout Fixt</h3>
-        <p>Arregla bugs, restaura contenido y mejora la resolución.</p>
-        <a href="https://www.nma-fallout.com" target="_blank" class="btn-mod">DESCARGAR FIXT</a>
-      </div>
+    <!-- Sección Historia -->
+    <div class="w3-row w3-padding-64">
+        <div class="w3-container w3-half">
+            <h2 class="w3-border-bottom w3-border-green">LA HISTORIA</h2>
+            <p>Es el año 2161. El mundo es un desierto radiactivo tras la Gran Guerra. Vives en el <b>Refugio 13</b>, pero la paz se acaba: el chip de agua se ha roto. Tienes 150 días para encontrar uno nuevo antes de que tu comunidad perezca.</p>
+        </div>
+        <div class="w3-container w3-half">
+            <div class="section-border">
+                <p><i>"La guerra... la guerra no cambia nunca. Pero los hombres sí, a través de los caminos que recorren."</i></p>
+            </div>
+        </div>
     </div>
-    <!-- Mod 2 -->
-    <div class="w3-half">
-      <div class="w3-black w3-padding-large w3-center">
-        <h3>Fallout Et Tu</h3>
-        <p>Juega Fallout 1 con todas las mejoras de motor de Fallout 2.</p>
-        <a href="https://github.com" target="_blank" class="btn-mod">DESCARGAR ET TU</a>
-      </div>
-    </div>
-  </div>
-</div>
 
-<footer class="w3-container w3-padding-64 w3-center">
-  <p>ACCESO AUTORIZADO POR VAULT-TEC © 2161</p>
-</footer>
+    <!-- Sección El Jefe -->
+    <div class="w3-row w3-padding-64 w3-black w3-border w3-border-green">
+        <div class="w3-container w3-third w3-center">
+            <img src="https://shared.fastly.steamstatic.com" style="width:100%; border: 1px solid #33ff33;" alt="The Master">
+        </div>
+        <div class="w3-container w3-twothird">
+            <h2>EL JEFE: EL MAESTRO</h2>
+            <p class="w3-large">Originalmente conocido como Richard Moreau, se convirtió en una aberración biológica capaz de absorber mentes. Es el creador del Ejército de Supermutantes y busca la evolución forzada de la humanidad.</p>
+        </div>
+    </div>
+
+    <!-- Sección Mods -->
+    <div class="w3-container w3-padding-64">
+        <h2 class="w3-center">MODS RECOMENDADOS</h2>
+        <div class="w3-row-padding">
+            <div class="w3-half">
+                <div class="section-border w3-center">
+                    <h3>FALLOUT FIXT</h3>
+                    <img src="https://external-preview.redd.it" style="height:150px; width:auto; margin-bottom:10px;">
+                    <p>Repara errores críticos y añade contenido restaurado.</p>
+                    <a href="https://www.nma-fallout.com" target="_blank" class="btn-download">DESCARGAR FIXT</a>
+                </div>
+            </div>
+            <div class="w3-half">
+                <div class="section-border w3-center">
+                    <h3>FALLOUT ET TU</h3>
+                    <img src="https://i.ytimg.com" style="height:150px; width:auto; margin-bottom:10px;">
+                    <p>Convierte Fallout 1 al motor de Fallout 2 para mejor jugabilidad.</p>
+                    <a href="https://github.com" target="_blank" class="btn-download">DESCARGAR ET TU</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w3-container w3-center w3-padding-32">
+        <p>FIN DE LA TRANSMISIÓN - VAULT-TEC INDUSTRIES</p>
+        <p class="footer-small">Plantilla: <a href="https://www.w3schools.com/w3css/tryw3css_templates_design.htm" target="_blank">https://www.w3schools.com/w3css/tryw3css_templates_design.htm</a></p>
+    </footer>
+
+</div>
 
 </body>
 </html>
