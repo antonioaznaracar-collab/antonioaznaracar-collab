@@ -1,361 +1,46 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE SMASH BROS: SUPREME EDITION 2026</title>
-    <style>
-        /* =========================================
-           CONFIGURACIÓN VISUAL Y FUENTES
-           ========================================= */
-        @import url('https://googleapis.com');
+import random
+import time
+
+class JuegoNarcoDispatch:
+    def __init__(self):
+        self.dinero = 500
+        self.reputacion = 50
+        self.sospecha_policial = 10
+        self.mercancia = 20
+
+    def mostrar_estado(self):
+        print(f"\n--- ESTADO ACTUAL ---")
+        print(f"Efectivo: ${self.dinero} | Reputación: {self.reputacion} | Sospecha: {self.sospecha_policial}%")
+        print(f"Stock: {self.mercancia} unidades")
+        print("----------------------")
+
+    def mision_reparto(self):
+        print("\n[ALERTA] Los 'Salamanca' necesitan un envío en el muelle.")
+        print("1. Enviar mensajero rápido (Riesgo alto de policía)")
+        print("2. Enviar camión de pollos (Lento pero seguro)")
         
-        :root { --red: #ff4757; --blue: #2e9eff; --gold: #ffa502; --dark: #0a0a1a; }
-        * { box-sizing: border-box; }
-        body { 
-            margin: 0; overflow: hidden; background: #000; 
-            font-family: 'Archivo Black', sans-serif; color: white; 
-            user-select: none; cursor: none !important; 
-        }
-
-        /* CAPAS DE SISTEMA (Z-INDEX CRÍTICO) */
-        #brightness-overlay { position: fixed; inset: 0; background-color: black; opacity: 0; pointer-events: none; z-index: 2000000; }
-        #flash-effect { position: fixed; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 15000; }
-        #custom-cursor { 
-            position: fixed; font-size: 60px; z-index: 3000000; pointer-events: none; 
-            transition: transform 0.05s; display: flex; align-items: center; justify-content: center;
-        }
-        .clicking { transform: scale(0.8) rotate(-15deg); }
-
-        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-        .active { display: flex; }
-
-        /* 1. INTRO: LLAMA DE FUEGO ORIGINAL */
-        #intro-screen { background: radial-gradient(circle, #f0ca4d, #e37424); z-index: 5000; cursor: pointer; }
-        .fire { font-size: 150px; animation: burn 0.2s infinite alternate; filter: drop-shadow(0 0 40px orange); }
-        .press-x { margin-top: 50px; font-size: 35px; letter-spacing: 5px; animation: blink 0.8s infinite; text-shadow: 3px 3px #000; }
-
-        /* 2. MENÚ PRINCIPAL ULTIMATE */
-        #menu-screen, #smash-select-screen { background: var(--dark); }
-        .menu-grid, .smash-grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 2fr 1fr; gap: 20px; width: 90%; height: 80%; }
-        .m-item, .smash-item { position: relative; cursor: pointer; transition: 0.3s; overflow: hidden; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); border: 4px solid transparent; }
-        .m-item:hover, .smash-item:hover { transform: scale(1.03); border-color: white; z-index: 150; }
-        .m-label { position: absolute; bottom: 25px; left: 35px; font-size: 3.5rem; font-style: italic; text-shadow: 4px 4px #000; }
-        #btn-smash { background: linear-gradient(135deg, #ff0000, #600); }
+        opcion = input("Elige tu jugada (1/2): ")
         
-        .side-bar { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 40px; z-index: 200; }
-        .side-icon { font-size: 55px; cursor: pointer; transition: 0.2s; filter: drop-shadow(0 0 10px black); }
-
-        /* 3. SELECTOR DE PERSONAJES (CON HISTORIA) */
-        #char-select-screen { background: #111; z-index: 1000; }
-        .grid-luchadores { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; width: 65%; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 20px; }
-        .ficha { background: #333; border: 3px solid #555; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .ficha:hover { border-color: white; transform: scale(1.05); }
-        .confirmed-p1 { border: 5px solid var(--red) !important; background: #600; box-shadow: 0 0 30px var(--red); }
-        .confirmed-cpu { border: 5px solid var(--blue) !important; background: #006; box-shadow: 0 0 30px var(--blue); }
-
-        .info-players { display: flex; width: 100%; height: 280px; margin-top: auto; }
-        .p-panel { flex: 1; padding: 35px; border-left: 15px solid white; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); transition: 0.5s; }
-        #p1-panel { background: linear-gradient(to right, #d32f2f, #7b0000); }
-        #p2-panel { background: linear-gradient(to right, #1976d2, #003a75); opacity: 0.5; }
-
-        #ready-banner { position: fixed; top: 45%; left: -160%; width: 200%; height: 140px; background: var(--gold); transform: translateY(-50%) rotate(-5deg); z-index: 12000; display: flex; align-items: center; justify-content: center; border: 12px solid white; transition: 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); cursor: pointer; }
-        #ready-banner.show { left: -50%; }
-
-        /* 4. VERSUS Y PUERTAS DE ORO */
-        #versus-screen { background: #000; z-index: 13000; }
-        .vs-side { flex: 1; background-size: cover; background-position: center; filter: brightness(0.7); }
-        .door { position: fixed; top: 0; width: 50%; height: 100%; background: #111; z-index: 40000; transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1); border: 2px solid #333; pointer-events: none; }
-        #door-left { left: 0; border-right: 5px solid var(--gold); transform: translateX(-100%); }
-        #door-right { right: 0; border-left: 5px solid var(--gold); transform: translateX(100%); }
-        .door-closed { transform: translateX(0) !important; }
-
-        /* 5. ESCENARIO DE PELEA (GALÁCTICO Y FIJO) */
-        #game-screen { background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://wallpaperaccess.com') center/cover; z-index: 500; }
-        #stage-main { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: 950px; height: 40px; background: linear-gradient(#444, #111); border-top: 5px solid #00d2ff; box-shadow: 0 0 50px #00d2ff; border-radius: 5px; }
-        .fighter { position: absolute; width: 170px; height: 170px; background-size: contain; background-repeat: no-repeat; background-position: bottom; z-index: 1000; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.8)); }
+        if opcion == "1":
+            exito = random.randint(1, 100) > 40
+            if exito:
+                ganancia = 1000
+                self.dinero += ganancia
+                self.sospecha_policial += 15
+                print(f"¡ÉXITO! Cobraste ${ganancia}, pero la poli te tiene en la mira.")
+            else:
+                self.sospecha_policial += 30
+                self.mercancia -= 5
+                print("¡EMBOSCADA! Perdiste la mercancía y casi te atrapan.")
         
-        .hit-fx { position: absolute; width: 130px; height: 130px; background: radial-gradient(circle, white, #ff0, transparent); border-radius: 50%; z-index: 2000; animation: hit 0.2s forwards; }
-        @keyframes hit { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+        elif opcion == "2":
+            self.dinero += 400
+            self.sospecha_policial += 2
+            print("Envío entregado. Poco dinero, pero pasaste bajo el radar.")
 
-        /* 6. MODALES Y PAUSA */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 50px; }
-        .modal.active { display: flex; }
-        .pause-btn { width: 350px; margin: 15px; padding: 25px; background: white; color: black; font-size: 30px; border: none; cursor: pointer; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); transition: 0.2s; font-family: inherit; }
-        .pause-btn:hover { background: var(--gold); transform: scale(1.1); }
-
-        .controls-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #eee; padding: 30px; border-radius: 20px; color: #333; border: 6px solid var(--gold); }
-        .key-box { background: white; padding: 12px; border: 2px solid #bbb; display: flex; justify-content: space-between; width: 300px; font-weight: 900; }
-
-        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.1); filter: brightness(1.2) drop-shadow(0 0 50px red); } }
-        @keyframes blink { 50% { opacity: 0; } }
-    </style>
-</head>
-<body>
-
-    <div id="brightness-overlay"></div>
-    <div id="flash-effect"></div>
-    <div id="custom-cursor">👉</div>
-    <div id="door-left" class="door"></div>
-    <div id="door-right" class="door"></div>
-
-    <!-- 1. INTRO -->
-    <div id="intro-screen" class="screen active" onclick="iniciarTodo()">
-        <div class="fire">🔥</div>
-        <h1 style="font-size: 100px; margin: 0; text-shadow: 0 0 50px red;">ULTIMATE SMASH</h1>
-        <p class="press-x">CLIC PARA EMPEZAR</p>
-    </div>
-
-    <!-- 2. MENÚ PRINCIPAL -->
-    <div id="menu-screen" class="screen">
-        <div class="menu-grid">
-            <div id="btn-smash" class="m-item" onclick="goToSmashSub()"><div class="m-label">SMASH</div></div>
-            <div class="m-item" style="background: #27ae60;" onclick="showBuild()"><div class="m-label">SPIRITS</div></div>
-            <div class="m-item" style="background: #2e9eff;" onclick="showBuild()"><div class="m-label">GAMES</div></div>
-            <div class="m-item" style="background: #8e44ad;" onclick="showBuild()"><div class="m-label">VAULT</div></div>
-        </div>
-        <div class="side-bar">
-            <div class="side-icon" onclick="openSettings()">⚙️</div>
-            <div class="side-icon" onclick="openHelp()">❓</div>
-        </div>
-    </div>
-
-    <!-- 3. SELECTOR DE PERSONAJES -->
-    <div id="char-select-screen" class="screen">
-        <h2 style="font-style:italic; font-size: 40px; margin-bottom: 20px;">ELIGE TU LUCHADOR</h2>
-        <div class="grid-luchadores" id="grid-pjs"></div>
-        <div class="info-players">
-            <div id="p1-panel" class="p-panel">
-                <div id="p1-n" style="font-size:3.5rem">P1</div>
-                <p id="p1-h" style="font-family:sans-serif; font-size: 1.2rem;">Selecciona un luchador...</p>
-                <div id="p1-f" style="color:gold; font-size: 1.5rem;">Fuerza: --</div>
-            </div>
-            <div id="p2-panel" class="p-panel">
-                <div id="p2-n" style="font-size:3.5rem">CPU</div>
-                <p id="p2-h" style="font-family:sans-serif; font-size: 1.2rem;">Esperando rival...</p>
-                <div id="p2-f" style="color:gold; font-size: 1.5rem;">Fuerza: --</div>
-            </div>
-        </div>
-        <div id="ready-banner" onclick="iniciarVersus()">
-            <div style="font-size:80px; color:black; font-weight:900">READY TO FIGHT!</div>
-        </div>
-    </div>
-
-    <!-- 4. VERSUS -->
-    <div id="versus-screen" class="screen">
-        <div id="vs-p1" class="vs-side"></div>
-        <div style="font-size:150px; position:absolute; z-index:10; font-style:italic;">VS</div>
-        <div id="vs-cpu" class="vs-side"></div>
-    </div>
-
-    <!-- 5. PELEA -->
-    <div id="game-screen" class="screen">
-        <div id="stage-main"></div>
-        <div id="player-1" class="fighter"></div>
-        <div id="player-ia" class="fighter"></div>
-        <div id="timer" style="position:fixed; top:25px; font-size:70px; font-style:italic;">15:00</div>
-        
-        <div style="position:fixed; bottom:30px; left:10%; text-align:center">
-            <div id="p1-stocks" style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;"></div>
-            <div style="font-size:95px; font-weight:900; -webkit-text-stroke:3px black;"><span id="p1-p">0</span>%</div>
-        </div>
-        <div style="position:fixed; bottom:30px; right:10%; text-align:center">
-            <div id="p2-stocks" style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;"></div>
-            <div style="font-size:95px; font-weight:900; -webkit-text-stroke:3px black;"><span id="p2-p">0</span>%</div>
-        </div>
-    </div>
-
-    <!-- 6. MODAL PAUSA -->
-    <div id="modal-pause" class="modal">
-        <h1 style="font-size:80px; color:var(--gold); font-style:italic;">PAUSA</h1>
-        <button class="pause-btn" onclick="closePause()">CONTINUAR</button>
-        <button class="pause-btn" onclick="openSettings()">AJUSTES</button>
-        <button class="pause-btn" style="background:var(--red); color:white;" onclick="location.reload()">SALIR AL MENÚ</button>
-    </div>
-
-    <!-- 7. MODAL AJUSTES -->
-    <div id="modal-settings" class="modal">
-        <h1>AJUSTES SUPREME</h1>
-        <div class="controls-visual">
-            <div class="key-box"><span>MOVER</span><span>W, A, S, D</span></div>
-            <div class="key-box"><span>ATAQUE</span><span>K</span></div>
-            <div class="key-box"><span>PAUSA</span><span>P</span></div>
-            <div class="key-box"><span>ESQUIVAR</span><span>INTRO</span></div>
-        </div>
-        <div class="opt-row" style="margin-top:30px;">
-            <span>BRILLO</span><input type="range" min="0" max="90" value="0" oninput="adjBri(this.value)">
-        </div>
-        <button class="btn-back" onclick="closeModals()" style="padding:20px 60px; background:var(--red); color:white; border:none; cursor:pointer;">VOLVER</button>
-    </div>
-
-    <div id="modal-build" class="modal">
-        <div style="font-size:120px;">🏗️</div>
-        <h2>ESTAMOS TRABAJANDO EN ELLO</h2>
-        <button class="btn-back" onclick="closeModals()" style="background:var(--gold); padding:20px 50px;">VOLVER</button>
-    </div>
-
-    <script>
-        const spriteAssets = {
-            "MARIO": "https://smashbros.com",
-            "PACMAN": "https://smashbros.com",
-            "PIKACHU": "https://smashbros.com",
-            "DK": "https://smashbros.com",
-            "STEVE": "https://smashbros.com",
-            "SONIC": "https://smashbros.com",
-            "LINK": "https://smashbros.com",
-            "BOWSER": "https://smashbros.com",
-            "SAMUS": "https://smashbros.com",
-            "RYU": "https://smashbros.com"
-        };
-
-        const personajes = [
-            { id: "MARIO", h: "Héroe del Reino Champiñón.", f: "8/10" },
-            { id: "PACMAN", h: "Leyenda retro traga-fantasmas.", f: "7/10" },
-            { id: "PIKACHU", h: "Ratón eléctrico veloz.", f: "7.5/10" },
-            { id: "DK", h: "Fuerza bruta de la jungla.", f: "10/10" },
-            { id: "STEVE", h: "Constructor de mundos cúbicos.", f: "8/10" },
-            { id: "SONIC", h: "Erizo más rápido del mundo.", f: "7/10" },
-            { id: "LINK", h: "Guerrero de Hyrule.", f: "9/10" },
-            { id: "BOWSER", h: "Rey de los Koopas.", f: "10/10" },
-            { id: "SAMUS", h: "Cazarrecompensas espacial.", f: "9/10" },
-            { id: "RYU", h: "Luchador callejero incansable.", f: "9/10" }
-        ];
-
-        let p1Sel=null, cpuSel=null, fase="P1", gameActive=false, paused=false;
-        let p1Stocks=3, cpuStocks=3, gameTime=900;
-        const p1={x:200, y:0, vx:0, vy:0, p:0}, cpu={x:700, y:0, vx:0, vy:0, p:0}, keys={};
-
-        // CURSOR
-        window.onmousemove = e => { 
-            const c = document.getElementById('custom-cursor');
-            c.style.left = e.clientX-15+'px'; c.style.top = e.clientY-10+'px'; 
-        };
-
-        function iniciarTodo() {
-            document.getElementById('intro-screen').classList.remove('active');
-            document.getElementById('menu-screen').classList.add('active');
-        }
-
-        function goToSmashSub() {
-            document.getElementById('menu-screen').classList.remove('active');
-            document.getElementById('char-select-screen').classList.add('active');
-            const g = document.getElementById('grid-pjs'); g.innerHTML = "";
-            personajes.forEach(p => {
-                const d = document.createElement('div'); d.className='ficha'; 
-                d.innerHTML=`<img src="${spriteAssets[p.id]}" width="60"><br><strong>${p.id}</strong>`;
-                d.onclick = () => {
-                    if(fase === "P1") { p1Sel = p; d.classList.add('confirmed-p1'); fase = "CPU"; document.getElementById('p2-panel').style.opacity="1"; }
-                    else { cpuSel = p; d.classList.add('confirmed-cpu'); document.getElementById('ready-banner').classList.add('show'); }
-                    document.getElementById(fase==='CPU'?'p1-n':'p2-n').innerText = p.id;
-                    document.getElementById(fase==='CPU'?'p1-h':'p2-h').innerText = p.h;
-                };
-                g.appendChild(d);
-            });
-        }
-
-        function iniciarVersus() {
-            document.getElementById('ready-banner').classList.remove('show');
-            document.getElementById('door-left').classList.add('door-closed');
-            document.getElementById('door-right').classList.add('door-closed');
-            setTimeout(() => {
-                document.getElementById('char-select-screen').classList.remove('active');
-                document.getElementById('versus-screen').classList.add('active');
-                document.getElementById('vs-p1').style.backgroundImage = `url('${spriteAssets[p1Sel.id]}')`;
-                document.getElementById('vs-cpu').style.backgroundImage = `url('${spriteAssets[cpuSel.id]}')`;
-                setTimeout(() => {
-                    document.getElementById('door-left').classList.remove('door-closed');
-                    document.getElementById('door-right').classList.remove('door-closed');
-                    document.getElementById('versus-screen').classList.remove('active');
-                    document.getElementById('game-screen').classList.add('active');
-                    prepararPelea();
-                }, 5000);
-            }, 800);
-        }
-
-        function prepararPelea() {
-            p1.x = window.innerWidth/2-300; p1.y=50; cpu.x=window.innerWidth/2+200; cpu.y=450;
-            document.getElementById('player-1').style.backgroundImage = `url('${spriteAssets[p1Sel.id]}')`;
-            document.getElementById('player-ia').style.backgroundImage = `url('${spriteAssets[cpuSel.id]}')`;
-            updateHUD(); gameActive=true; loop(); clock();
-        }
-
-        window.onkeydown = e => {
-            keys[e.code]=true;
-            if(e.code === 'KeyP' && gameActive) togglePause();
-        };
-        window.onkeyup = e => keys[e.code]=false;
-
-        function togglePause() {
-            paused = !paused;
-            if(paused) document.getElementById('modal-pause').classList.add('active');
-            else document.getElementById('modal-pause').classList.remove('active');
-        }
-
-        function closePause() { paused = false; document.getElementById('modal-pause').classList.remove('active'); }
-
-        function loop() {
-            if(!gameActive || paused) return;
-            // P1
-            if(keys['KeyA']) p1.vx -= 1.4; if(keys['KeyD']) p1.vx += 1.4;
-            if(keys['KeyW'] && p1.y > 450) p1.vy = -19;
-            if(keys['KeyK']) atacar(p1, cpu);
-
-            // IA (FUSTE)
-            if(p1.x > cpu.x) cpu.vx += 0.95; else cpu.vx -= 0.95;
-            if(Math.abs(p1.x - cpu.x) < 130 && Math.random() > 0.96) atacar(cpu, p1);
-
-            phys(p1); phys(cpu);
-            document.getElementById('player-1').style.transform = `translate(${p1.x}px, ${p1.y}px)`;
-            document.getElementById('player-ia').style.transform = `translate(${cpu.x}px, ${cpu.y}px)`;
-            
-            if(p1.y > 850 || p1.x < -200 || p1.x > window.innerWidth) morir(p1);
-            if(cpu.y > 850 || cpu.x < -200 || cpu.x > window.innerWidth) morir(cpu);
-            requestAnimationFrame(loop);
-        }
-
-        function phys(o) {
-            o.vy += 0.8; o.x += o.vx; o.y += o.vy; o.vx *= 0.85;
-            if(o.y > 460 && o.x > window.innerWidth/2-475 && o.x < window.innerWidth/2+475) { o.y=460; o.vy=0; }
-        }
-
-        function atacar(a, v) {
-            if(Math.abs(a.x-v.x)<130 && Math.abs(a.y-v.y)<100) {
-                v.p += 7; document.getElementById(v === p1 ? 'p1-p' : 'p2-p').innerText = v.p;
-                v.vx = (a.x < v.x ? 1 : -1) * (v.p/5 + 13); v.vy = -10;
-                const f = document.createElement('div'); f.className='hit-fx'; f.style.left=v.x+'px'; f.style.top=v.y+'px';
-                document.getElementById('game-screen').appendChild(f); setTimeout(()=>f.remove(), 200);
-            }
-        }
-
-        function morir(o) {
-            if(o===p1) p1Stocks--; else cpuStocks--;
-            o.x=window.innerWidth/2; o.y=0; o.p=0; o.vx=0; o.vy=0;
-            document.getElementById(o === p1 ? 'p1-p' : 'p2-p').innerText = "0";
-            updateHUD();
-            if(p1Stocks<=0 || cpuStocks<=0) { alert("¡PARTIDA FINALIZADA!"); location.reload(); }
-        }
-
-        function updateHUD() {
-            const h1=document.getElementById('p1-stocks'), h2=document.getElementById('p2-stocks');
-            h1.innerHTML=""; h2.innerHTML="";
-            for(let i=0; i<p1Stocks; i++) h1.innerHTML+='<div style="width:25px; height:25px; background:red; border-radius:50%; border:2px solid black"></div>';
-            for(let i=0; i<cpuStocks; i++) h2.innerHTML+='<div style="width:25px; height:25px; background:blue; border-radius:50%; border:2px solid black"></div>';
-        }
-
-        function clock() {
-            setInterval(() => {
-                if(!gameActive || paused) return;
-                gameTime--; let m=Math.floor(gameTime/60), s=gameTime%60;
-                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-            }, 1000);
-        }
-
-        function adjBri(v) { document.getElementById('brightness-overlay').style.opacity = v/100; }
-        function openSettings() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active')); document.getElementById('modal-settings').classList.add('active'); }
-        function openHelp() { document.getElementById('modal-help').classList.add('active'); }
-        function showBuild() { document.getElementById('modal-build').classList.add('active'); }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); if(paused) document.getElementById('modal-pause').classList.add('active'); }
-    </script>
-</body>
-</html>
-
+# Iniciar el juego
+juego = JuegoNarcoDispatch()
+while True:
+    juego.mostrar_estado()
+    juego.mision_reparto()
+    time.sleep(2)
