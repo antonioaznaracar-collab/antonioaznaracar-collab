@@ -2,203 +2,382 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SMASH NINJA: BATTLEFIELD</title>
+    <title>ULTIMATE SMASH BROS: ETERNAL BATTLE 2026</title>
     <style>
+        /* =========================================
+           CSS MASIVO - ESTÉTICA TRIPLE A
+           ========================================= */
         @import url('https://googleapis.com');
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Permanent Marker', cursive; color: white; user-select: none; }
         
-        /* FONTO FANTÁSTICO ANIMADO */
-        #bg-fantastic { 
-            position: fixed; inset: 0; 
-            background: linear-gradient(to bottom, #1e3c72, #2a5298, #70e1ff);
-            z-index: -1;
-        }
-        .cloud { position: absolute; background: rgba(255,255,255,0.3); border-radius: 50%; filter: blur(20px); animation: moveCloud 30s linear infinite; }
-        .island { position: absolute; width: 200px; height: 100px; background: #444; border-radius: 50% / 20%; box-shadow: inset 0 -20px 0 #222; animation: floatIsland 5s ease-in-out infinite; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Roboto', sans-serif; color: white; cursor: none; }
 
-        /* INTRO Y MENÚS */
-        #intro-screen { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .fire-anim { font-size: 140px; animation: burn 0.2s infinite alternate; filter: drop-shadow(0 0 30px orange); }
-        .logo-smash { font-size: 110px; color: #ff2200; display: none; text-shadow: 0 0 50px red; text-align: center; }
-        .screen-crack { position: absolute; inset: 0; background: url('https://pngimg.com') center/cover; display: none; opacity: 0.8; pointer-events: none; }
+        /* CAPAS DE ESCENA */
+        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .active { display: flex; }
 
-        /* ESCENARIO BATTLEFIELD (Multiplataforma) */
-        #stage-container { display: none; position: absolute; inset: 0; }
-        #main-stage { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 800px; height: 40px; background: #5c3d2e; border-bottom: 10px solid #221100; border-radius: 10px; }
-        .plat { position: absolute; width: 180px; height: 15px; background: rgba(255,255,255,0.4); border-top: 5px solid gold; border-radius: 5px; box-shadow: 0 0 15px gold; }
+        /* PANTALLA TÍTULO (TU IMAGEN) */
+        #title-screen { background: radial-gradient(circle, #f0ca4d 0%, #e37424 100%); z-index: 2000; }
+        .logo-box { width: 650px; filter: drop-shadow(0 0 50px rgba(0,0,0,0.6)); animation: logoEntry 1.2s ease-out; }
+        .fire-fx { font-size: 160px; animation: flamePulse 0.15s infinite alternate; filter: drop-shadow(0 0 40px orange); }
+        .press-btn { margin-top: 60px; font-size: 35px; letter-spacing: 10px; animation: blink 0.8s infinite; text-shadow: 4px 4px #000; }
 
-        /* LUCHADORES (Basados en tu imagen) */
-        .fighter { position: absolute; width: 90px; height: 120px; background-size: contain; background-repeat: no-repeat; bottom: 220px; z-index: 10; transition: transform 0.05s; }
-        #ninja-p1 { background-image: url('https://ibb.co'); }
-        #rival-ia { background-image: url('https://ibb.co'); filter: hue-rotate(180deg) brightness(0.7); transform: scaleX(-1); }
+        /* MENÚ ULTIMATE (TU IMAGEN DE BLOQUES) */
+        #main-menu { background: url('https://wallpaperaccess.com') center/cover; }
+        #main-menu::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: -1; }
+        .menu-grid { display: grid; grid-template-columns: 2.2fr 1.2fr 1.2fr; grid-template-rows: 2.2fr 1.2fr; gap: 20px; width: 92%; height: 85%; z-index: 5; }
+        .m-item { position: relative; overflow: hidden; cursor: pointer; transition: 0.4s; clip-path: polygon(6% 0, 100% 0, 94% 100%, 0% 100%); border: 5px solid transparent; }
+        .m-item:hover { transform: scale(1.06); border-color: #fff; box-shadow: 0 0 50px rgba(255,255,255,0.3); z-index: 100; }
+        .m-label { position: absolute; bottom: 25px; left: 45px; font-size: 55px; font-style: italic; text-transform: uppercase; text-shadow: 4px 4px #000; }
+        .m-icon { position: absolute; right: 30px; top: 30px; font-size: 120px; opacity: 0.25; }
+
+        #btn-smash { background: linear-gradient(135deg, #ff0055, #702); grid-column: 1/2; grid-row: 1/2; }
+        #btn-games { background: linear-gradient(135deg, #00d2ff, #037); grid-column: 2/4; }
+        #btn-online { background: linear-gradient(135deg, #ffcc00, #a70); }
+        #btn-vault { background: linear-gradient(135deg, #cc00ff, #407); }
+        #btn-options { background: linear-gradient(135deg, #666, #222); }
+
+        /* SELECTOR (EL GUANTE Y LA REJILLA) */
+        #char-select { background: #1a1a2e; cursor: none; }
+        .grid-container { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; width: 95%; height: 55%; padding: 30px; background: rgba(0,0,0,0.5); border-bottom: 10px solid #ff0055; }
+        .char-slot { background: #333; border: 3px solid #666; transition: 0.15s; position: relative; overflow: hidden; }
+        .char-slot:hover { border-color: #fff; transform: scale(1.15); z-index: 50; box-shadow: 0 0 20px #fff; }
+        .preview-pane { width: 100%; height: 45%; display: flex; justify-content: space-around; align-items: center; background: linear-gradient(to top, #000 0%, transparent 100%); }
+        .p-card { width: 500px; height: 350px; background: #ff0055; clip-path: polygon(0 0, 100% 0, 88% 100%, 0% 100%); position: relative; border-left: 12px solid #fff; }
+        .p-img-render { position: absolute; right: -30px; bottom: 0; height: 120%; filter: drop-shadow(0 0 30px black); transition: 0.4s; }
+
+        /* JUEGO (BATTLEFIELD FANTÁSTICO) */
+        #game-stage { background: linear-gradient(to bottom, #1e3c72, #2a5298, #70e1ff); }
+        .sky-island { position: absolute; width: 300px; height: 100px; background: #444; border-radius: 50%; box-shadow: inset 0 -20px 0 #222; animation: floatIsland 6s ease-in-out infinite; }
+        #main-platform { position: absolute; bottom: 220px; left: 50%; transform: translateX(-50%); width: 900px; height: 50px; background: #5c3d2e; border-bottom: 15px solid #2d1b13; border-radius: 15px; z-index: 10; }
+        .sub-plat { position: absolute; width: 200px; height: 15px; background: rgba(255,255,255,0.4); border-top: 5px solid gold; border-radius: 8px; box-shadow: 0 0 20px gold; z-index: 10; }
+
+        .fighter { position: absolute; width: 110px; height: 150px; background-size: contain; background-repeat: no-repeat; bottom: 270px; z-index: 100; transition: transform 0.05s; }
+        #p1-sprite { background-image: url('https://ibb.co'); }
+        #p2-sprite { background-image: url('https://ibb.co'); transform: scaleX(-1); }
+
+        /* ELEMENTOS DINÁMICOS */
+        .hand-cursor { position: fixed; width: 65px; pointer-events: none; z-index: 5000; transition: transform 0.05s; }
+        .item-obj { position: absolute; width: 75px; height: 75px; font-size: 60px; text-align: center; line-height: 75px; z-index: 150; filter: drop-shadow(0 0 15px #fff); }
+        .hit-effect { position: absolute; width: 150px; height: 150px; background: url('https://freeiconspng.com') center/cover; pointer-events: none; z-index: 500; display: none; }
 
         /* HUD */
-        #hud-smash { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-around; font-size: 45px; text-shadow: 3px 3px #000; }
-        .perc { font-size: 85px; color: #ff0000; font-weight: 900; }
+        #hud-master { position: absolute; bottom: 40px; width: 100%; display: flex; justify-content: space-around; font-size: 60px; text-shadow: 4px 4px #000; z-index: 1000; }
+        .perc-display { font-size: 100px; color: #ff0000; font-weight: 900; font-style: italic; }
 
         /* ANIMACIONES */
-        @keyframes moveCloud { from { left: -200px; } to { left: 100vw; } }
-        @keyframes floatIsland { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.15); } }
-        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(15px,-15px); } 75% { transform: translate(-15px,15px); } }
+        @keyframes flamePulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+        @keyframes logoEntry { from { transform: scale(6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes floatIsland { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(20px, -20px); } 75% { transform: translate(-20px, 20px); } }
     </style>
 </head>
 <body>
 
-<div id="bg-fantastic">
-    <!-- Nubes e Islas de fondo -->
-    <div class="cloud" style="top:10%; width:300px; height:100px; animation-duration:40s"></div>
-    <div class="cloud" style="top:40%; width:200px; height:80px; animation-duration:25s; opacity:0.5"></div>
-    <div class="island" style="top:20%; left:15%"></div>
-    <div class="island" style="top:35%; right:20%; animation-delay:1s"></div>
-</div>
+    <!-- EL GUANTE DE SMASH -->
+    <img id="smash-hand" class="hand-cursor" src="https://ssbwiki.com">
 
-<div id="intro-screen">
-    <div class="fire-anim">🔥</div>
-    <div class="logo-smash" id="l-smash">SUPER NINJA<br><span style="font-size:150px">SMASH</span></div>
-    <div class="screen-crack" id="glass-fx"></div>
-    <p id="hint" style="font-size:30px; margin-top:50px">PULSA [ X ] PARA EL IMPACTO</p>
-</div>
-
-<div id="stage-container">
-    <!-- Campo de Batalla -->
-    <div id="main-stage"></div>
-    <div class="plat" id="p-top" style="bottom: 500px; left: 50%; transform: translateX(-50%);"></div>
-    <div class="plat" id="p-left" style="bottom: 350px; left: 35%;"></div>
-    <div class="plat" id="p-right" style="bottom: 350px; right: 35%;"></div>
-
-    <!-- Luchadores -->
-    <div id="ninja-p1" class="fighter"></div>
-    <div id="rival-ia" class="fighter"></div>
-
-    <!-- HUD -->
-    <div id="hud-smash">
-        <div style="text-align:center">P1: <span id="p1-p" class="perc">0</span>% <br> STOCKS: <span id="p1-s">●●●</span></div>
-        <div id="timer">20:00</div>
-        <div style="text-align:center">IA: <span id="p2-p" class="perc">0</span>% <br> STOCKS: <span id="p2-s">●●●</span></div>
+    <!-- 1. PANTALLA DE TÍTULO (INTRO) -->
+    <div id="screen-title" class="screen active" onclick="triggerMenu()">
+        <div class="fire-fx">🔥</div>
+        <img class="logo-box" src="https://ytimg.com">
+        <div class="press-btn">PRESS ANY KEY TO START</div>
     </div>
-</div>
 
-<script>
-    /** MOTOR FÍSICO SMASH AVANZADO **/
-    let p1 = { x: 300, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0 };
-    let p2 = { x: 800, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0 };
-    let state = "INTRO";
-    let timer = 1200;
-    const input = {};
+    <!-- 2. MENÚ PRINCIPAL (ULTIMATE) -->
+    <div id="screen-menu" class="screen">
+        <div class="menu-grid">
+            <div id="btn-smash" class="m-item" onclick="triggerSelect()">
+                <div class="m-label">SMASH</div>
+                <div class="m-icon">⚔️</div>
+            </div>
+            <div id="btn-games" class="m-item">
+                <div class="m-label">GAMES & MORE</div>
+                <div class="m-icon">🎮</div>
+            </div>
+            <div id="btn-online" class="m-item">
+                <div class="m-label">ONLINE</div>
+                <div class="m-icon">🌐</div>
+            </div>
+            <div id="btn-vault" class="m-item">
+                <div class="m-label">VAULT</div>
+                <div class="m-icon">🏆</div>
+            </div>
+            <div id="btn-options" class="m-item">
+                <div class="m-label">OPTIONS</div>
+                <div class="m-icon">⚙️</div>
+            </div>
+        </div>
+    </div>
 
-    window.onkeydown = e => {
-        if(e.code === 'KeyX' && state === "INTRO") startIntro();
-        input[e.code] = true;
-    };
-    window.onkeyup = e => input[e.code] = false;
+    <!-- 3. SELECTOR DE PERSONAJE -->
+    <div id="screen-select" class="screen">
+        <div class="grid-container" id="char-grid-build"></div>
+        <div class="preview-pane">
+            <div class="p-card">
+                <div style="z-index:10; padding:20px;">
+                    <div style="font-size:30px; color:gold">JUGADOR 1</div>
+                    <div id="char-name-display" style="font-size:80px; font-style:italic">NINJA</div>
+                </div>
+                <img id="p1-render" class="p-img-render" src="https://ibb.co">
+            </div>
+            <div class="p-card" style="background:#444; clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);">
+                <div style="margin-left:100px; padding:20px;">
+                    <div style="font-size:30px; color:#aaa">CPU</div>
+                    <div style="font-size:80px; font-style:italic">AL AZAR</div>
+                </div>
+            </div>
+        </div>
+        <div style="position:absolute; bottom:15px; color:#fff; background:#ff0055; padding:10px 30px; font-size:20px;">DOBLE CLIC PARA PELEAR</div>
+    </div>
 
-    function startIntro() {
-        state = "ANIMATING";
-        document.querySelector('.fire-anim').style.display = 'none';
-        document.getElementById('hint').style.display = 'none';
-        document.getElementById('l-smash').style.display = 'block';
-        setTimeout(() => {
-            document.getElementById('glass-fx').style.display = 'block';
-            document.body.style.animation = "shake 0.4s 4";
-            setTimeout(() => {
-                document.getElementById('intro-screen').style.display = 'none';
-                document.getElementById('stage-container').style.display = 'block';
-                state = "BATTLE";
-                setInterval(countDown, 1000);
-            }, 800);
-        }, 900);
-    }
+    <!-- 4. CAMPO DE BATALLA -->
+    <div id="screen-game" class="screen">
+        <!-- Fondo Fantástico -->
+        <div class="sky-island" style="top:15%; left:10%;"></div>
+        <div class="sky-island" style="top:35%; right:15%; animation-delay:-3s;"></div>
 
-    function loop() {
-        if(state === "BATTLE") {
-            // JUGADOR 1 (W A S D + ESPACIO)
-            if(input['KeyA']) p1.vX = -10;
-            else if(input['KeyD']) p1.vX = 10;
-            else p1.vX *= 0.85;
+        <!-- Escenario Multi-Plataforma -->
+        <div id="main-platform"></div>
+        <div class="sub-plat" style="bottom: 580px; left: 50%; transform: translateX(-50%);"></div>
+        <div class="sub-plat" style="bottom: 440px; left: 30%;"></div>
+        <div class="sub-plat" style="bottom: 440px; right: 30%;"></div>
 
-            if(input['Space'] && p1.jumps < 2) { 
-                p1.vY = 22; p1.jumps++; input['Space'] = false; 
+        <!-- Luchadores -->
+        <div id="p1-sprite" class="fighter"></div>
+        <div id="p2-sprite" class="fighter"></div>
+
+        <!-- Efectos -->
+        <div id="fx-hit" class="hit-effect"></div>
+        <div id="spawned-item" class="item-obj" style="display:none"></div>
+
+        <!-- HUD -->
+        <div id="hud-master">
+            <div style="text-align:center">P1: <span id="p1-perc-val" class="perc-display">0</span>% <br> <span id="p1-stocks-val" style="font-size:35px">●●●</span></div>
+            <div id="game-timer-val" style="border:6px solid #fff; padding:20px 50px; border-radius:100px; background:rgba(0,0,0,0.6)">20:00</div>
+            <div style="text-align:center">IA: <span id="p2-perc-val" class="perc-display">0</span>% <br> <span id="p2-stocks-val" style="font-size:35px">●●●</span></div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT - EL CORAZÓN DEL JUEGO
+         ========================================= -->
+    <script>
+        /** --- MOTOR DE ESTADOS --- **/
+        let currentState = "TITLE";
+        let p1 = { x: 300, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0, type: 'NINJA', size: 1, power: 'none' };
+        let p2 = { x: 800, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0, type: 'MAGO', size: 1, power: 'none' };
+        let gameClock = 1200;
+        let activeItem = null;
+        const keys = {};
+
+        // Definición de Personajes y Poderes
+        const CHARS = {
+            NINJA: { speed: 10, jumpPower: 25, weight: 1.1, attack: 7 },
+            MAGO: { speed: 7, jumpPower: 22, weight: 0.9, attack: 5 },
+            BESTIA: { speed: 5, jumpPower: 18, weight: 1.5, attack: 12 }
+        };
+
+        const ITEMS_LIST = [
+            { icon: '🔨', type: 'HAMMER' }, { icon: '❤️', type: 'HEART' }, 
+            { icon: '🍄', type: 'MUSHROOM' }, { icon: '⭐', type: 'STAR' }, { icon: '💣', type: 'BOMB' }
+        ];
+
+        /** --- NAVEGACIÓN --- **/
+        window.onmousemove = e => {
+            const hand = document.getElementById('smash-hand');
+            hand.style.left = e.clientX + 'px';
+            hand.style.top = e.clientY + 'px';
+        };
+
+        window.onkeydown = e => {
+            if(currentState === "TITLE") triggerMenu();
+            keys[e.code] = true;
+        };
+        window.onkeyup = e => keys[e.code] = false;
+
+        function triggerMenu() {
+            document.body.style.animation = "shake 0.4s 3";
+            changeScreen('screen-menu');
+            document.getElementById('smash-hand').style.display = "block";
+            currentState = "MENU";
+        }
+
+        function triggerSelect() {
+            changeScreen('screen-select');
+            buildGrid();
+            currentState = "SELECT";
+        }
+
+        function changeScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function buildGrid() {
+            const grid = document.getElementById('char-grid-build');
+            if(grid.children.length > 0) return;
+            for(let i=0; i<72; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'char-slot';
+                slot.innerHTML = `<img src="https://ibb.co" style="width:100%">`;
+                slot.onmouseover = () => {
+                    document.getElementById('p1-render').style.transform = "scale(1.1) rotate(-5deg)";
+                    document.getElementById('char-name-display').innerText = i % 2 === 0 ? "NINJA" : "MAGO";
+                };
+                slot.ondblclick = () => startGameCombat();
+                grid.appendChild(slot);
+            }
+        }
+
+        /** --- MOTOR DE COMBATE --- **/
+        function startGameCombat() {
+            changeScreen('screen-game');
+            document.getElementById('smash-hand').style.display = "none";
+            currentState = "BATTLE";
+            setInterval(tickTimer, 1000);
+            setInterval(dropItem, 15000);
+        }
+
+        function gameLoop() {
+            if(currentState === "BATTLE") {
+                // JUGADOR 1 (W A S D + ESPACIO)
+                if(keys['KeyA']) p1.vX = -CHARS[p1.type].speed;
+                else if(keys['KeyD']) p1.vX = CHARS[p1.type].speed;
+                else p1.vX *= 0.82;
+
+                if(keys['Space'] && p1.jumps < 2) { 
+                    p1.vY = CHARS[p1.type].jumpPower; p1.jumps++; keys['Space'] = false; 
+                }
+
+                // ATAQUES (K: Normal, M: Especial, E: Smash)
+                if(keys['KeyK'] || keys['KeyM'] || keys['KeyE']) {
+                    if(checkCollision(p1, p2)) resolveCombatHit(p1, p2);
+                }
+
+                // --- IA AVANZADA ---
+                const distance = p1.x - p2.x;
+                const platformX = window.innerWidth / 2;
+                
+                // Inteligencia de Recuperación
+                if(p2.y < 0 && (p2.x < platformX - 450 || p2.x > platformX + 450)) {
+                    p2.vX = (platformX - p2.x) * 0.07;
+                    if(p2.jumps < 2 && p2.vY < 0) { p2.vY = 24; p2.jumps++; }
+                } else {
+                    // Caza al Jugador
+                    if(Math.abs(distance) > 110) p2.vX = distance > 0 ? 6 : -6;
+                    else {
+                        p2.vX *= 0.8;
+                        if(Math.random() > 0.95) resolveCombatHit(p2, p1);
+                    }
+                }
+
+                updatePhysics(p1, 'p1-sprite');
+                updatePhysics(p2, 'p2-sprite');
+                handleItemsLogic();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updatePhysics(obj, id) {
+            obj.x += obj.vX;
+            obj.y += obj.vY;
+            obj.vY -= CHARS[obj.type].weight;
+
+            // Plataformas Battlefield
+            const mid = window.innerWidth / 2;
+            collide(obj, mid - 450, mid + 450, 0); // Base
+            collide(obj, mid - 100, mid + 100, 360); // Top
+            collide(obj, mid - 350, mid - 150, 220); // Left
+            collide(obj, mid + 150, mid + 350, 220); // Right
+
+            // RING OUT (EXPLOSIÓN)
+            if(obj.y < -500 || Math.abs(obj.x - mid) > 1000) {
+                obj.stocks--;
+                obj.dmg = 0; obj.y = 800; obj.x = mid; obj.vY = 0;
+                obj.size = 1; obj.power = 'none';
+                updateHUDDisplay();
+                if(obj.stocks <= 0) alert("FIN DEL COMBATE");
             }
 
-            // ATAQUE (K, M, E)
-            if(input['KeyK'] || input['KeyM'] || input['KeyE']) {
-                if(dist(p1, p2) < 120 && Math.abs(p1.y - p2.y) < 100) { hit(p1, p2); }
+            const dom = document.getElementById(id);
+            dom.style.left = obj.x + "px";
+            dom.style.bottom = (220 + obj.y + 50) + "px";
+            dom.style.transform = `scale(${obj.size}) ${id.includes('p2') ? 'scaleX(-1)' : ''}`;
+        }
+
+        function collide(obj, l, r, h) {
+            if(obj.vY <= 0 && obj.x > l && obj.x < r && obj.y <= h && obj.y > h - 35) {
+                obj.y = h; obj.vY = 0; obj.jumps = 0;
             }
-
-            // IA INTELIGENTE (Battlefield Logic)
-            const gap = p1.x - p2.x;
-            const onStage = (p2.x > window.innerWidth/2 - 400 && p2.x < window.innerWidth/2 + 400);
-
-            if (!onStage && p2.y < 0) { // RECUPERACIÓN IA
-                p2.vX = (window.innerWidth/2 - p2.x) * 0.08;
-                if(p2.jumps < 2 && p2.vY < 0) { p2.vY = 22; p2.jumps++; }
-            } else { // PERSECUCIÓN
-                if(Math.abs(gap) > 80) p2.vX = gap > 0 ? 5 : -5;
-                else { p2.vX *= 0.8; if(Math.random() > 0.95) hit(p2, p1); }
-            }
-
-            physics(p1, 'ninja-p1');
-            physics(p2, 'rival-ia');
-        }
-        requestAnimationFrame(loop);
-    }
-
-    function physics(obj, domId) {
-        obj.x += obj.vX;
-        obj.y += obj.vY;
-        obj.vY -= 1.1; // Gravedad
-
-        // Plataformas (Colisión)
-        checkCol(obj, window.innerWidth/2 - 400, window.innerWidth/2 + 400, 0); // Suelo
-        checkCol(obj, window.innerWidth/2 - 90, window.innerWidth/2 + 90, 320); // Top Plat
-        checkCol(obj, window.innerWidth/2 - 300, window.innerWidth/2 - 120, 170); // Left Plat
-        checkCol(obj, window.innerWidth/2 + 120, window.innerWidth/2 + 300, 170); // Right Plat
-
-        // Ring Out (Explosión)
-        if(obj.y < -500 || Math.abs(obj.x - window.innerWidth/2) > 900) {
-            obj.stocks--;
-            obj.dmg = 0;
-            obj.y = 800; obj.x = window.innerWidth/2; obj.vY = 0;
-            updateHUD();
-            if(obj.stocks <= 0) { alert("¡FIN DE LA PARTIDA!"); location.reload(); }
         }
 
-        const el = document.getElementById(domId);
-        el.style.left = obj.x + "px";
-        el.style.bottom = (180 + obj.y + 40) + "px";
-    }
-
-    function checkCol(obj, left, right, height) {
-        if(obj.vY <= 0 && obj.x > left && obj.x < right && obj.y <= height && obj.y > height - 30) {
-            obj.y = height; obj.vY = 0; obj.jumps = 0;
+        function resolveCombatHit(atk, def) {
+            if(def.power === 'STAR') return;
+            const knockback = (def.dmg / 8);
+            const dir = def.x > atk.x ? 1 : -1;
+            def.vX = dir * (15 + knockback);
+            def.vY = 8 + knockback;
+            def.dmg += CHARS[atk.type].attack * (atk.size > 1 ? 1.8 : 1);
+            
+            // Efecto Visual de Golpe
+            const fx = document.getElementById('fx-hit');
+            fx.style.display = 'block';
+            fx.style.left = def.x + "px"; fx.style.bottom = (220 + def.y + 80) + "px";
+            setTimeout(() => fx.style.display = 'none', 150);
+            
+            document.body.style.animation = "shake 0.1s 2";
+            updateHUDDisplay();
         }
-    }
 
-    function hit(atk, def) {
-        def.dmg += 8;
-        const dir = def.x > atk.x ? 1 : -1;
-        def.vX = dir * (def.dmg * 0.5);
-        def.vY = def.dmg * 0.2;
-        updateHUD();
-    }
+        /** --- OBJETOS --- **/
+        function dropItem() {
+            const data = ITEMS_LIST[Math.floor(Math.random() * ITEMS_LIST.length)];
+            const el = document.getElementById('spawned-item');
+            el.style.display = 'block';
+            el.innerHTML = data.icon;
+            activeItem = { x: (Math.random() * 800) + (window.innerWidth/2 - 400), y: 900, type: data.type, el: el };
+        }
 
-    function updateHUD() {
-        document.getElementById('p1-p').innerText = p1.dmg;
-        document.getElementById('p2-p').innerText = p2.dmg;
-        document.getElementById('p1-s').innerText = "●".repeat(p1.stocks);
-        document.getElementById('p2-s').innerText = "●".repeat(p2.stocks);
-    }
+        function handleItemsLogic() {
+            if(!activeItem) return;
+            activeItem.y -= 4;
+            activeItem.el.style.left = activeItem.x + "px";
+            activeItem.el.style.top = (900 - activeItem.y) + "px";
 
-    function countDown() {
-        timer--;
-        let m = Math.floor(timer/60), s = timer % 60;
-        document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
-    }
+            [p1, p2].forEach(p => {
+                if(Math.abs(p.x - activeItem.x) < 70 && Math.abs((600 - p.y) - (900 - activeItem.y)) < 70) {
+                    if(activeItem.type === 'HEART') p.dmg = 0;
+                    if(activeItem.type === 'MUSHROOM') { p.size = 2.2; setTimeout(() => p.size = 1, 8000); }
+                    if(activeItem.type === 'STAR') { p.power = 'STAR'; setTimeout(() => p.power = 'none', 6000); }
+                    if(activeItem.type === 'BOMB') { p.dmg += 40; p.vY = 30; }
+                    
+                    activeItem.el.style.display = 'none';
+                    activeItem = null;
+                    updateHUDDisplay();
+                }
+            });
+            if(activeItem && activeItem.y < -200) { activeItem.el.style.display = 'none'; activeItem = null; }
+        }
 
-    function dist(a, b) { return Math.abs(a.x - b.x); }
+        function updateHUDDisplay() {
+            document.getElementById('p1-perc-val').innerText = Math.floor(p1.dmg);
+            document.getElementById('p2-perc-val').innerText = Math.floor(p2.dmg);
+            document.getElementById('p1-stocks-val').innerText = "●".repeat(p1.stocks);
+            document.getElementById('p2-stocks-val').innerText = "●".repeat(p2.stocks);
+        }
 
-    loop();
-</script>
+        function tickTimer() {
+            if(currentState !== "BATTLE") return;
+            gameClock--;
+            let m = Math.floor(gameClock/60), s = gameClock % 60;
+            document.getElementById('game-timer-val').innerText = `${m}:${s < 10 ? '0' + s : s}`;
+        }
+
+        function checkCollision(a, b) { return Math.abs(a.x - b.x) < 130 && Math.abs(a.y - b.y) < 100; }
+
+        gameLoop();
+    </script>
 </body>
 </html>
+
