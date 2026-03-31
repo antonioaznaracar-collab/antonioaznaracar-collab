@@ -2,524 +2,266 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE SMASH BROS: SUPREME EDITION 2026 - MASTER CODE</title>
+    <title>ULTIMATE SMASH BROS 2026 - FINAL MASTER CODE</title>
     <style>
-        /* ============================================================
-           1. VARIABLES GLOBALES Y RESET
-           ============================================================ */
         @import url('https://googleapis.com');
+        :root { --red: #ff0055; --blue: #00d2ff; --gold: #f1c40f; --purple: #d300d3; --green: #2ecc71; --dark: #0a0a1a; }
+
+        * { cursor: none !important; user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Roboto', sans-serif; color: white; }
+
+        /* CAPAS DE SISTEMA */
+        #brightness-layer { position: fixed; inset: 0; background: black; opacity: 0; pointer-events: none; z-index: 100000; }
+        #hand { position: fixed; font-size: 50px; z-index: 110000; pointer-events: none; transition: opacity 0.3s; }
+
+        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; background: var(--dark); }
+        .active { display: flex !important; }
+
+        /* 1. MENÚ PRINCIPAL (ESTILO ULTIMATE) */
+        .menu-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 2fr 1fr; gap: 15px; width: 90%; height: 85%; }
+        .m-item { position: relative; cursor: pointer; transition: 0.3s; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); overflow: hidden; border: 4px solid transparent; }
+        .m-item:hover { transform: scale(1.03); border-color: white; filter: brightness(1.2); }
+        .m-label { position: absolute; bottom: 25px; left: 30px; font-size: 45px; font-style: italic; text-shadow: 3px 3px #000; }
         
-        :root {
-            --red-smash: #ff0055;
-            --blue-smash: #00d2ff;
-            --gold-smash: #f1c40f;
-            --green-smash: #2ecc71;
-            --dark-bg: #0a0a1a;
-            --transition-speed: 0.6s;
-        }
+        #btn-smash { background: linear-gradient(135deg, var(--red), #700); grid-column: 1/2; grid-row: 1/2; }
+        #btn-espiritus { background: linear-gradient(135deg, var(--green), #050); }
+        #btn-cajon { background: linear-gradient(135deg, var(--blue), #005); grid-column: 2/4; }
+        #btn-baul { background: linear-gradient(135deg, var(--purple), #505); }
 
-        * { box-sizing: border-box; outline: none; }
+        .sidebar { position: fixed; right: 0; top: 0; height: 100%; width: 80px; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; border-left: 2px solid #444; }
+        .side-btn { font-size: 40px; transition: 0.3s; cursor: pointer; }
+        .side-btn:hover { transform: rotate(90deg) scale(1.2); color: var(--gold); }
 
-        body { 
-            margin: 0; padding: 0; overflow: hidden; 
-            background: #000; font-family: 'Roboto', sans-serif; 
-            color: white; user-select: none; cursor: none;
-        }
-
-        /* CURSOR PERSONALIZADO */
-        #hand { 
-            position: fixed; width: 60px; height: 60px; 
-            z-index: 99999; pointer-events: none; 
-            font-size: 45px; transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
-        }
-
-        /* ============================================================
-           2. SISTEMA DE PANTALLAS (TRANSICIONES SUAVES)
-           ============================================================ */
-        .screen { 
-            position: fixed; inset: 0; display: none; 
-            flex-direction: column; align-items: center; 
-            justify-content: center; z-index: 10; 
-            opacity: 0; transition: opacity var(--transition-speed) ease-in-out; 
-        }
-        .active { display: flex; opacity: 1; }
-
-        /* INTRO */
-        #intro-screen { 
-            background: radial-gradient(circle, #f0ca4d, #e37424); 
-            z-index: 5000; 
-        }
-        .fire-logo { 
-            font-size: 180px; animation: flamePulse 1.5s infinite ease-in-out; 
-            filter: drop-shadow(0 0 40px orange); 
-        }
-        @keyframes flamePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-
-        /* MENÚ PRINCIPAL */
-        #menu-screen { background: var(--dark-bg); }
-        .menu-grid { 
-            display: grid; grid-template-columns: 2fr 1fr 1fr; 
-            grid-template-rows: 2fr 1fr; gap: 20px; 
-            width: 90%; height: 85%; padding: 20px;
-        }
-        .m-item { 
-            position: relative; cursor: pointer; overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            clip-path: polygon(4% 0, 100% 0, 96% 100%, 0% 100%);
-            border: 0px solid white;
-        }
-        .m-item:hover { transform: scale(1.03); border-width: 5px; box-shadow: 0 0 50px rgba(255,255,255,0.2); }
-        .m-label { position: absolute; bottom: 30px; left: 40px; font-size: 60px; font-style: italic; text-shadow: 4px 4px #000; }
-        
-        #btn-smash { background: linear-gradient(135deg, var(--red-smash), #700); grid-column: 1/2; grid-row: 1/2; }
-        #btn-games { background: linear-gradient(135deg, var(--blue-smash), #005); }
-        #btn-vault { background: linear-gradient(135deg, #8e44ad, #301); }
-        #btn-online { background: linear-gradient(135deg, var(--gold-smash), #640); }
-        #btn-options { background: linear-gradient(135deg, #444, #111); }
-
-        /* ============================================================
-           3. SECCIÓN DE AJUSTES (DISEÑO SEGÚN IMAGEN)
-           ============================================================ */
+        /* 2. AJUSTES INTERACTIVOS */
         #options-screen { background: #3b0062; }
-        .options-container { width: 85%; max-width: 1200px; text-align: center; }
-        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 40px 0; }
-        .opt-bar { 
-            background: white; color: #3b0062; padding: 25px; 
-            display: flex; justify-content: space-between; align-items: center;
-            clip-path: polygon(3% 0, 100% 0, 97% 100%, 0% 100%);
-            font-size: 28px; font-weight: 900;
-        }
-        .opt-bar select { border: none; font-family: inherit; font-size: 24px; color: #3b0062; cursor: pointer; }
-        .btn-back-menu { 
-            background: var(--red-smash); color: white; padding: 20px 60px;
-            font-size: 25px; border: none; cursor: pointer;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
-            transition: 0.3s;
-        }
-        .btn-back-menu:hover { background: white; color: var(--red-smash); transform: scale(1.1); }
+        .opt-box { background: white; color: #3b0062; padding: 20px; width: 600px; margin: 10px; display: flex; justify-content: space-between; align-items: center; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); font-size: 24px; }
+        .key-cap { width: 50px; height: 50px; border: 2px solid white; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold; transition: 0.1s; }
+        .key-glow { background: var(--gold); color: black; box-shadow: 0 0 20px var(--gold); transform: scale(0.9); }
 
-        /* ============================================================
-           4. SELECTOR DE PERSONAJES Y FICHA
-           ============================================================ */
-        #select-screen { background: #121225; }
-        .char-grid { 
-            display: grid; grid-template-columns: repeat(10, 1fr); 
-            gap: 12px; width: 95%; height: 45%; 
-            padding: 25px; background: rgba(0,0,0,0.6);
-            overflow-y: auto; border-bottom: 5px solid var(--red-smash);
-        }
-        .slot { 
-            aspect-ratio: 1; background: #222; border: 3px solid #444;
-            cursor: pointer; transition: 0.3s; display: flex; 
-            align-items: center; justify-content: center;
-        }
-        .slot:hover { border-color: white; transform: scale(1.15) rotate(2deg); z-index: 100; }
-        .slot img { width: 85%; height: 85%; object-fit: contain; }
+        /* 3. VOLVER */
+        .back-btn { position: absolute; top: 30px; left: 30px; font-size: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; padding: 15px; transition: 0.3s; z-index: 1000; }
+        .back-btn:hover { background: var(--red); transform: translateX(-10px); }
 
-        .info-panel { 
-            width: 100%; height: 220px; background: rgba(0,0,0,0.95);
-            display: flex; padding: 30px; border-top: 6px solid var(--gold-smash);
-            position: absolute; bottom: 0;
-        }
-        .info-portrait { height: 100%; width: 200px; border: 4px solid white; background: #333; margin-right: 40px; }
-        .stat-line { margin: 15px 0; }
-        .bar-bg { width: 300px; height: 15px; background: #333; border-radius: 10px; margin-top: 5px; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--gold-smash); width: 0%; transition: 0.8s ease-out; }
-
-        /* ============================================================
-           5. TRANSICIÓN VERSUS (DOBLE PUERTA)
-           ============================================================ */
-        #versus-screen { position: fixed; inset: 0; z-index: 10000; display: none; overflow: hidden; background: #000; }
-        .v-door { 
-            position: absolute; width: 50%; height: 100%; 
-            background-size: cover; background-position: center;
-            transition: transform 0.9s cubic-bezier(0.85, 0, 0.15, 1);
-        }
-        #v-left { left: 0; border-right: 4px solid white; }
-        #v-right { right: 0; border-left: 4px solid white; }
-        .vs-text { 
-            position: absolute; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); font-size: 180px; 
-            font-style: italic; z-index: 10; text-shadow: 0 0 30px #000;
-        }
-
-        /* ============================================================
-           6. CAMPO DE BATALLA (Naturaleza Viva)
-           ============================================================ */
-        #game-screen { background: linear-gradient(to bottom, #1e3c72, #2a5298, #70e1ff); }
-        .cloud { 
-            position: absolute; background: white; border-radius: 50px; 
-            opacity: 0.5; animation: cloudMove 30s linear infinite; 
-        }
-        @keyframes cloudMove { from { left: -300px; } to { left: 120vw; } }
-
-        #stage-floor { 
-            position: absolute; bottom: 180px; left: 50%; 
-            transform: translateX(-50%); width: 950px; height: 45px; 
-            background: linear-gradient(to bottom, #4CAF50 18px, #8B4513 18px);
-            border-radius: 0 0 60px 60px; box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-            z-index: 10;
-        }
-        .floating-plat { 
-            position: absolute; width: 200px; height: 12px; 
-            background: rgba(255,255,255,0.4); border-top: 4px solid gold; 
-            border-radius: 10px; box-shadow: 0 0 25px gold; z-index: 10;
-        }
-
-        /* PERSONAJES */
-        .fighter { 
-            position: absolute; width: 70px; height: 100px; 
-            background-size: contain; background-repeat: no-repeat; 
-            background-position: bottom center; z-index: 100;
-            /* No hay tambaleo de cámara aquí */
-        }
-        .shield-burbuja { 
-            position: absolute; width: 120px; height: 120px; 
-            border: 4px solid white; border-radius: 50%; 
-            background: rgba(255,255,255,0.2); transform: translate(-25px, -10px);
-            display: none; box-shadow: 0 0 30px white;
-        }
-        .god-fx { animation: godPulse 0.5s infinite alternate; }
-        @keyframes godPulse { from { filter: drop-shadow(0 0 10px gold) brightness(1.2); } to { filter: drop-shadow(0 0 40px white) brightness(2); } }
+        /* 4. CAMPO DE BATALLA */
+        #game-screen { background: radial-gradient(circle, #2a5298, #1e3c72); }
+        #stage { position: absolute; bottom: 150px; width: 900px; height: 40px; background: #4CAF50; left: 50%; transform: translateX(-50%); border-bottom: 12px solid #5d3a1a; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .fighter { position: absolute; width: 110px; height: 160px; bottom: 195px; background-size: contain; background-repeat: no-repeat; background-position: bottom; z-index: 500; transition: transform 0.1s; }
+        .god-mode { animation: godGlow 0.4s infinite alternate; }
+        @keyframes godGlow { from { filter: drop-shadow(0 0 10px gold) hue-rotate(0deg); transform: scale(1.1); } to { filter: drop-shadow(0 0 30px white) hue-rotate(360deg); transform: scale(1.3); } }
 
         /* HUD JUEGO */
-        #game-header { position: absolute; top: 30px; width: 100%; display: flex; justify-content: center; z-index: 500; }
-        #clock { font-size: 70px; font-weight: 900; text-shadow: 3px 3px #000; }
-        #game-footer { position: absolute; bottom: 0; width: 100%; height: 150px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; justify-content: space-around; align-items: center; }
-        .hud-perc { font-size: 90px; font-weight: 900; color: #ff3333; -webkit-text-stroke: 2px black; }
-
-        /* ============================================================
-           7. RESULTADOS (ESTILO K. ROOL)
-           ============================================================ */
-        #results-screen { background: #000; overflow: hidden; }
-        #winner-portrait { position: absolute; right: -5%; bottom: 0; width: 75%; height: 95%; background-size: contain; background-repeat: no-repeat; background-position: right bottom; z-index: 1; }
-        .win-tag-big { position: absolute; left: 8%; top: 15%; z-index: 10; }
-        .rank-num { font-size: 220px; color: var(--gold-smash); -webkit-text-stroke: 6px black; margin: 0; line-height: 0.8; }
-        .loser-stripe { position: absolute; left: -50px; bottom: 10%; width: 550px; height: 220px; background: var(--red-smash); border: 10px solid black; transform: skewX(-20deg); z-index: 5; overflow: hidden; }
-        #loser-img-res { width: 120%; height: 120%; object-fit: cover; transform: skewX(20deg) translate(10%, 10%); }
+        #timer { position: absolute; top: 20px; font-size: 70px; font-weight: 900; }
+        .dmg-ui { font-size: 90px; font-weight: 900; -webkit-text-stroke: 3px black; text-shadow: 4px 4px 0 rgba(0,0,0,0.5); }
 
         /* OBJETOS */
-        .item-drop { position: absolute; width: 50px; height: 50px; background-size: contain; background-repeat: no-repeat; z-index: 150; }
+        .item { position: absolute; width: 60px; height: 60px; background: rgba(255,255,255,0.2); border: 3px solid white; border-radius: 50%; z-index: 600; display: flex; align-items: center; justify-content: center; font-size: 40px; animation: fall 5s linear forwards; }
+        @keyframes fall { from { top: -50px; } to { top: 70%; } }
     </style>
 </head>
 <body>
 
-    <!-- ELEMENTOS FIJOS -->
+    <div id="brightness-layer"></div>
     <div id="hand">👆</div>
-    <div id="countdown" style="position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); font-size:300px; font-weight:900; z-index:10000; display:none; color:white; text-shadow: 15px 15px var(--red-smash);">3</div>
 
-    <!-- 1. PANTALLA INTRO -->
-    <div id="intro-screen" class="screen active" onclick="navigate('menu-screen')">
-        <div class="fire-logo">🔥</div>
-        <h1 style="font-size: 90px; text-shadow: 5px 5px #000; margin: 20px 0;">SUPREME EDITION</h1>
-        <p style="font-size: 35px; animation: blink 1s infinite;">HAZ CLIC PARA EMPEZAR</p>
-    </div>
-
-    <!-- 2. PANTALLA MENÚ -->
-    <div id="menu-screen" class="screen">
+    <!-- PANTALLA: MENÚ -->
+    <div id="menu-screen" class="screen active">
         <div class="menu-grid">
-            <div id="btn-smash" class="m-item" onclick="navigate('select-screen')"><span class="m-label">SMASH</span></div>
-            <div id="btn-games" class="m-item"><span class="m-label">GAMES</span></div>
-            <div id="btn-vault" class="m-item"><span class="m-label">BAÚL</span></div>
-            <div id="btn-online" class="m-item"><span class="m-label">ONLINE</span></div>
-            <div id="btn-options" class="m-item" onclick="navigate('options-screen')"><span class="m-label">OPCIONES</span></div>
+            <div class="m-item" id="btn-smash" onclick="navigate('select-screen')"><span class="m-label" id="txt-smash">Smash ⚔️</span></div>
+            <div class="m-item" id="btn-espiritus"><span class="m-label" id="txt-espiritus">Espíritus 👻</span></div>
+            <div class="m-item" id="btn-cajon"><span class="m-label" id="txt-cajon">Cajón de sastre 🛠️</span></div>
+            <div class="m-item" id="btn-baul"><span class="m-label" id="txt-baul">Baúl 📦</span></div>
+        </div>
+        <div class="sidebar">
+            <div class="side-btn" onclick="navigate('options-screen')">⚙️</div>
+            <div class="side-btn">🏠</div>
         </div>
     </div>
 
-    <!-- 3. PANTALLA OPCIONES -->
+    <!-- PANTALLA: OPCIONES -->
     <div id="options-screen" class="screen">
-        <div class="options-container">
-            <h1 style="font-size: 80px; font-style: italic; margin-bottom: 50px;">OPCIONES</h1>
-            <div class="opt-grid">
-                <div class="opt-bar">CONTROLES <span>⌨️</span></div>
-                <div class="opt-bar">DIFICULTAD 
-                    <select id="diff-set">
-                        <option value="1">FÁCIL</option>
-                        <option value="2">NORMAL</option>
-                        <option value="3">SMASH (IA DIOS)</option>
-                    </select>
-                </div>
-                <div class="opt-bar">BRILLO <span>☀️</span></div>
-                <div class="opt-bar">IDIOMA 
-                    <select id="lang-set">
-                        <option value="es">ESPAÑOL</option>
-                        <option value="en">ENGLISH</option>
-                        <option value="fr">FRANÇAIS</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-back-menu" onclick="saveAndBack()">VOLVER AL MENÚ</button>
+        <div class="back-btn" onclick="navigate('menu-screen')">⬅️</div>
+        <h1 id="txt-opt-title">⚙️ AJUSTES</h1>
+        <div class="opt-box"><span id="txt-bright">BRILLO</span> <input type="range" min="0" max="0.8" step="0.1" value="0" oninput="document.getElementById('brightness-layer').style.opacity = this.value"></div>
+        <div class="opt-box"><span id="txt-diff">DIFICULTAD</span> 
+            <select id="diff-sel" style="font-size:20px;">
+                <option value="1">FÁCIL</option>
+                <option value="2">SMASH (DIOS)</option>
+            </select>
+        </div>
+        <div class="opt-box"><span id="txt-lang">IDIOMA</span> 
+            <select id="lang-sel" style="font-size:20px;" onchange="changeLang()">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
+        <p id="txt-test">TEST TECLADO:</p>
+        <div style="display:flex; gap:10px;">
+            <div id="key-w" class="key-cap">W</div><div id="key-a" class="key-cap">A</div><div id="key-s" class="key-cap">S</div><div id="key-d" class="key-cap">D</div><div id="key-k" class="key-cap">K</div><div id="key-m" class="key-cap">M</div>
         </div>
     </div>
 
-    <!-- 4. PANTALLA SELECTOR -->
+    <!-- PANTALLA: SELECCIÓN -->
     <div id="select-screen" class="screen">
-        <div class="char-grid" id="grid-chars"></div>
-        <div class="info-panel">
-            <img id="p-portrait" class="info-portrait" src="">
-            <div style="flex: 1;">
-                <h2 id="p-name" style="font-size: 50px; margin: 0; color: var(--red-smash);">SELECCIONA PERSONAJE</h2>
-                <p id="p-desc" style="font-size: 18px; color: #aaa; margin: 10px 0;">Elige a tu luchador para ver sus habilidades y origen.</p>
-                <div class="stat-line">FUERZA: <div class="bar-bg"><div id="bar-f" class="bar-fill"></div></div></div>
-            </div>
-            <div style="display:flex; flex-direction:column; justify-content:center;">
-                <h3 id="select-mode-txt" style="font-size:30px; text-align:right;">JUGADOR 1...</h3>
-            </div>
+        <div class="back-btn" onclick="navigate('menu-screen')">⬅️</div>
+        <h1 id="txt-select-title" style="font-size: 60px;">ELIGE TU LUCHADOR</h1>
+        <div style="display:flex; gap:20px;">
+            <button onclick="preStart('MARIO')" style="padding:15px; font-size:20px; cursor:pointer;">MARIO</button>
+            <button onclick="preStart('SONIC')" style="padding:15px; font-size:20px; cursor:pointer;">SONIC</button>
+            <button onclick="preStart('KIRBY')" style="padding:15px; font-size:20px; cursor:pointer;">KIRBY</button>
+            <button onclick="preStart('LINK')" style="padding:15px; font-size:20px; cursor:pointer;">LINK</button>
+            <button onclick="preStart('STEVE')" style="padding:15px; font-size:20px; cursor:pointer;">STEVE</button>
         </div>
     </div>
 
-    <!-- 5. PANTALLA VERSUS -->
-    <div id="versus-screen">
-        <div id="v-left" class="v-door"></div>
-        <div id="v-right" class="v-door"></div>
-        <h1 class="vs-text">VS</h1>
-    </div>
-
-    <!-- 6. PANTALLA JUEGO -->
+    <!-- PANTALLA: JUEGO -->
     <div id="game-screen" class="screen">
-        <div id="game-header"><div id="clock">2:00.00</div></div>
-        
-        <div id="stage-floor"></div>
-        <div class="floating-plat" style="top: 400px; left: 15%;"></div>
-        <div class="floating-plat" style="top: 400px; right: 15%;"></div>
-        <div class="floating-plat" style="top: 250px; left: 50%; transform: translateX(-50%);"></div>
-
-        <div id="p1-fighter" class="fighter"><div class="shield-burbuja" id="s1"></div></div>
-        <div id="ia-fighter" class="fighter"><div class="shield-burbuja" id="s2"></div></div>
-
-        <div id="game-footer">
-            <div style="text-align:center;"><div id="n1" style="font-size:20px;">P1</div><div id="d1" class="hud-perc">0%</div></div>
-            <div style="text-align:center;"><div id="n2" style="font-size:20px;">IA</div><div id="d2" class="hud-perc">0%</div></div>
+        <div id="timer">10:00</div>
+        <div id="stage"></div>
+        <div id="p1" class="fighter"></div>
+        <div id="ia" class="fighter"></div>
+        <div style="position:absolute; bottom:30px; width:100%; display:flex; justify-content:space-around;">
+            <div id="p1-dmg" class="dmg-ui" style="color:var(--red)">0%</div>
+            <div id="ia-dmg" class="dmg-ui" style="color:var(--blue)">0%</div>
         </div>
     </div>
 
-    <!-- 7. PANTALLA RESULTADOS -->
+    <!-- PANTALLA: RESULTADOS -->
     <div id="results-screen" class="screen">
-        <div id="winner-portrait"></div>
-        <div class="win-tag-big">
-            <p class="rank-num">1</p>
-            <h1 id="win-name-res" style="font-size: 110px; font-style: italic; -webkit-text-stroke: 3px black; margin:0;">WINNER</h1>
-        </div>
-        <div class="loser-stripe"><img id="loser-img-res" src=""></div>
-        <div style="position:absolute; bottom:50px; right:70px; font-size:40px; cursor:pointer;" onclick="location.reload()">SIGUIENTE ▶</div>
+        <div class="back-btn" onclick="navigate('menu-screen')">🏠</div>
+        <h1 style="font-size: 100px; color: var(--gold); font-style: italic;">¡VICTORIA!</h1>
+        <p id="winner-name" style="font-size: 60px;"></p>
     </div>
 
     <script>
-        // ============================================================
-        // MOTOR LÓGICO SMASH 2026
-        // ============================================================
+        const hand = document.getElementById('hand');
+        let gameActive = false, p1X = 300, iaX = 850, p1Dmg = 0, iaDmg = 0, p1Hero = "";
+        let p1God = false, iaTrapped = false;
 
-        const DB = {
-            "MARIO": { f: 75, d: "El icono de Nintendo. Equilibrado y potente.", img: "https://smashbros.com", vs: "https://imgur.com" },
-            "SONIC": { f: 60, d: "El más rápido. Ataca en forma de bola azul.", img: "https://smashbros.com", vs: "https://imgur.com" },
-            "STEVE": { f: 90, d: "Usa cubos y TNT. Estrategia de Minecraft.", img: "https://smashbros.com", vs: "https://imgur.com" },
-            "KIRBY": { f: 55, d: "Capaz de absorber poderes. Muy ágil en el aire.", img: "https://smashbros.com", vs: "https://imgur.com" },
-            "LINK": { f: 80, d: "Guerrero de Hyrule con espada y escudo.", img: "https://smashbros.com", vs: "https://imgur.com" }
+        const imgs = {
+            MARIO: "https://gstatic.com",
+            SONIC: "https://smashbros.com",
+            KIRBY: "https://smashbros.com",
+            LINK: "https://smashbros.com",
+            STEVE: "https://gstatic.com"
         };
 
-        // Estado del Juego
-        let state = {
-            p1Selected: null,
-            iaSelected: null,
-            difficulty: 1,
-            gameActive: false,
-            canMove: false,
-            p1: { x: 300, y: 0, dmg: 0, id: "", god: false, shield: false, el: document.getElementById('p1-fighter') },
-            ia: { x: 850, y: 0, dmg: 0, id: "", trapped: false, shield: false, el: document.getElementById('ia-fighter') }
+        const trans = {
+            es: { smash: "Smash ⚔️", espíritus: "Espíritus 👻", cajon: "Cajón de sastre 🛠️", baul: "Baúl 📦", opt: "⚙️ AJUSTES", bright: "BRILLO", lang: "IDIOMA", test: "TEST TECLADO:", select: "ELIGE TU LUCHADOR" },
+            en: { smash: "Smash ⚔️", espíritus: "Spirits 👻", cajon: "Games & More 🛠️", baul: "Vault 📦", opt: "⚙️ SETTINGS", bright: "BRIGHTNESS", lang: "LANGUAGE", test: "KEYBOARD TEST:", select: "CHOOSE YOUR FIGHTER" },
+            fr: { smash: "Smash ⚔️", espíritus: "Esprits 👻", cajon: "Coffre de tout 🛠️", baul: "Coffre 📦", opt: "⚙️ RÉGLAGES", bright: "LUMINOSITÉ", lang: "LANGUE", test: "TEST CLAVIER:", select: "CHOISIS TON LUTTEUR" }
         };
 
-        // NAVEGACIÓN
+        window.onmousemove = (e) => { hand.style.left = e.clientX+'px'; hand.style.top = e.clientY+'px'; };
+
         function navigate(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(id);
-            target.style.display = 'flex';
-            setTimeout(() => target.classList.add('active'), 50);
+            document.getElementById(id).classList.add('active');
+            gameActive = (id === 'game-screen');
+            hand.style.opacity = gameActive ? '0' : '1';
         }
 
-        function saveAndBack() {
-            state.difficulty = parseInt(document.getElementById('diff-set').value);
-            navigate('menu-screen');
-        }
-
-        // CURSOR
-        window.onmousemove = (e) => {
-            const h = document.getElementById('hand');
-            h.style.left = e.clientX + 'px';
-            h.style.top = e.clientY + 'px';
-        };
-
-        // GENERADOR SELECTOR
-        const grid = document.getElementById('grid-chars');
-        Object.keys(DB).forEach(name => {
-            let s = document.createElement('div');
-            s.className = 'slot';
-            s.innerHTML = `<img src="${DB[name].img}">`;
-            s.onmouseover = () => {
-                document.getElementById('p-name').innerText = name;
-                document.getElementById('p-desc').innerText = DB[name].d;
-                document.getElementById('bar-f').style.width = DB[name].f + "%";
-                document.getElementById('p-portrait').src = DB[name].img;
-            };
-            s.onclick = () => {
-                if(!state.p1Selected) {
-                    state.p1Selected = name;
-                    state.p1.id = name;
-                    document.getElementById('select-mode-txt').innerText = "IA RIVAL...";
-                    document.getElementById('select-mode-txt').style.color = "var(--blue-smash)";
-                } else {
-                    state.iaSelected = name;
-                    state.ia.id = name;
-                    startVersusFlow();
-                }
-            };
-            grid.appendChild(s);
-        });
-
-        // FLUJO VERSUS
-        function startVersusFlow() {
-            const vs = document.getElementById('versus-screen');
-            document.getElementById('v-left').style.backgroundImage = `url(${DB[state.p1Selected].vs})`;
-            document.getElementById('v-right').style.backgroundImage = `url(${DB[state.iaSelected].vs})`;
-            vs.style.display = 'block';
-            
-            setTimeout(() => {
-                document.getElementById('v-left').style.transform = "translateX(-100%)";
-                document.getElementById('v-right').style.transform = "translateX(100%)";
-                setTimeout(() => {
-                    vs.style.display = 'none';
-                    initBattle();
-                }, 900);
-            }, 3000);
-        }
-
-        // MOTOR DE BATTLE
-        function initBattle() {
-            navigate('game-screen');
-            state.p1.el.style.backgroundImage = `url(${DB[state.p1Selected].img})`;
-            state.ia.el.style.backgroundImage = `url(${DB[state.iaSelected].img})`;
-            document.getElementById('n1').innerText = state.p1Selected;
-            document.getElementById('n2').innerText = state.iaSelected;
-            
-            createAmbience();
-            
-            let count = 3;
-            const cd = document.getElementById('countdown');
-            cd.style.display = 'block';
-            let timer = setInterval(() => {
-                cd.innerText = count > 0 ? count : "¡SMASH!";
-                if(count < 0) {
-                    clearInterval(timer);
-                    cd.style.display = 'none';
-                    state.canMove = true;
-                    state.gameActive = true;
-                    battleLoop();
-                    runClock();
-                }
-                count--;
-            }, 1000);
+        function changeLang() {
+            const l = document.getElementById('lang-sel').value;
+            const t = trans[l];
+            document.getElementById('txt-smash').innerText = t.smash;
+            document.getElementById('txt-espiritus').innerText = t.espíritus;
+            document.getElementById('txt-cajon').innerText = t.cajon;
+            document.getElementById('txt-baul').innerText = t.baul;
+            document.getElementById('txt-opt-title').innerText = t.opt;
+            document.getElementById('txt-bright').innerText = t.bright;
+            document.getElementById('txt-lang').innerText = t.lang;
+            document.getElementById('txt-test').innerText = t.test;
+            document.getElementById('txt-select-title').innerText = t.select;
         }
 
         let keys = {};
         window.onkeydown = (e) => {
-            keys[e.key.toLowerCase()] = true;
-            if(e.key.toLowerCase() === 'k' && state.canMove) executeAttack(state.p1, state.ia);
-            if(e.key.toLowerCase() === 'e') { state.p1.shield = true; document.getElementById('s1').style.display = 'block'; }
-            if(e.key.toLowerCase() === 'm') executeSpecial(state.p1);
+            const k = e.key.toLowerCase();
+            keys[k] = true;
+            if(k === 'escape') navigate('menu-screen');
+            const cap = document.getElementById('key-'+k);
+            if(cap) cap.classList.add('key-glow');
+            if(gameActive && k === 'k') attack();
         };
         window.onkeyup = (e) => {
-            keys[e.key.toLowerCase()] = false;
-            if(e.key.toLowerCase() === 'e') { state.p1.shield = false; document.getElementById('s1').style.display = 'none'; }
+            const k = e.key.toLowerCase();
+            keys[k] = false;
+            const cap = document.getElementById('key-'+k);
+            if(cap) cap.classList.remove('key-glow');
         };
 
-        function executeAttack(attacker, victim) {
-            if(Math.abs(attacker.x - victim.x) < 95) {
-                if(victim.shield) return;
-                let power = attacker.god ? 45 : 6;
-                victim.dmg += power;
-                victim.x += (attacker.x < victim.x ? 1 : -1) * (victim.dmg / 1.5);
+        function preStart(hero) {
+            p1Hero = hero; p1X = 300; iaX = 850; p1Dmg = 0; iaDmg = 0;
+            document.getElementById('p1').style.backgroundImage = `url(${imgs[hero]})`;
+            document.getElementById('ia').style.backgroundImage = `url(${imgs['STEVE']})`;
+            navigate('game-screen');
+            spawnItemLoop();
+            battleLoop();
+        }
+
+        function attack() {
+            if(Math.abs(p1X - iaX) < 100) {
+                iaDmg += p1God ? 50 : 7;
+                iaX += (p1X < iaX ? 60 : -60);
                 updateHUD();
             }
         }
 
-        function executeSpecial(p) {
-            if(p.id === "SONIC") p.x += 150;
-            if(p.id === "STEVE") { /* Lógica de bloque */ }
+        function updateHUD() {
+            document.getElementById('p1-dmg').innerText = p1Dmg + "%";
+            document.getElementById('ia-dmg').innerText = iaDmg + "%";
         }
 
         function battleLoop() {
-            if(!state.gameActive) return;
+            if(!gameActive) return;
+            if(keys['arrowleft']) p1X -= 8;
+            if(keys['arrowright']) p1X += 8;
 
-            if(state.canMove) {
-                if(keys['arrowleft']) state.p1.x -= 8;
-                if(keys['arrowright']) state.p1.x += 8;
-                
-                // IA LÓGICA (Basada en dificultad)
-                let aiSpeed = state.difficulty === 3 ? 10 : (state.difficulty === 2 ? 6 : 3);
-                if(state.ia.x > state.p1.x + 70) state.ia.x -= aiSpeed;
-                else if(state.ia.x < state.p1.x - 70) state.ia.x += aiSpeed;
-
-                // IA Ataca
-                if(state.difficulty >= 2 && Math.abs(state.ia.x - state.p1.x) < 100 && Math.random() < 0.05) {
-                    executeAttack(state.ia, state.p1);
-                }
-                // IA Defensa modo Smash
-                if(state.difficulty === 3 && keys['k'] && Math.random() < 0.4) {
-                    state.ia.shield = true;
-                    document.getElementById('s2').style.display = 'block';
-                    setTimeout(() => { state.ia.shield = false; document.getElementById('s2').style.display = 'none'; }, 400);
+            if(!iaTrapped) {
+                let speed = (document.getElementById('diff-sel').value == "2") ? 9 : 3;
+                if(iaX > p1X + 85) iaX -= speed; else if(iaX < p1X - 85) iaX += speed;
+                if(Math.abs(iaX - p1X) < 100 && Math.random() < 0.06) {
+                    p1Dmg += 6; p1X += (iaX < p1X ? 50 : -50); updateHUD();
                 }
             }
 
-            // Aplicar posiciones
-            state.p1.el.style.left = state.p1.x + 'px';
-            state.ia.el.style.left = state.ia.x + 'px';
+            document.getElementById('p1').style.left = p1X + "px";
+            document.getElementById('ia').style.left = iaX + "px";
 
-            // Comprobar fuera de límites (Victoria)
-            if(state.ia.x > window.innerWidth || state.ia.x < -100) finishMatch(state.p1Selected);
-            if(state.p1.x > window.innerWidth || state.p1.x < -100) finishMatch(state.iaSelected);
+            if(iaX > window.innerWidth || iaX < -150) finalizeMatch(p1Hero);
+            if(p1X > window.innerWidth || p1X < -150) finalizeMatch("IA STEVE");
 
             requestAnimationFrame(battleLoop);
         }
 
-        function updateHUD() {
-            document.getElementById('d1').innerText = Math.floor(state.p1.dmg) + "%";
-            document.getElementById('d2').innerText = Math.floor(state.ia.dmg) + "%";
+        function spawnItemLoop() {
+            if(!gameActive) return;
+            const items = [{i:'❂', t:'GOD'}, {i:'🔴', t:'POKE'}, {i:'❤️', t:'HEAL'}, {i:'⚡', t:'SPEED'}];
+            const sel = items[Math.floor(Math.random()*items.length)];
+            const el = document.createElement('div');
+            el.className = 'item'; el.innerHTML = sel.i;
+            el.style.left = Math.random()*70+15+"%";
+            document.getElementById('game-screen').appendChild(el);
+
+            let check = setInterval(() => {
+                if(!gameActive) { clearInterval(check); el.remove(); return; }
+                if(Math.abs(el.offsetLeft - p1X) < 60) {
+                    if(sel.t === 'GOD') { p1God = true; document.getElementById('p1').classList.add('god-mode'); setTimeout(()=>{p1God=false; document.getElementById('p1').classList.remove('god-mode')}, 10000); }
+                    else if(sel.t === 'POKE') { iaTrapped = true; document.getElementById('ia').style.opacity = "0.5"; setTimeout(()=>iaTrapped=false, 5000); }
+                    else if(sel.t === 'HEAL') { p1Dmg = 0; updateHUD(); }
+                    el.remove(); clearInterval(check);
+                }
+            }, 50);
+            setTimeout(spawnItemLoop, 12000);
         }
 
-        function finishMatch(winner) {
-            state.gameActive = false;
-            const loser = (winner === state.p1Selected) ? state.iaSelected : state.p1Selected;
+        function finalizeMatch(winner) {
+            gameActive = false;
+            document.getElementById('winner-name').innerText = "GANADOR: " + winner;
             navigate('results-screen');
-            document.getElementById('win-name-res').innerText = winner;
-            document.getElementById('winner-portrait').style.backgroundImage = `url(${DB[winner].img})`;
-            document.getElementById('loser-img-res').src = DB[loser].img;
-        }
-
-        function runClock() {
-            let t = 120;
-            const interval = setInterval(() => {
-                if(t > 0 && state.gameActive) {
-                    t--;
-                    let m = Math.floor(t/60);
-                    let s = t%60;
-                    document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}.00`;
-                } else { clearInterval(interval); }
-            }, 1000);
-        }
-
-        function createAmbience() {
-            for(let i=0; i<8; i++) {
-                let c = document.createElement('div');
-                c.className = 'cloud';
-                c.style.width = (Math.random()*250 + 100) + 'px';
-                c.style.height = '45px';
-                c.style.top = (Math.random()*300) + 'px';
-                c.style.animationDelay = (Math.random()*15) + 's';
-                document.getElementById('game-screen').appendChild(c);
-            }
         }
     </script>
 </body>
 </html>
+
