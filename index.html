@@ -3,422 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE SMASH BROS: SUPREME EDITION 2026</title>
+    <title>ULTIMATE SMASH BROS: SUPREME EDITION 2026 - MASTER CODE</title>
     <style>
-        /* =========================================
-           CONFIGURACIÓN VISUAL Y FUENTES
-           ========================================= */
+        /* ============================================================
+           1. VARIABLES GLOBALES Y RESET
+           ============================================================ */
         @import url('https://googleapis.com');
         
         :root {
-            --red: #ff0055;
-            --blue: #00d2ff;
-            --gold: #f1c40f;
-            --purple: #8e44ad;
-            --dark: #0a0a1a;
+            --red-smash: #ff0055;
+            --blue-smash: #00d2ff;
+            --gold-smash: #f1c40f;
+            --green-smash: #2ecc71;
+            --dark-bg: #0a0a1a;
+            --transition-speed: 0.6s;
         }
+
+        * { box-sizing: border-box; outline: none; }
 
         body { 
-            margin: 0; overflow: hidden; background: #000; 
-            font-family: 'Roboto', sans-serif; color: white; 
-            user-select: none; cursor: none; 
+            margin: 0; padding: 0; overflow: hidden; 
+            background: #000; font-family: 'Roboto', sans-serif; 
+            color: white; user-select: none; cursor: none;
         }
 
-        /* FILTROS DE AJUSTES REALES */
-        #brightness-overlay { position: fixed; inset: 0; background: black; opacity: 0; pointer-events: none; z-index: 10000; }
-        #hand { position: fixed; width: 60px; z-index: 11000; pointer-events: none; transition: transform 0.05s; }
+        /* CURSOR PERSONALIZADO */
+        #hand { 
+            position: fixed; width: 60px; height: 60px; 
+            z-index: 99999; pointer-events: none; 
+            font-size: 45px; transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
+        }
 
+        /* ============================================================
+           2. SISTEMA DE PANTALLAS (TRANSICIONES SUAVES)
+           ============================================================ */
         .screen { 
             position: fixed; inset: 0; display: none; 
-            flex-direction: column; align-items: center; justify-content: center; 
-            z-index: 10; transition: opacity 0.4s ease; 
+            flex-direction: column; align-items: center; 
+            justify-content: center; z-index: 10; 
+            opacity: 0; transition: opacity var(--transition-speed) ease-in-out; 
         }
         .active { display: flex; opacity: 1; }
 
-        /* =========================================
-           1. INTRO: PANTALLA ROTA Y FUEGO
-           ========================================= */
-        #intro-screen { background: radial-gradient(circle, #f0ca4d, #e37424); z-index: 5000; }
-        .fire { font-size: 150px; animation: burn 0.2s infinite alternate; filter: drop-shadow(0 0 30px orange); }
-        .crack-fx { position: absolute; inset: 0; background: url('https://pngimg.com') center/cover; display: none; opacity: 0.8; pointer-events: none; }
-        .press-x { margin-top: 50px; font-size: 35px; letter-spacing: 8px; animation: blink 0.8s infinite; text-shadow: 3px 3px #000; }
+        /* INTRO */
+        #intro-screen { 
+            background: radial-gradient(circle, #f0ca4d, #e37424); 
+            z-index: 5000; 
+        }
+        .fire-logo { 
+            font-size: 180px; animation: flamePulse 1.5s infinite ease-in-out; 
+            filter: drop-shadow(0 0 40px orange); 
+        }
+        @keyframes flamePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 
-        /* =========================================
-           2. MENÚ PRINCIPAL: BLOQUES ULTIMATE
-           ========================================= */
-        #menu-screen { background: var(--dark); z-index: 900; }
+        /* MENÚ PRINCIPAL */
+        #menu-screen { background: var(--dark-bg); }
         .menu-grid { 
-            display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 2fr 1fr; 
-            gap: 15px; width: 90%; height: 80%; 
+            display: grid; grid-template-columns: 2fr 1fr 1fr; 
+            grid-template-rows: 2fr 1fr; gap: 20px; 
+            width: 90%; height: 85%; padding: 20px;
         }
         .m-item { 
-            position: relative; cursor: pointer; transition: 0.3s; 
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); 
+            position: relative; cursor: pointer; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            clip-path: polygon(4% 0, 100% 0, 96% 100%, 0% 100%);
+            border: 0px solid white;
         }
-        .m-item:hover { transform: scale(1.04); border: 4px solid white; z-index: 100; box-shadow: 0 0 30px rgba(255,255,255,0.3); }
-        .m-label { position: absolute; bottom: 25px; left: 35px; font-size: 50px; font-style: italic; text-shadow: 3px 3px #000; }
-
-        #btn-smash { background: linear-gradient(135deg, var(--red), #602); grid-column: 1/2; grid-row: 1/2; }
-        #btn-games { background: linear-gradient(135deg, var(--blue), #037); grid-column: 2/4; }
-        #btn-online { background: linear-gradient(135deg, var(--gold), #a70); }
-        #btn-vault { background: linear-gradient(135deg, var(--purple), #407); }
+        .m-item:hover { transform: scale(1.03); border-width: 5px; box-shadow: 0 0 50px rgba(255,255,255,0.2); }
+        .m-label { position: absolute; bottom: 30px; left: 40px; font-size: 60px; font-style: italic; text-shadow: 4px 4px #000; }
+        
+        #btn-smash { background: linear-gradient(135deg, var(--red-smash), #700); grid-column: 1/2; grid-row: 1/2; }
+        #btn-games { background: linear-gradient(135deg, var(--blue-smash), #005); }
+        #btn-vault { background: linear-gradient(135deg, #8e44ad, #301); }
+        #btn-online { background: linear-gradient(135deg, var(--gold-smash), #640); }
         #btn-options { background: linear-gradient(135deg, #444, #111); }
 
-        /* =========================================
-           3. OPCIONES Y CONFIGURACIÓN TECLADO
-           ========================================= */
-        #options-screen { background: #3b0062; z-index: 1500; }
-        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 80%; }
-        .opt-box { 
-            background: white; color: #3b0062; padding: 20px; font-size: 25px; 
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); cursor: pointer; 
+        /* ============================================================
+           3. SECCIÓN DE AJUSTES (DISEÑO SEGÚN IMAGEN)
+           ============================================================ */
+        #options-screen { background: #3b0062; }
+        .options-container { width: 85%; max-width: 1200px; text-align: center; }
+        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 40px 0; }
+        .opt-bar { 
+            background: white; color: #3b0062; padding: 25px; 
             display: flex; justify-content: space-between; align-items: center;
+            clip-path: polygon(3% 0, 100% 0, 97% 100%, 0% 100%);
+            font-size: 28px; font-weight: 900;
         }
-        .opt-box:hover { background: var(--gold); }
-
-        #controls-screen { background: #eee; color: #333; z-index: 1600; padding: 40px; }
-        .key-visual { 
-            display: inline-block; width: 65px; height: 65px; background: #fff; 
-            border: 3px solid #ccc; border-radius: 10px; line-height: 65px; 
-            text-align: center; margin: 5px; font-weight: bold; font-size: 20px;
+        .opt-bar select { border: none; font-family: inherit; font-size: 24px; color: #3b0062; cursor: pointer; }
+        .btn-back-menu { 
+            background: var(--red-smash); color: white; padding: 20px 60px;
+            font-size: 25px; border: none; cursor: pointer;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+            transition: 0.3s;
         }
-        .key-active { background: var(--gold) !important; color: white; border-color: orange !important; transform: scale(0.9); }
+        .btn-back-menu:hover { background: white; color: var(--red-smash); transform: scale(1.1); }
 
-        /* =========================================
-           4. SELECTOR DUAL (P1 Y RIVAL)
-           ========================================= */
-        #select-screen { background: #1a1a2e; z-index: 1000; }
+        /* ============================================================
+           4. SELECTOR DE PERSONAJES Y FICHA
+           ============================================================ */
+        #select-screen { background: #121225; }
         .char-grid { 
-            display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; 
-            padding: 15px; background: rgba(0,0,0,0.5); width: 95%; height: 45%; 
-            overflow-y: auto; border-bottom: 8px solid var(--red);
+            display: grid; grid-template-columns: repeat(10, 1fr); 
+            gap: 12px; width: 95%; height: 45%; 
+            padding: 25px; background: rgba(0,0,0,0.6);
+            overflow-y: auto; border-bottom: 5px solid var(--red-smash);
         }
         .slot { 
-            aspect-ratio: 1; background: #333; border: 2px solid #555; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            aspect-ratio: 1; background: #222; border: 3px solid #444;
+            cursor: pointer; transition: 0.3s; display: flex; 
+            align-items: center; justify-content: center;
         }
-        .slot:hover { border-color: white; background: #555; transform: scale(1.1); z-index: 50; }
+        .slot:hover { border-color: white; transform: scale(1.15) rotate(2deg); z-index: 100; }
+        .slot img { width: 85%; height: 85%; object-fit: contain; }
 
-        .preview-area { 
-            width: 100%; height: 45%; display: flex; justify-content: space-around; 
-            align-items: center; background: linear-gradient(to top, #000, transparent); 
+        .info-panel { 
+            width: 100%; height: 220px; background: rgba(0,0,0,0.95);
+            display: flex; padding: 30px; border-top: 6px solid var(--gold-smash);
+            position: absolute; bottom: 0;
         }
-        .p-card { 
-            width: 450px; height: 260px; position: relative; 
-            clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); 
-            border-left: 12px solid white; display: flex; align-items: center; padding-left: 40px;
-        }
+        .info-portrait { height: 100%; width: 200px; border: 4px solid white; background: #333; margin-right: 40px; }
+        .stat-line { margin: 15px 0; }
+        .bar-bg { width: 300px; height: 15px; background: #333; border-radius: 10px; margin-top: 5px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--gold-smash); width: 0%; transition: 0.8s ease-out; }
 
-        /* =========================================
-           5. MUNDO DE COMBATE (CÁMARA ESTABLE)
-           ========================================= */
-        #game-screen { 
-            background: linear-gradient(to bottom, #1e3c72, #2a5298, #70e1ff); 
-            z-index: 100;
+        /* ============================================================
+           5. TRANSICIÓN VERSUS (DOBLE PUERTA)
+           ============================================================ */
+        #versus-screen { position: fixed; inset: 0; z-index: 10000; display: none; overflow: hidden; background: #000; }
+        .v-door { 
+            position: absolute; width: 50%; height: 100%; 
+            background-size: cover; background-position: center;
+            transition: transform 0.9s cubic-bezier(0.85, 0, 0.15, 1);
         }
-        .sky-island { 
-            position: absolute; width: 250px; height: 100px; background: #444; 
-            border-radius: 50%; box-shadow: inset 0 -15px 0 #222; 
-            animation: floatAnim 6s infinite ease-in-out; opacity: 0.6;
-        }
-        #stage-main { 
-            position: absolute; bottom: 200px; left: 50%; transform: translateX(-50%); 
-            width: 850px; height: 45px; background: #5c3d2e; 
-            border-bottom: 15px solid #221100; border-radius: 10px; z-index: 10;
-        }
-        .plat-static { 
-            position: absolute; width: 200px; height: 15px; 
-            background: rgba(255,255,255,0.4); border-top: 5px solid gold; 
-            box-shadow: 0 0 20px gold; border-radius: 5px; z-index: 10;
+        #v-left { left: 0; border-right: 4px solid white; }
+        #v-right { right: 0; border-left: 4px solid white; }
+        .vs-text { 
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); font-size: 180px; 
+            font-style: italic; z-index: 10; text-shadow: 0 0 30px #000;
         }
 
-        /* PERSONAJES SÓLIDOS (Garantizan visibilidad) */
+        /* ============================================================
+           6. CAMPO DE BATALLA (Naturaleza Viva)
+           ============================================================ */
+        #game-screen { background: linear-gradient(to bottom, #1e3c72, #2a5298, #70e1ff); }
+        .cloud { 
+            position: absolute; background: white; border-radius: 50px; 
+            opacity: 0.5; animation: cloudMove 30s linear infinite; 
+        }
+        @keyframes cloudMove { from { left: -300px; } to { left: 120vw; } }
+
+        #stage-floor { 
+            position: absolute; bottom: 180px; left: 50%; 
+            transform: translateX(-50%); width: 950px; height: 45px; 
+            background: linear-gradient(to bottom, #4CAF50 18px, #8B4513 18px);
+            border-radius: 0 0 60px 60px; box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+        .floating-plat { 
+            position: absolute; width: 200px; height: 12px; 
+            background: rgba(255,255,255,0.4); border-top: 4px solid gold; 
+            border-radius: 10px; box-shadow: 0 0 25px gold; z-index: 10;
+        }
+
+        /* PERSONAJES */
         .fighter { 
-            position: absolute; width: 100px; height: 140px; 
-            bottom: 245px; border: 4px solid white; border-radius: 12px; 
-            z-index: 100; box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px;
+            position: absolute; width: 70px; height: 100px; 
+            background-size: contain; background-repeat: no-repeat; 
+            background-position: bottom center; z-index: 100;
+            /* No hay tambaleo de cámara aquí */
         }
-        #player-1 { background: var(--red); left: 300px; }
-        #player-ia { background: var(--blue); right: 300px; }
-
-        /* HUD */
-        #game-hud { 
-            position: absolute; bottom: 35px; width: 100%; display: flex; 
-            justify-content: space-around; font-size: 55px; text-shadow: 3px 3px #000; z-index: 500;
+        .shield-burbuja { 
+            position: absolute; width: 120px; height: 120px; 
+            border: 4px solid white; border-radius: 50%; 
+            background: rgba(255,255,255,0.2); transform: translate(-25px, -10px);
+            display: none; box-shadow: 0 0 30px white;
         }
-        .dmg-perc { font-size: 90px; color: red; font-weight: 900; }
+        .god-fx { animation: godPulse 0.5s infinite alternate; }
+        @keyframes godPulse { from { filter: drop-shadow(0 0 10px gold) brightness(1.2); } to { filter: drop-shadow(0 0 40px white) brightness(2); } }
 
-        /* =========================================
-           6. RESULTADOS FINALES (STEVE STYLE)
-           ========================================= */
-        #results-screen { background: linear-gradient(to bottom, #4facfe, #00f2fe); z-index: 6000; }
-        .win-tag { font-size: 160px; color: gold; font-style: italic; -webkit-text-stroke: 4px black; text-shadow: 10px 10px 0 rgba(0,0,0,0.3); }
-        .arrow-back { 
-            position: absolute; bottom: 50px; right: 60px; font-size: 90px; 
-            color: white; cursor: pointer; animation: arrowMove 1s infinite; 
-            text-shadow: 0 0 25px black;
-        }
+        /* HUD JUEGO */
+        #game-header { position: absolute; top: 30px; width: 100%; display: flex; justify-content: center; z-index: 500; }
+        #clock { font-size: 70px; font-weight: 900; text-shadow: 3px 3px #000; }
+        #game-footer { position: absolute; bottom: 0; width: 100%; height: 150px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; justify-content: space-around; align-items: center; }
+        .hud-perc { font-size: 90px; font-weight: 900; color: #ff3333; -webkit-text-stroke: 2px black; }
 
-        /* ANIMACIONES DEFINITIVAS */
-        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.15); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        @keyframes floatAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-35px); } }
-        @keyframes arrowMove { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-25px); } }
+        /* ============================================================
+           7. RESULTADOS (ESTILO K. ROOL)
+           ============================================================ */
+        #results-screen { background: #000; overflow: hidden; }
+        #winner-portrait { position: absolute; right: -5%; bottom: 0; width: 75%; height: 95%; background-size: contain; background-repeat: no-repeat; background-position: right bottom; z-index: 1; }
+        .win-tag-big { position: absolute; left: 8%; top: 15%; z-index: 10; }
+        .rank-num { font-size: 220px; color: var(--gold-smash); -webkit-text-stroke: 6px black; margin: 0; line-height: 0.8; }
+        .loser-stripe { position: absolute; left: -50px; bottom: 10%; width: 550px; height: 220px; background: var(--red-smash); border: 10px solid black; transform: skewX(-20deg); z-index: 5; overflow: hidden; }
+        #loser-img-res { width: 120%; height: 120%; object-fit: cover; transform: skewX(20deg) translate(10%, 10%); }
+
+        /* OBJETOS */
+        .item-drop { position: absolute; width: 50px; height: 50px; background-size: contain; background-repeat: no-repeat; z-index: 150; }
     </style>
 </head>
 <body>
 
-    <div id="brightness-overlay"></div>
-    <img id="hand" src="https://ssbwiki.com">
+    <!-- ELEMENTOS FIJOS -->
+    <div id="hand">👆</div>
+    <div id="countdown" style="position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); font-size:300px; font-weight:900; z-index:10000; display:none; color:white; text-shadow: 15px 15px var(--red-smash);">3</div>
 
-    <!-- 1. INTRO -->
-    <div id="intro-screen" class="screen active" onclick="actionIntro()">
-        <div class="fire">🔥</div>
-        <h1 style="font-size:110px; margin:0">SUPER SMASH BROS</h1>
-        <div id="glass-crack" class="crack-fx"></div>
-        <p class="press-x">PULSA [ X ] PARA EMPEZAR</p>
+    <!-- 1. PANTALLA INTRO -->
+    <div id="intro-screen" class="screen active" onclick="navigate('menu-screen')">
+        <div class="fire-logo">🔥</div>
+        <h1 style="font-size: 90px; text-shadow: 5px 5px #000; margin: 20px 0;">SUPREME EDITION</h1>
+        <p style="font-size: 35px; animation: blink 1s infinite;">HAZ CLIC PARA EMPEZAR</p>
     </div>
 
-    <!-- 2. MENÚ -->
+    <!-- 2. PANTALLA MENÚ -->
     <div id="menu-screen" class="screen">
         <div class="menu-grid">
-            <div id="btn-smash" class="m-item" onclick="actionSelect()"><div class="m-label">SMASH</div></div>
-            <div id="btn-games" class="m-item" onclick="alert('MODO GAMES: EN PROGRESO')"><div class="m-label">GAMES</div></div>
-            <div id="btn-online" class="m-item" onclick="alert('ONLINE: EN PROGRESO')"><div class="m-label">ONLINE</div></div>
-            <div id="btn-vault" class="m-item" onclick="alert('BAÚL: TRABAJANDO EN ELLO...')"><div class="m-label">BAÚL</div></div>
-            <div id="btn-options" class="m-item" onclick="actionOptions()"><div class="m-label">OPCIONES</div></div>
+            <div id="btn-smash" class="m-item" onclick="navigate('select-screen')"><span class="m-label">SMASH</span></div>
+            <div id="btn-games" class="m-item"><span class="m-label">GAMES</span></div>
+            <div id="btn-vault" class="m-item"><span class="m-label">BAÚL</span></div>
+            <div id="btn-online" class="m-item"><span class="m-label">ONLINE</span></div>
+            <div id="btn-options" class="m-item" onclick="navigate('options-screen')"><span class="m-label">OPCIONES</span></div>
         </div>
     </div>
 
-    <!-- 3. OPCIONES -->
+    <!-- 3. PANTALLA OPCIONES -->
     <div id="options-screen" class="screen">
-        <h1 style="font-size:70px; margin-bottom:40px; font-style:italic">OPCIONES</h1>
-        <div class="opt-grid">
-            <div class="opt-box" onclick="actionControls()"><span>CONTROLES</span> ⌨️</div>
-            <div class="opt-box" onclick="toggleDiff()"><span>DIFICULTAD</span> <b id="ui-diff">NORMAL</b></div>
-            <div class="opt-box" onclick="toggleBright()"><span>BRILLO</span> ☀️</div>
-            <div class="opt-box" onclick="alert('IDIOMA: ESPAÑOL')"><span>IDIOMA</span> 🌍</div>
-        </div>
-        <button class="opt-box" style="background:var(--red); color:white; margin-top:40px" onclick="actionMenu()">VOLVER AL MENÚ</button>
-    </div>
-
-    <!-- 4. CONTROLES (TECLADO INTERACTIVO) -->
-    <div id="controls-screen" class="screen">
-        <h1 style="color:#333; font-size:50px">PRUEBA DE TECLADO</h1>
-        <div style="background:white; padding:50px; border-radius:30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-            <div style="text-align:center">
-                <div id="visual-KeyW" class="key-visual">W</div><br>
-                <div id="visual-KeyA" class="key-visual">A</div>
-                <div id="visual-KeyS" class="key-visual">S</div>
-                <div id="visual-KeyD" class="key-visual">D</div>
-                <div style="margin-top:20px"><div id="visual-Space" class="key-visual" style="width:300px">SPACE (SALTO)</div></div>
-                <div style="margin-top:20px">
-                    <div id="visual-KeyK" class="key-visual">K (ATK)</div>
-                    <div id="visual-KeyM" class="key-visual">M (ESP)</div>
-                    <div id="visual-KeyE" class="key-visual">E (SMA)</div>
+        <div class="options-container">
+            <h1 style="font-size: 80px; font-style: italic; margin-bottom: 50px;">OPCIONES</h1>
+            <div class="opt-grid">
+                <div class="opt-bar">CONTROLES <span>⌨️</span></div>
+                <div class="opt-bar">DIFICULTAD 
+                    <select id="diff-set">
+                        <option value="1">FÁCIL</option>
+                        <option value="2">NORMAL</option>
+                        <option value="3">SMASH (IA DIOS)</option>
+                    </select>
+                </div>
+                <div class="opt-bar">BRILLO <span>☀️</span></div>
+                <div class="opt-bar">IDIOMA 
+                    <select id="lang-set">
+                        <option value="es">ESPAÑOL</option>
+                        <option value="en">ENGLISH</option>
+                        <option value="fr">FRANÇAIS</option>
+                    </select>
                 </div>
             </div>
+            <button class="btn-back-menu" onclick="saveAndBack()">VOLVER AL MENÚ</button>
         </div>
-        <button class="opt-box" style="background:#333; color:white; margin-top:40px" onclick="actionOptions()">GUARDAR Y SALIR</button>
     </div>
 
-    <!-- 5. SELECTOR DUAL -->
+    <!-- 4. PANTALLA SELECTOR -->
     <div id="select-screen" class="screen">
-        <button style="position:absolute; top:40px; left:40px; padding:20px; cursor:pointer" onclick="actionMenu()">VOLVER</button>
-        <h1 id="select-state-msg" style="font-size:45px; margin-bottom:20px">ELIJE TU LUCHADOR (P1)</h1>
-        <div class="char-grid" id="char-roster-build"></div>
-        <div class="preview-area">
-            <div class="p-card" id="card-p1" style="background:var(--red)">
-                <div><div style="font-size:25px; color:gold">PLAYER 1</div><div id="p1-name-ui" style="font-size:70px">---</div></div>
+        <div class="char-grid" id="grid-chars"></div>
+        <div class="info-panel">
+            <img id="p-portrait" class="info-portrait" src="">
+            <div style="flex: 1;">
+                <h2 id="p-name" style="font-size: 50px; margin: 0; color: var(--red-smash);">SELECCIONA PERSONAJE</h2>
+                <p id="p-desc" style="font-size: 18px; color: #aaa; margin: 10px 0;">Elige a tu luchador para ver sus habilidades y origen.</p>
+                <div class="stat-line">FUERZA: <div class="bar-bg"><div id="bar-f" class="bar-fill"></div></div></div>
             </div>
-            <div class="p-card" id="card-ia" style="background:#444">
-                <div style="margin-left:80px"><div style="font-size:25px; color:#aaa">IA RIVAL</div><div id="ia-name-ui" style="font-size:70px">---</div></div>
+            <div style="display:flex; flex-direction:column; justify-content:center;">
+                <h3 id="select-mode-txt" style="font-size:30px; text-align:right;">JUGADOR 1...</h3>
             </div>
         </div>
-        <h3 style="color:white; background:red; padding:10px 30px; margin-top:20px">DOBLE CLICK PARA CONFIRMAR</h3>
     </div>
 
-    <!-- 6. JUEGO (CÁMARA ESTABLE) -->
+    <!-- 5. PANTALLA VERSUS -->
+    <div id="versus-screen">
+        <div id="v-left" class="v-door"></div>
+        <div id="v-right" class="v-door"></div>
+        <h1 class="vs-text">VS</h1>
+    </div>
+
+    <!-- 6. PANTALLA JUEGO -->
     <div id="game-screen" class="screen">
-        <!-- Escenario Estilo Battlefield -->
-        <div class="sky-island" style="top:20%; left:10%"></div>
-        <div class="sky-island" style="top:45%; right:15%; animation-delay:-3s"></div>
-        <div id="stage-main"></div>
-        <div class="plat-static" style="bottom: 580px; left: 50%; transform: translateX(-50%);"></div>
-        <div class="plat-static" style="bottom: 430px; left: 30%;"></div>
-        <div class="plat-static" style="bottom: 430px; right: 30%;"></div>
+        <div id="game-header"><div id="clock">2:00.00</div></div>
+        
+        <div id="stage-floor"></div>
+        <div class="floating-plat" style="top: 400px; left: 15%;"></div>
+        <div class="floating-plat" style="top: 400px; right: 15%;"></div>
+        <div class="floating-plat" style="top: 250px; left: 50%; transform: translateX(-50%);"></div>
 
-        <!-- Personajes Sólidos -->
-        <div id="player-1" class="fighter">P1</div>
-        <div id="player-ia" class="fighter">IA</div>
+        <div id="p1-fighter" class="fighter"><div class="shield-burbuja" id="s1"></div></div>
+        <div id="ia-fighter" class="fighter"><div class="shield-burbuja" id="s2"></div></div>
 
-        <div id="item-drop" style="position:absolute; font-size:60px; display:none; z-index:1000">🍄</div>
-
-        <!-- HUD -->
-        <div id="game-hud">
-            <div style="text-align:center">P1: <span id="p1-percent-ui" class="dmg-perc">0</span>% <br> <span id="p1-stocks-ui" style="font-size:35px">●●●</span></div>
-            <div id="game-timer-ui" style="border:5px solid white; padding:15px 50px; border-radius:100px; background:rgba(0,0,0,0.6)">20:00</div>
-            <div style="text-align:center">IA: <span id="ia-percent-ui" class="dmg-perc">0</span>% <br> <span id="ia-stocks-ui" style="font-size:35px">●●●</span></div>
+        <div id="game-footer">
+            <div style="text-align:center;"><div id="n1" style="font-size:20px;">P1</div><div id="d1" class="hud-perc">0%</div></div>
+            <div style="text-align:center;"><div id="n2" style="font-size:20px;">IA</div><div id="d2" class="hud-perc">0%</div></div>
         </div>
     </div>
 
-    <!-- 7. RESULTADOS -->
+    <!-- 7. PANTALLA RESULTADOS -->
     <div id="results-screen" class="screen">
-        <div class="win-tag">1st</div>
-        <div id="final-winner-name" style="font-size:110px; text-transform:uppercase; margin-bottom:40px">STEVE</div>
-        <div style="display:flex; align-items:flex-end; gap:60px; height:350px">
-            <div id="res-winner-body" style="width:110px; height:220px; border:6px solid white; box-shadow:0 0 40px gold;"></div>
-            <div id="res-loser-body" style="width:110px; height:140px; border:6px solid white; opacity:0.4;"></div>
+        <div id="winner-portrait"></div>
+        <div class="win-tag-big">
+            <p class="rank-num">1</p>
+            <h1 id="win-name-res" style="font-size: 110px; font-style: italic; -webkit-text-stroke: 3px black; margin:0;">WINNER</h1>
         </div>
-        <div class="arrow-back" onclick="location.reload()">⬅ MENÚ</div>
+        <div class="loser-stripe"><img id="loser-img-res" src=""></div>
+        <div style="position:absolute; bottom:50px; right:70px; font-size:40px; cursor:pointer;" onclick="location.reload()">SIGUIENTE ▶</div>
     </div>
 
-    <!-- =========================================
-         LÓGICA DEL MOTOR (EL ALMA DEL JUEGO)
-         ========================================= -->
     <script>
-        /** MOTOR FÍSICO Y VARIABLES **/
-        let p1 = { x: 400, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0, name: "NINJA", size: 1 };
-        let ia = { x: 850, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0, name: "RIVAL", size: 1 };
-        let gameState = "INTRO", selectMode = "P1", aiDiff = "NORMAL", screenBright = 0, clock = 1200;
-        const keys = {};
+        // ============================================================
+        // MOTOR LÓGICO SMASH 2026
+        // ============================================================
 
-        // Mouse Guante
-        window.onmousemove = e => {
+        const DB = {
+            "MARIO": { f: 75, d: "El icono de Nintendo. Equilibrado y potente.", img: "https://smashbros.com", vs: "https://imgur.com" },
+            "SONIC": { f: 60, d: "El más rápido. Ataca en forma de bola azul.", img: "https://smashbros.com", vs: "https://imgur.com" },
+            "STEVE": { f: 90, d: "Usa cubos y TNT. Estrategia de Minecraft.", img: "https://smashbros.com", vs: "https://imgur.com" },
+            "KIRBY": { f: 55, d: "Capaz de absorber poderes. Muy ágil en el aire.", img: "https://smashbros.com", vs: "https://imgur.com" },
+            "LINK": { f: 80, d: "Guerrero de Hyrule con espada y escudo.", img: "https://smashbros.com", vs: "https://imgur.com" }
+        };
+
+        // Estado del Juego
+        let state = {
+            p1Selected: null,
+            iaSelected: null,
+            difficulty: 1,
+            gameActive: false,
+            canMove: false,
+            p1: { x: 300, y: 0, dmg: 0, id: "", god: false, shield: false, el: document.getElementById('p1-fighter') },
+            ia: { x: 850, y: 0, dmg: 0, id: "", trapped: false, shield: false, el: document.getElementById('ia-fighter') }
+        };
+
+        // NAVEGACIÓN
+        function navigate(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            target.style.display = 'flex';
+            setTimeout(() => target.classList.add('active'), 50);
+        }
+
+        function saveAndBack() {
+            state.difficulty = parseInt(document.getElementById('diff-set').value);
+            navigate('menu-screen');
+        }
+
+        // CURSOR
+        window.onmousemove = (e) => {
             const h = document.getElementById('hand');
-            h.style.left = e.clientX + 'px'; h.style.top = e.clientY + 'px';
+            h.style.left = e.clientX + 'px';
+            h.style.top = e.clientY + 'px';
         };
 
-        // Teclado
-        window.onkeydown = e => {
-            keys[e.code] = true;
-            if(e.code === 'KeyX' && gameState === "INTRO") actionIntro();
-            const vk = document.getElementById('visual-' + e.code);
-            if(vk) vk.classList.add('key-active');
-        };
-        window.onkeyup = e => {
-            keys[e.code] = false;
-            const vk = document.getElementById('visual-' + e.code);
-            if(vk) vk.classList.remove('key-active');
-        };
+        // GENERADOR SELECTOR
+        const grid = document.getElementById('grid-chars');
+        Object.keys(DB).forEach(name => {
+            let s = document.createElement('div');
+            s.className = 'slot';
+            s.innerHTML = `<img src="${DB[name].img}">`;
+            s.onmouseover = () => {
+                document.getElementById('p-name').innerText = name;
+                document.getElementById('p-desc').innerText = DB[name].d;
+                document.getElementById('bar-f').style.width = DB[name].f + "%";
+                document.getElementById('p-portrait').src = DB[name].img;
+            };
+            s.onclick = () => {
+                if(!state.p1Selected) {
+                    state.p1Selected = name;
+                    state.p1.id = name;
+                    document.getElementById('select-mode-txt').innerText = "IA RIVAL...";
+                    document.getElementById('select-mode-txt').style.color = "var(--blue-smash)";
+                } else {
+                    state.iaSelected = name;
+                    state.ia.id = name;
+                    startVersusFlow();
+                }
+            };
+            grid.appendChild(s);
+        });
 
-        /** NAVEGACIÓN **/
-        function actionIntro() {
-            document.getElementById('glass-crack').style.display = 'block';
+        // FLUJO VERSUS
+        function startVersusFlow() {
+            const vs = document.getElementById('versus-screen');
+            document.getElementById('v-left').style.backgroundImage = `url(${DB[state.p1Selected].vs})`;
+            document.getElementById('v-right').style.backgroundImage = `url(${DB[state.iaSelected].vs})`;
+            vs.style.display = 'block';
+            
             setTimeout(() => {
-                gameState = "MENU"; hideAll();
-                document.getElementById('menu-screen').classList.add('active');
-                document.getElementById('hand').style.display = 'block';
-            }, 800);
+                document.getElementById('v-left').style.transform = "translateX(-100%)";
+                document.getElementById('v-right').style.transform = "translateX(100%)";
+                setTimeout(() => {
+                    vs.style.display = 'none';
+                    initBattle();
+                }, 900);
+            }, 3000);
         }
 
-        function actionMenu() { hideAll(); document.getElementById('menu-screen').classList.add('active'); }
-        function actionOptions() { hideAll(); document.getElementById('options-screen').classList.add('active'); }
-        function actionControls() { hideAll(); document.getElementById('controls-screen').classList.add('active'); }
-        function toggleBright() { screenBright += 0.25; if(screenBright > 0.8) screenBright = 0; document.getElementById('brightness-overlay').style.opacity = screenBright; }
-        function toggleDiff() { aiDiff = (aiDiff === "NORMAL") ? "ULTIMATE" : "NORMAL"; document.getElementById('ui-diff').innerText = aiDiff; }
-
-        function actionSelect() {
-            hideAll(); document.getElementById('select-screen').classList.add('active');
-            const roster = ["STEVE", "NINJA", "MAGO", "LINK", "MARIO", "KIRBY", "PIKACHU", "FOX", "SAMUS", "ZELDA", "BOWSER", "LUIGI", "SONIC", "CLOUD"];
-            const grid = document.getElementById('char-roster-build');
-            if(grid.children.length === 0) {
-                roster.forEach(n => {
-                    const s = document.createElement('div');
-                    s.className = 'slot'; s.innerText = n;
-                    s.onclick = () => {
-                        if(selectMode === "P1") { p1.name = n; document.getElementById('p1-name-ui').innerText = n; selectMode = "IA"; document.getElementById('select-state-msg').innerText = "ELIJE RIVAL (IA)"; }
-                        else { ia.name = n; document.getElementById('ia-name-ui').innerText = n; actionBattle(); }
-                    };
-                    grid.appendChild(s);
-                });
-            }
-        }
-
-        function actionBattle() {
-            hideAll(); document.getElementById('game-screen').classList.add('active');
-            document.getElementById('hand').style.display = 'none';
-            gameState = "BATTLE";
-            setInterval(() => { if(gameState==="BATTLE"){clock--; let m=Math.floor(clock/60), s=clock%60; document.getElementById('game-timer-ui').innerText=`${m}:${s<10?'0'+s:s}`;} }, 1000);
-            setInterval(spawnPowerUp, 15000);
-        }
-
-        function hideAll() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); }
-
-        /** MOTOR DE PELEA Y FÍSICA **/
-        function coreLoop() {
-            if(gameState === "BATTLE") {
-                // JUGADOR 1
-                if(keys['KeyA']) p1.vX = -10; else if(keys['KeyD']) p1.vX = 10; else p1.vX *= 0.85;
-                if(keys['Space'] && p1.jumps < 2) { p1.vY = 22; p1.jumps++; keys['Space'] = false; }
-                if(keys['KeyK'] && Math.abs(p1.x - ia.x) < 120) { 
-                    ia.dmg += 8; ia.vX = (ia.x > p1.x ? 1 : -1) * (ia.dmg * 0.5); ia.vY = 12; 
-                    document.getElementById('ia-percent-ui').innerText = Math.floor(ia.dmg);
+        // MOTOR DE BATTLE
+        function initBattle() {
+            navigate('game-screen');
+            state.p1.el.style.backgroundImage = `url(${DB[state.p1Selected].img})`;
+            state.ia.el.style.backgroundImage = `url(${DB[state.iaSelected].img})`;
+            document.getElementById('n1').innerText = state.p1Selected;
+            document.getElementById('n2').innerText = state.iaSelected;
+            
+            createAmbience();
+            
+            let count = 3;
+            const cd = document.getElementById('countdown');
+            cd.style.display = 'block';
+            let timer = setInterval(() => {
+                cd.innerText = count > 0 ? count : "¡SMASH!";
+                if(count < 0) {
+                    clearInterval(timer);
+                    cd.style.display = 'none';
+                    state.canMove = true;
+                    state.gameActive = true;
+                    battleLoop();
+                    runClock();
                 }
+                count--;
+            }, 1000);
+        }
 
-                // IA INTELIGENTE
-                let speedIA = (aiDiff === "ULTIMATE") ? 10 : 5;
-                if(ia.x < p1.x - 70) ia.vX = speedIA; else if(ia.x > p1.x + 70) ia.vX = -speedIA;
-                if(Math.abs(ia.x - p1.x) < 100 && Math.random() > 0.96) { 
-                    p1.dmg += (aiDiff === "ULTIMATE" ? 12 : 5); p1.vX = (p1.x > ia.x ? 1 : -1) * (p1.dmg * 0.4); 
-                    document.getElementById('p1-percent-ui').innerText = Math.floor(p1.dmg);
+        let keys = {};
+        window.onkeydown = (e) => {
+            keys[e.key.toLowerCase()] = true;
+            if(e.key.toLowerCase() === 'k' && state.canMove) executeAttack(state.p1, state.ia);
+            if(e.key.toLowerCase() === 'e') { state.p1.shield = true; document.getElementById('s1').style.display = 'block'; }
+            if(e.key.toLowerCase() === 'm') executeSpecial(state.p1);
+        };
+        window.onkeyup = (e) => {
+            keys[e.key.toLowerCase()] = false;
+            if(e.key.toLowerCase() === 'e') { state.p1.shield = false; document.getElementById('s1').style.display = 'none'; }
+        };
+
+        function executeAttack(attacker, victim) {
+            if(Math.abs(attacker.x - victim.x) < 95) {
+                if(victim.shield) return;
+                let power = attacker.god ? 45 : 6;
+                victim.dmg += power;
+                victim.x += (attacker.x < victim.x ? 1 : -1) * (victim.dmg / 1.5);
+                updateHUD();
+            }
+        }
+
+        function executeSpecial(p) {
+            if(p.id === "SONIC") p.x += 150;
+            if(p.id === "STEVE") { /* Lógica de bloque */ }
+        }
+
+        function battleLoop() {
+            if(!state.gameActive) return;
+
+            if(state.canMove) {
+                if(keys['arrowleft']) state.p1.x -= 8;
+                if(keys['arrowright']) state.p1.x += 8;
+                
+                // IA LÓGICA (Basada en dificultad)
+                let aiSpeed = state.difficulty === 3 ? 10 : (state.difficulty === 2 ? 6 : 3);
+                if(state.ia.x > state.p1.x + 70) state.ia.x -= aiSpeed;
+                else if(state.ia.x < state.p1.x - 70) state.ia.x += aiSpeed;
+
+                // IA Ataca
+                if(state.difficulty >= 2 && Math.abs(state.ia.x - state.p1.x) < 100 && Math.random() < 0.05) {
+                    executeAttack(state.ia, state.p1);
                 }
-
-                // RECUPERACIÓN IA
-                if(Math.abs(ia.x - window.innerWidth/2) > 425 && ia.y < 0 && ia.jumps < 2) { ia.vY = 23; ia.jumps++; ia.vX = (window.innerWidth/2 - ia.x) * 0.09; }
-
-                physics(p1, 'player-1');
-                physics(ia, 'player-ia');
+                // IA Defensa modo Smash
+                if(state.difficulty === 3 && keys['k'] && Math.random() < 0.4) {
+                    state.ia.shield = true;
+                    document.getElementById('s2').style.display = 'block';
+                    setTimeout(() => { state.ia.shield = false; document.getElementById('s2').style.display = 'none'; }, 400);
+                }
             }
-            requestAnimationFrame(coreLoop);
+
+            // Aplicar posiciones
+            state.p1.el.style.left = state.p1.x + 'px';
+            state.ia.el.style.left = state.ia.x + 'px';
+
+            // Comprobar fuera de límites (Victoria)
+            if(state.ia.x > window.innerWidth || state.ia.x < -100) finishMatch(state.p1Selected);
+            if(state.p1.x > window.innerWidth || state.p1.x < -100) finishMatch(state.iaSelected);
+
+            requestAnimationFrame(battleLoop);
         }
 
-        function physics(obj, id) {
-            obj.x += obj.vX; obj.y += obj.vY; obj.vY -= 1.1;
-            const mid = window.innerWidth/2;
-            // Colisiones Battlefield (Suelo + 3 Plataformas)
-            const check = (o, l, r, h) => { if(o.vY <= 0 && o.x > l && o.x < r && o.y <= h && o.y > h-30) { o.y = h; o.vY = 0; o.jumps = 0; } };
-            check(obj, mid-425, mid+425, 0); check(obj, mid-100, mid+100, 380); check(obj, mid-340, mid-140, 230); check(obj, mid+140, mid+340, 230);
+        function updateHUD() {
+            document.getElementById('d1').innerText = Math.floor(state.p1.dmg) + "%";
+            document.getElementById('d2').innerText = Math.floor(state.ia.dmg) + "%";
+        }
 
-            // Ring Out (Explosión)
-            if(obj.y < -500 || Math.abs(obj.x - mid) > 980) {
-                if(obj.stocks > 1) { obj.stocks--; obj.dmg = 0; obj.y = 800; obj.x = mid; obj.vY = 0; refreshHUD(); }
-                else actionGameOver(id === 'player-1' ? false : true);
+        function finishMatch(winner) {
+            state.gameActive = false;
+            const loser = (winner === state.p1Selected) ? state.iaSelected : state.p1Selected;
+            navigate('results-screen');
+            document.getElementById('win-name-res').innerText = winner;
+            document.getElementById('winner-portrait').style.backgroundImage = `url(${DB[winner].img})`;
+            document.getElementById('loser-img-res').src = DB[loser].img;
+        }
+
+        function runClock() {
+            let t = 120;
+            const interval = setInterval(() => {
+                if(t > 0 && state.gameActive) {
+                    t--;
+                    let m = Math.floor(t/60);
+                    let s = t%60;
+                    document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}.00`;
+                } else { clearInterval(interval); }
+            }, 1000);
+        }
+
+        function createAmbience() {
+            for(let i=0; i<8; i++) {
+                let c = document.createElement('div');
+                c.className = 'cloud';
+                c.style.width = (Math.random()*250 + 100) + 'px';
+                c.style.height = '45px';
+                c.style.top = (Math.random()*300) + 'px';
+                c.style.animationDelay = (Math.random()*15) + 's';
+                document.getElementById('game-screen').appendChild(c);
             }
-            const el = document.getElementById(id);
-            el.style.left = obj.x + "px"; el.style.bottom = (200 + obj.y + 45) + "px";
-            el.style.transform = `scale(${obj.size})`;
         }
-
-        function spawnPowerUp() {
-            const it = document.getElementById('item-drop');
-            it.style.display = 'block'; it.style.left = (window.innerWidth/2 + (Math.random()-0.5)*700) + "px"; it.style.top = "0px";
-            let itY = 0;
-            let f = setInterval(() => {
-                itY += 6; it.style.top = itY + "px";
-                if(Math.abs(p1.x - parseInt(it.style.left)) < 70 && itY > 350) { p1.size = 2.2; it.style.display = 'none'; clearInterval(f); setTimeout(()=>p1.size=1, 9000); }
-                if(itY > 900) { it.style.display = 'none'; clearInterval(f); }
-            }, 20);
-        }
-
-        function refreshHUD() {
-            document.getElementById('p1-stocks-ui').innerText = "●".repeat(p1.stocks);
-            document.getElementById('ia-stocks-ui').innerText = "●".repeat(ia.stocks);
-        }
-
-        function actionGameOver(win) {
-            gameState = "END"; hideAll();
-            document.getElementById('results-screen').classList.add('active');
-            document.getElementById('final-winner-name').innerText = win ? p1.name : ia.name;
-            document.getElementById('res-winner-body').style.background = win ? "var(--red)" : "var(--blue)";
-            document.getElementById('res-loser-body').style.background = win ? "var(--blue)" : "var(--red)";
-            document.getElementById('hand').style.display = 'block';
-        }
-
-        coreLoop();
     </script>
 </body>
 </html>
-
-
