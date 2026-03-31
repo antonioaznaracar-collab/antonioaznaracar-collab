@@ -5,523 +5,295 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ULTIMATE SMASH BROS: SUPREME EDITION 2026</title>
     <style>
-        /* =========================================
-           CONFIGURACIÓN VISUAL Y FUENTES
-           ========================================= */
         @import url('https://googleapis.com');
         
-        :root {
-            --red: #ff4757; --blue: #2e9eff; --gold: #ffa502; --dark: #0a0a1a;
-        }
-
+        :root { --red: #ff4757; --blue: #2e9eff; --gold: #ffa502; --dark: #0a0a1a; }
         * { box-sizing: border-box; }
-        body { 
-            margin: 0; overflow: hidden; background: #000; 
-            font-family: 'Archivo Black', sans-serif; color: white; 
-            user-select: none; cursor: none !important; 
-        }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Archivo Black', sans-serif; color: white; user-select: none; cursor: none !important; }
 
-        /* ELEMENTOS GLOBALES Y CAPAS */
-        #brightness-overlay { position: fixed; inset: 0; background: black; opacity: 0; pointer-events: none; z-index: 20000; }
-        #flash-effect { position: fixed; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 15000; }
+        /* EFECTOS DINÁMICOS */
+        #viewport { width: 100vw; height: 100vh; transition: transform 0.2s ease-out; } /* Para el zoom de cámara */
+        #brightness-overlay { position: fixed; inset: 0; background-color: black; opacity: 0; pointer-events: none; z-index: 2000000; }
+        #custom-cursor { position: fixed; font-size: 50px; z-index: 3000000; pointer-events: none; transition: transform 0.05s; display: flex; align-items: center; justify-content: center; }
         
-        /* EL DEDO SIEMPRE ARRIBA DE TODO */
-        #custom-cursor { 
-            position: fixed; font-size: 50px; z-index: 1000000; pointer-events: none; 
-            transition: transform 0.05s; display: flex; align-items: center; justify-content: center;
-        }
-        .clicking { transform: scale(0.8) rotate(-15deg); }
-
-        .screen { 
-            position: fixed; inset: 0; display: none; 
-            flex-direction: column; align-items: center; justify-content: center; 
-            z-index: 100;
-        }
+        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
         .active { display: flex; }
 
-        /* =========================================
-           1. PANTALLA INTRO
-           ========================================= */
-        #intro-screen { background: radial-gradient(circle, #f0ca4d, #e37424); z-index: 5000; cursor: pointer; }
-        .fire { font-size: 150px; animation: burn 0.2s infinite alternate; filter: drop-shadow(0 0 30px orange); }
-        .press-x { margin-top: 50px; font-size: 30px; letter-spacing: 5px; animation: blink 0.8s infinite; text-shadow: 3px 3px #000; }
-
-        /* =========================================
-           2. MENÚ PRINCIPAL Y SUBMENÚS
-           ========================================= */
-        #menu-screen, #smash-select-screen { background: var(--dark); }
-        .menu-grid, .smash-grid { 
-            display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 2fr 1fr; 
-            gap: 20px; width: 90%; height: 80%; 
+        /* ESCENARIO CIUDAD GALÁCTICA 2026 */
+        #game-screen { 
+            background: radial-gradient(circle, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 200% 200%;
+            animation: skyGradient 15s infinite alternate;
         }
-        .m-item, .smash-item { 
-            position: relative; cursor: pointer; transition: 0.3s; overflow: hidden;
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); border: 4px solid transparent;
+        @keyframes skyGradient { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+
+        #stage-main { 
+            position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); 
+            width: 1000px; height: 45px; background: linear-gradient(to bottom, #444, #111); 
+            border-top: 6px solid #00d2ff; box-shadow: 0 0 60px rgba(0,210,255,0.6); border-radius: 5px; 
         }
-        .m-item:hover, .smash-item:hover { transform: scale(1.03); border-color: white; z-index: 150; }
-        .m-label { position: absolute; bottom: 20px; left: 30px; font-size: 3rem; font-style: italic; text-shadow: 4px 4px #000; }
 
-        #btn-smash { background: linear-gradient(135deg, #ff0000, #600); }
-        #btn-spirits { background: linear-gradient(135deg, #27ae60, #145a32); }
-        #btn-games { background: linear-gradient(135deg, #2e9eff, #154360); }
-        #btn-vault { background: linear-gradient(135deg, #8e44ad, #4a235a); }
-
-        .side-bar { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 30px; z-index: 200; }
-        .side-icon { font-size: 45px; cursor: pointer; filter: drop-shadow(0 0 10px black); transition: 0.2s; }
-
-        /* =========================================
-           3. MODALES (CONSTRUCCIÓN, AJUSTES)
-           ========================================= */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        .modal.active { display: flex; }
-        .opt-row { display: flex; justify-content: space-between; width: 600px; background: #222; margin: 10px; padding: 25px; border-left: 10px solid var(--gold); font-size: 24px; }
-        .btn-back { margin-top: 40px; padding: 15px 50px; background: var(--red); color: white; border: none; cursor: pointer; font-size: 20px; }
-
-        /* =========================================
-           4. SELECTOR DE PERSONAJES
-           ========================================= */
-        #char-select-screen { background: #111; z-index: 1000; }
-        .grid-luchadores { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 60%; background: rgba(255,255,255,0.05); padding: 15px; }
-        .ficha { background: #333; border: 2px solid #555; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; }
-        .confirmed-p1 { border: 4px solid var(--red) !important; background: #600; }
-        .confirmed-cpu { border: 4px solid var(--blue) !important; background: #006; }
-
-        .info-players { display: flex; width: 100%; height: 250px; margin-top: auto; }
-        .p-panel { flex: 1; padding: 30px; border-left: 15px solid white; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); transition: 0.5s; }
-        #p1-panel { background: linear-gradient(to right, #d32f2f, #7b0000); }
-        #p2-panel { background: linear-gradient(to right, #1976d2, #003a75); opacity: 0.5; }
-
-        #ready-banner { position: fixed; top: 50%; left: -110%; width: 150%; height: 120px; background: var(--gold); transform: translateY(-50%) rotate(-5deg); z-index: 12000; display: flex; align-items: center; justify-content: center; border: 10px solid white; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #ready-banner.show { left: -25%; }
-
-        /* =========================================
-           5. VERSUS Y PUERTAS (ARREGLADO)
-           ========================================= */
-        #versus-screen { background: #000; z-index: 13000; }
-        .vs-side { flex: 1; background-size: cover; background-position: center; filter: brightness(0.7); }
-        .door { position: fixed; top: 0; width: 50%; height: 100%; background: #111; z-index: 40000; transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1); border: 2px solid #333; pointer-events: none; }
-        #door-left { left: 0; border-right: 5px solid var(--gold); transform: translateX(-100%); }
-        #door-right { right: 0; border-left: 5px solid var(--gold); transform: translateX(100%); }
-        .door-closed { transform: translateX(0) !important; }
-
-        /* =========================================
-           6. ESCENARIO DE PELEA
-           ========================================= */
-        #game-screen { background: url('https://wiki.gallery') center/cover; z-index: 500; }
-        #stage-main { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: 800px; height: 30px; background: #444; border-bottom: 10px solid #222; }
-        .plat { position: absolute; width: 220px; height: 12px; background: rgba(255,255,255,0.2); border-top: 3px solid gold; border-radius: 5px; }
+        /* LUCHADORES SUPREME */
+        .fighter { position: absolute; width: 180px; height: 180px; background-size: contain; background-repeat: no-repeat; background-position: bottom center; z-index: 1000; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.8)); }
         
-        .fighter { position: absolute; width: 130px; height: 130px; background-size: contain; background-repeat: no-repeat; background-position: bottom; z-index: 100; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
-        .invincible { opacity: 0.5; filter: brightness(2) drop-shadow(0 0 15px white); }
+        /* EFECTOS DE PARTÍCULAS */
+        .dust { position: absolute; width: 20px; height: 20px; background: rgba(255,255,255,0.4); border-radius: 50%; animation: dustFade 0.5s forwards; pointer-events: none; }
+        @keyframes dustFade { to { transform: scale(3) translateY(-20px); opacity: 0; } }
 
-        #timer-display { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); font-size: 60px; text-shadow: 3px 3px black; font-style: italic; z-index: 600; }
-        #countdown { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); font-size: 200px; z-index: 16000; -webkit-text-stroke: 4px black; display: none; }
+        .hit-ring { position: absolute; border: 8px solid white; border-radius: 50%; z-index: 2000; animation: ringExpand 0.3s forwards; }
+        @keyframes ringExpand { from { width: 0; height: 0; opacity: 1; } to { width: 300px; height: 300px; opacity: 0; } }
 
-        .hud-card { position: fixed; bottom: 20px; width: 350px; text-align: center; z-index: 600; }
-        .perc-val { font-size: 85px; font-weight: 900; color: white; -webkit-text-stroke: 2px black; }
-        .stocks { display: flex; justify-content: center; gap: 8px; margin-bottom: 5px; }
-        .stock-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid black; }
+        /* MENÚS ESTILO ULTIMATE */
+        .menu-grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 2fr 1fr; gap: 20px; width: 90%; height: 80%; }
+        .m-item { position: relative; cursor: pointer; transition: 0.3s; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); border: 4px solid transparent; overflow: hidden; }
+        .m-item:hover { transform: scale(1.05); border-color: white; box-shadow: 0 0 30px rgba(255,255,255,0.2); }
+        .m-label { position: absolute; bottom: 25px; left: 35px; font-size: 4rem; font-style: italic; text-shadow: 5px 5px #000; }
 
-        /* =========================================
-           7. RESULTADOS FINALES
-           ========================================= */
-        #finish-banner { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(5); font-size: 150px; color: #ff0000; z-index: 18000; display: none; -webkit-text-stroke: 4px white; font-style: italic; transition: 0.3s; }
-        #results-screen { background: linear-gradient(to right, #111, #333); z-index: 60000; }
-        .winner-img { position: absolute; right: 0; bottom: 0; height: 90vh; width: 50vw; background-size: contain; background-repeat: no-repeat; background-position: bottom right; }
-        .loser-box { position: absolute; bottom: 50px; left: 100px; width: 380px; height: 220px; border: 8px solid white; background: #000; transform: skewX(-10deg); overflow: hidden; }
-        .back-arrow { position: fixed; bottom: 40px; right: 60px; font-size: 80px; cursor: pointer; animation: pulse 1.5s infinite; z-index: 70000; }
+        /* SELECTOR DE PERSONAJES */
+        .grid-pjs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; width: 70%; padding: 25px; background: rgba(0,0,0,0.5); border-radius: 15px; border: 2px solid #444; }
+        .ficha { background: #222; border: 3px solid #444; aspect-ratio: 1; cursor: pointer; transition: 0.2s; position: relative; padding: 10px; }
+        .ficha img { width: 80%; transition: 0.3s; }
+        .ficha:hover img { transform: scale(1.2) translateY(-5px); }
+        .confirmed-p1 { border-color: var(--red) !important; background: #500; }
+        .confirmed-cpu { border-color: var(--blue) !important; background: #003; }
 
-        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.1); filter: brightness(1.2) drop-shadow(0 0 50px red); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        @keyframes pulse { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(15px); } }
-        @keyframes flashBang { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+        #ready-banner { position: fixed; top: 40%; left: -160%; width: 200%; height: 160px; background: var(--gold); transform: rotate(-4deg); z-index: 10000; display: flex; align-items: center; justify-content: center; font-size: 100px; color: black; font-weight: 900; border: 12px solid white; transition: 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); cursor: pointer; }
+        #ready-banner.show { left: -50%; }
+
+        /* HUD MEJORADO */
+        .hud-container { position: fixed; bottom: 40px; display: flex; flex-direction: column; align-items: center; width: 350px; z-index: 10000; }
+        .hud-name { font-size: 25px; background: rgba(0,0,0,0.7); padding: 5px 20px; border-radius: 10px; margin-bottom: 10px; font-style: italic; }
+        .perc-text { font-size: 100px; color: white; -webkit-text-stroke: 4px black; text-shadow: 6px 6px 0px red; }
+
+        /* PANTALLA VICTORIA */
+        #results-screen { background: radial-gradient(circle, #4facfe, #00f2fe); }
+        .win-tag { font-size: 120px; color: gold; -webkit-text-stroke: 3px black; transform: rotate(-5deg); animation: blink 0.5s infinite; }
     </style>
 </head>
 <body>
 
     <div id="brightness-overlay"></div>
-    <div id="flash-effect"></div>
     <div id="custom-cursor">👉</div>
-    <div id="door-left" class="door"></div>
-    <div id="door-right" class="door"></div>
 
-    <!-- 1. INTRO -->
-    <div id="intro-screen" class="screen active" onclick="iniciarTodo()">
-        <div class="fire">🔥</div>
-        <h1 style="font-size: 100px; margin: 0;">SMASH BROS</h1>
-        <p class="press-x">CLIC PARA EMPEZAR</p>
-    </div>
-
-    <!-- 2. MENÚ PRINCIPAL -->
-    <div id="menu-screen" class="screen">
-        <div class="menu-grid">
-            <div id="btn-smash" class="m-item" onclick="goToSmashSub()"><div class="m-label">SMASH</div></div>
-            <div id="btn-spirits" class="m-item" onclick="showBuild()"><div class="m-label">SPIRITS</div></div>
-            <div id="btn-games" class="m-item" onclick="showBuild()"><div class="m-label">GAMES & MORE</div></div>
-            <div id="btn-vault" class="m-item" onclick="showBuild()"><div class="m-label">VAULT</div></div>
+    <div id="viewport">
+        <!-- PANTALLAS -->
+        <div id="intro-screen" class="screen active" onclick="iniciarMenu()">
+            <h1 style="font-size: 120px; text-shadow: 0 0 50px red; margin:0;">SUPREME SMASH</h1>
+            <p id="txt-start" style="font-size: 35px; animation: blink 1s infinite; letter-spacing: 5px;">HAZ CLIC PARA PELEAR</p>
         </div>
-        <div class="side-bar">
-            <div class="side-icon" onclick="openSettings()">⚙️</div>
-            <div class="side-icon" onclick="openHelp()">❓</div>
-        </div>
-    </div>
 
-    <!-- 3. SUBMENÚ SMASH -->
-    <div id="smash-select-screen" class="screen">
-        <div class="smash-grid">
-            <div id="btn-normal-fight" class="smash-item" style="background:var(--red); border:8px solid var(--gold);" onclick="goToCharSelect()">
-                <div class="m-label" style="font-size: 2rem;">COMBATE NORMAL</div>
+        <div id="menu-screen" class="screen">
+            <div class="menu-grid">
+                <div class="m-item" style="background: linear-gradient(135deg, #f00, #800);" onclick="goToCharSelect()">
+                    <div class="m-label" id="lbl-smash">SMASH</div>
+                </div>
+                <div class="m-item" style="background: #27ae60;" onclick="showBuild()"><div class="m-label" id="lbl-spirits">SPIRITS</div></div>
+                <div class="m-item" style="background: #2e9eff;" onclick="showBuild()"><div class="m-label" id="lbl-games">GAMES</div></div>
+                <div class="m-item" style="background: #8e44ad;" onclick="showBuild()"><div class="m-label" id="lbl-vault">VAULT</div></div>
             </div>
-            <div class="smash-item" style="background:#500;" onclick="showBuild()"><div class="m-label" style="font-size:1.5rem;">TROPA SMASH</div></div>
-            <div class="smash-item" style="background:#300;" onclick="showBuild()"><div class="m-label" style="font-size:1.5rem;">TORNEO</div></div>
-            <div class="smash-item" style="background:#200;" onclick="showBuild()"><div class="m-label" style="font-size:1rem;">ESPECIAL</div></div>
-        </div>
-        <button class="btn-back" onclick="backToMenu()">VOLVER</button>
-    </div>
-
-    <!-- 4. SELECTOR PERSONAJES -->
-    <div id="char-select-screen" class="screen">
-        <h1 style="margin-top:20px; font-style:italic;">ELIJE TU LUCHADOR</h1>
-        <div class="grid-luchadores" id="grid-pjs"></div>
-        <div class="info-players">
-            <div id="p1-panel" class="p-panel">
-                <div class="m-label" id="p1-n" style="position:static; font-size:2.5rem;">PLAYER 1</div>
-                <p id="p1-h" style="font-family:sans-serif;">Selecciona un luchador...</p>
-                <div id="p1-f" style="color:gold">Fuerza: --</div>
-            </div>
-            <div id="p2-panel" class="p-panel">
-                <div class="m-label" id="p2-n" style="position:static; font-size:2.5rem;">CPU</div>
-                <p id="p2-h" style="font-family:sans-serif;">Esperando rival...</p>
-                <div id="p2-f" style="color:gold">Fuerza: --</div>
+            <div style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 40px;">
+                <div onclick="openSettings()" style="font-size: 60px; cursor: pointer; filter: drop-shadow(0 0 10px white);">⚙️</div>
+                <div onclick="openHelp()" style="font-size: 60px; cursor: pointer;">❓</div>
             </div>
         </div>
-        <div id="ready-banner" onclick="iniciarVersus()">
-            <div style="font-size:80px; color:black; font-weight:900;">READY TO FIGHT!</div>
+
+        <div id="char-select-screen" class="screen" style="background: #0a0a1a;">
+            <h2 id="txt-choose" style="font-size: 40px; font-style: italic;">ELIGE TU LUCHADOR</h2>
+            <div class="grid-pjs" id="grid"></div>
+            <div style="display:flex; width:100%; height:300px; margin-top:auto; border-top: 10px solid white;">
+                <div id="p1-panel" style="flex:1; padding:40px; background:linear-gradient(to right, #d32f2f, #600); border-right: 5px solid white;">
+                    <div id="p1-n" style="font-size:4rem">P1</div>
+                    <p id="p1-h" style="font-size: 1.2rem; font-family: 'Roboto';">Selecciona tu campeón...</p>
+                </div>
+                <div id="p2-panel" style="flex:1; padding:40px; background:linear-gradient(to right, #1976d2, #003); opacity:0.4;">
+                    <div id="p2-n" style="font-size:4rem">CPU</div>
+                    <p id="p2-h" style="font-size: 1.2rem; font-family: 'Roboto';">Esperando rival...</p>
+                </div>
+            </div>
+            <div id="ready-banner" onclick="empezarPartida()">READY TO FIGHT!</div>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div id="stage-main"></div>
+            <div id="player-1" class="fighter"></div>
+            <div id="player-ia" class="fighter"></div>
+            
+            <div id="timer" style="position:fixed; top:30px; font-size:70px; font-style:italic;">15:00</div>
+            
+            <div class="hud-container" style="left: 10%;">
+                <div class="hud-name" id="hud-n1">MARIO</div>
+                <div id="p1-p" class="perc-text">0%</div>
+            </div>
+            <div class="hud-container" style="right: 10%;">
+                <div class="hud-name" id="hud-n2">CPU</div>
+                <div id="p2-p" class="perc-text">0%</div>
+            </div>
+        </div>
+
+        <div id="results-screen" class="screen">
+            <div class="win-tag">GAME!</div>
+            <h1 id="winner-name" style="font-size: 80px; margin: 20px;">WINNER</h1>
+            <div id="winner-img" class="fighter" style="position:relative; width:400px; height:400px; transform:none;"></div>
+            <div onclick="location.reload()" style="margin-top:50px; font-size:40px; cursor:pointer; background:red; padding:20px 50px;">➡ VOLVER AL MENÚ</div>
         </div>
     </div>
 
-    <!-- 5. VERSUS -->
-    <div id="versus-screen" class="screen">
-        <div id="vs-p1" class="vs-side"></div>
-        <div style="font-size:150px; position:absolute; z-index:10; font-style:italic; font-weight:900;">VS</div>
-        <div id="vs-cpu" class="vs-side"></div>
-    </div>
-
-    <!-- 6. PELEA -->
-    <div id="game-screen" class="screen">
-        <div id="timer-display">15:00</div>
-        <div id="countdown">3</div>
-        <div id="stage-main"></div>
-        <div class="plat" style="top:400px; left:25%;"></div>
-        <div class="plat" style="top:400px; right:25%;"></div>
-        <div class="plat" style="top:250px; left:50%; transform:translateX(-50%);"></div>
-
-        <div id="player-1" class="fighter"></div>
-        <div id="player-ia" class="fighter"></div>
-
-        <div id="p1-hud" class="hud-card" style="left:10%;">
-            <div class="stocks" id="p1-stocks"></div>
-            <div class="perc-val"><span id="p1-p">0</span>%</div>
-            <div id="p1-name-tag" style="font-style:italic;">PLAYER 1</div>
-        </div>
-        <div id="p2-hud" class="hud-card" style="right:10%;">
-            <div class="stocks" id="p2-stocks"></div>
-            <div class="perc-val"><span id="p2-p">0</span>%</div>
-            <div id="p2-name-tag" style="font-style:italic;">CPU</div>
-        </div>
-    </div>
-
-    <!-- 7. RESULTADOS -->
-    <div id="finish-banner">FINISH!</div>
-    <div id="results-screen" class="screen">
-        <div id="res-winner-img" class="winner-img"></div>
-        <div class="loser-box"><div id="res-loser-img" style="width:100%; height:100%; background-size:cover; filter:grayscale(1);"></div></div>
-        <div style="position:absolute; left:100px; top:100px; font-size:80px; font-style:italic; color:gold;" id="res-name">WINNER</div>
-        <div class="back-arrow" onclick="location.reload()">➡</div>
-    </div>
-
-    <!-- MODALES -->
+    <!-- AJUSTES -->
     <div id="modal-settings" class="modal">
         <h1 id="t-sett">AJUSTES</h1>
-        <div class="opt-row"><span id="t-keys">TECLAS</span><span>FLECHAS / ESPACIO</span></div>
-        <div class="opt-row"><span id="t-lang">LENGUAJE</span>
-            <select onchange="changeLang(this.value)" style="font-size:20px;">
-                <option value="es">Español</option><option value="en">English</option><option value="fr">Français</option>
+        <div class="opt-row"><span id="t-lang">IDIOMA</span>
+            <select onchange="cambiarIdioma(this.value)" style="font-size:25px; background: #333; color: white;">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
             </select>
         </div>
-        <div class="opt-row"><span id="t-bri">BRILLO</span><input type="range" min="0" max="80" value="0" oninput="adjBri(this.value)"></div>
-        <button class="btn-back" onclick="closeModals()">VOLVER</button>
-    </div>
-
-    <div id="modal-help" class="modal">
-        <h1>REGLAS DE SUPREME EDITION</h1>
-        <div style="max-width:600px; text-align:left; font-family:sans-serif; line-height:1.5;">
-            <p>• El objetivo es lanzar al rival fuera de la pantalla.</p>
-            <p>• Cada golpe sube el %, y a más % más lejos vuelas.</p>
-            <p>• El combate termina al perder las 3 vidas o agotar el tiempo.</p>
-        </div>
-        <button class="btn-back" onclick="closeModals()">ENTENDIDO</button>
-    </div>
-
-    <div id="modal-build" class="modal">
-        <div style="font-size:100px;">🏗️</div>
-        <h2>ESTAMOS TRABAJANDO EN ELLO</h2>
-        <button class="btn-back" onclick="closeModals()">VOLVER</button>
+        <div class="opt-row"><span>BRILLO</span><input type="range" min="0" max="90" value="0" oninput="document.getElementById('brightness-overlay').style.opacity = this.value/100"></div>
+        <button onclick="closeModals()" style="padding:20px 60px; background:var(--gold); border:none; cursor:pointer; font-weight:900;">GUARDAR</button>
     </div>
 
     <script>
-        /* =========================================
-           DATA Y CONFIGURACIÓN
-           ========================================= */
         const spriteAssets = {
-            "MARIO": "data:image/jpeg;base64,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",
-            "LINK": "data:image/jpeg;base64,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",
-            "KIRBY": "data:image/jpeg;base64,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",
+            "MARIO": "https://smashbros.com",
+            "PACMAN": "https://smashbros.com",
             "PIKACHU": "https://smashbros.com",
             "DK": "https://smashbros.com",
             "STEVE": "https://smashbros.com",
             "SONIC": "https://smashbros.com",
+            "LINK": "https://smashbros.com",
             "BOWSER": "https://smashbros.com",
-            "ZELDA": "https://smashbros.com",
             "SAMUS": "https://smashbros.com",
-            "FOX": "https://smashbros.com",
-            "RYU": "https://smashbros.com",
-            "MEGAMAN": "https://smashbros.com",
-            "CLOUD": "https://smashbros.com",
-            "PACMAN": "https://smashbros.com"
+            "RYU": "https://smashbros.com"
         };
 
         const personajes = [
-            { id: "MARIO", h: "El héroe polifacético del Reino Champiñón.", f: "8/10" },
-            { id: "LINK", h: "El guerrero legendario de Hyrule.", f: "9/10" },
-            { id: "KIRBY", h: "La bola rosa capaz de absorberlo todo.", f: "7/10" },
-            { id: "PIKACHU", h: "El ratón eléctrico más famoso de Kanto.", f: "7.5/10" },
-            { id: "DK", h: "El rey de la jungla y la fuerza bruta.", f: "10/10" },
-            { id: "STEVE", h: "El maestro constructor de mundos cúbicos.", f: "8/10" },
-            { id: "SONIC", h: "La velocidad supersónica personificada.", f: "7/10" },
-            { id: "BOWSER", h: "El poderoso y temible rey de los Koopas.", f: "10/10" },
-            { id: "ZELDA", h: "La sabia princesa poseedora de la Trifuerza.", f: "8.5/10" },
-            { id: "SAMUS", h: "La cazarrecompensas con armadura de combate.", f: "9/10" },
-            { id: "FOX", h: "Líder del equipo estelar Star Fox.", f: "8/10" },
-            { id: "RYU", h: "Luchador incansable que busca el desafío perfecto.", f: "9/10" },
-            { id: "MEGAMAN", h: "El robot azul con cañón en el brazo.", f: "8/10" },
-            { id: "CLOUD", h: "Ex-soldado portador de la Espada Mortal.", f: "9.5/10" },
-            { id: "PACMAN", h: "Leyenda retro con un apetito infinito.", f: "6.5/10" }
+            { id: "MARIO", h: "El fontanero más fuerte.", f: "8/10" },
+            { id: "PACMAN", h: "Héroe retro insaciable.", f: "7/10" },
+            { id: "PIKACHU", h: "Ataque trueno veloz.", f: "7.5/10" },
+            { id: "DK", h: "Pura potencia simia.", f: "10/10" },
+            { id: "STEVE", h: "Constructor de diamantes.", f: "8/10" },
+            { id: "SONIC", h: "Velocidad del sonido.", f: "7/10" },
+            { id: "LINK", h: "Maestro de la Trifuerza.", f: "9/10" },
+            { id: "BOWSER", h: "Gigante lanzallamas.", f: "10/10" },
+            { id: "SAMUS", h: "Armadura láser letal.", f: "9/10" },
+            { id: "RYU", h: "Puño del dragón.", f: "9/10" }
         ];
 
-        let p1Sel = null, cpuSel = null, p1Conf = false, cpuConf = false, fase = "P1";
-        let gameActive = false, p1Stocks = 3, cpuStocks = 3, gameTime = 900;
-        const conf = { grav: 0.7, fric: 0.85, jump: -17, speed: 1.1 };
-        const p1 = { x: 0, y: 0, vx: 0, vy: 0, p: 0, jumping: false, inv: false };
-        const cpu = { x: 0, y: 0, vx: 0, vy: 0, p: 0, inv: false };
+        let p1Sel, cpuSel, fase = "P1", gameActive = false, time = 900;
+        const p1 = { x: 300, y: 0, vx: 0, vy: 0, p: 0, id: "p1", el: null };
+        const cpu = { x: 800, y: 0, vx: 0, vy: 0, p: 0, id: "p2", el: null };
         const keys = {};
 
-        /* =========================================
-           LÓGICA DE INTERFAZ
-           ========================================= */
-        const cursor = document.getElementById('custom-cursor');
-        window.onmousemove = e => { cursor.style.left = e.clientX-15+'px'; cursor.style.top = e.clientY-10+'px'; };
-        window.onmousedown = () => cursor.classList.add('clicking');
-        window.onmouseup = () => cursor.classList.remove('clicking');
+        window.onmousemove = e => { 
+            const c = document.getElementById('custom-cursor');
+            c.style.left = e.clientX-15+'px'; c.style.top = e.clientY-10+'px'; 
+        };
 
-        function iniciarTodo() {
-            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
-            const f = document.getElementById('flash-effect');
-            f.style.animation = 'flashBang 0.5s';
-            setTimeout(() => {
-                document.getElementById('intro-screen').classList.remove('active');
-                document.getElementById('menu-screen').classList.add('active');
-            }, 250);
-        }
-
-        function goToSmashSub() {
-            document.getElementById('menu-screen').classList.remove('active');
-            document.getElementById('smash-select-screen').classList.add('active');
-        }
-        function backToMenu() {
-            document.getElementById('smash-select-screen').classList.remove('active');
+        function iniciarMenu() {
+            document.getElementById('intro-screen').classList.remove('active');
             document.getElementById('menu-screen').classList.add('active');
         }
 
         function goToCharSelect() {
-            document.getElementById('smash-select-screen').classList.remove('active');
+            document.getElementById('menu-screen').classList.remove('active');
             document.getElementById('char-select-screen').classList.add('active');
-            const grid = document.getElementById('grid-pjs');
-            grid.innerHTML = "";
-            personajes.forEach(pj => {
-                const d = document.createElement('div');
-                d.className = 'ficha';
-                d.innerHTML = `<strong>${pj.id}</strong>`;
-                d.onclick = () => manejarSeleccion(pj, d);
-                grid.appendChild(d);
+            const g = document.getElementById('grid'); g.innerHTML = "";
+            personajes.forEach(p => {
+                const d = document.createElement('div'); d.className='ficha';
+                d.innerHTML=`<img src="${spriteAssets[p.id]}"><br><strong>${p.id}</strong>`;
+                d.onclick = () => {
+                    if(fase === "P1") { p1Sel = p; d.classList.add('confirmed-p1'); fase = "CPU"; document.getElementById('p2-panel').style.opacity="1"; }
+                    else { cpuSel = p; d.classList.add('confirmed-cpu'); document.getElementById('ready-banner').classList.add('show'); }
+                    document.getElementById(fase==='CPU'?'p1-n':'p2-n').innerText = p.id;
+                    document.getElementById(fase==='CPU'?'hud-n1':'hud-n2').innerText = p.id;
+                };
+                g.appendChild(d);
             });
         }
 
-        function manejarSeleccion(pj, el) {
-            if (fase === "P1") {
-                if (p1Sel === pj) { p1Conf = true; el.classList.add('confirmed-p1'); fase = "CPU"; document.getElementById('p2-panel').style.opacity = "1"; }
-                else { p1Sel = pj; document.getElementById('p1-n').innerText = pj.id; document.getElementById('p1-h').innerText = pj.h; document.getElementById('p1-f').innerText = "Fuerza: "+pj.f; }
-            } else if (fase === "CPU") {
-                if (cpuSel === pj) { cpuConf = true; el.classList.add('confirmed-cpu'); document.getElementById('ready-banner').classList.add('show'); }
-                else { cpuSel = pj; document.getElementById('p2-n').innerText = pj.id; document.getElementById('p2-h').innerText = pj.h; document.getElementById('p2-f').innerText = "Fuerza: "+pj.f; }
-            }
-        }
-
-        function iniciarVersus() {
-            document.getElementById('ready-banner').classList.remove('show');
-            document.getElementById('door-left').classList.add('door-closed');
-            document.getElementById('door-right').classList.add('door-closed');
-            
-            setTimeout(() => {
-                document.getElementById('char-select-screen').classList.remove('active');
-                document.getElementById('versus-screen').classList.add('active');
-                document.getElementById('vs-p1').style.backgroundImage = `url('${spriteAssets[p1Sel.id]}')`;
-                document.getElementById('vs-cpu').style.backgroundImage = `url('${spriteAssets[cpuSel.id]}')`;
-                
-                setTimeout(() => {
-                    document.getElementById('door-left').classList.remove('door-closed');
-                    document.getElementById('door-right').classList.remove('door-closed');
-                    prepararPelea();
-                }, 5000);
-            }, 800);
-        }
-
-        /* =========================================
-           MOTOR DE COMBATE
-           ========================================= */
-        function prepararPelea() {
-            document.getElementById('versus-screen').classList.remove('active');
+        function empezarPartida() {
+            document.getElementById('char-select-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
-            const p1E = document.getElementById('player-1'), cpuE = document.getElementById('player-ia');
-            p1E.style.backgroundImage = `url('${spriteAssets[p1Sel.id]}')`;
-            cpuE.style.backgroundImage = `url('${spriteAssets[cpuSel.id]}')`;
-            
-            p1.x = window.innerWidth/2 - 60; p1.y = 50;
-            cpu.x = window.innerWidth/2 - 60; cpu.y = 450;
-            
-            let count = 3;
-            const cEl = document.getElementById('countdown');
-            cEl.style.display = "block";
-            const it = setInterval(() => {
-                if(count > 0) cEl.innerText = count;
-                else if(count === 0) { cEl.innerText = "FIGHT!"; cEl.style.color="gold"; }
-                else { clearInterval(it); cEl.style.display="none"; gameActive=true; loop(); iniciarReloj(); }
-                count--;
-            }, 1000);
-            actualizarStocksUI();
+            p1.el = document.getElementById('player-1');
+            cpu.el = document.getElementById('player-ia');
+            p1.el.style.backgroundImage = `url('${spriteAssets[p1Sel.id]}')`;
+            cpu.el.style.backgroundImage = `url('${spriteAssets[cpuSel.id]}')`;
+            gameActive = true; loop(); startTimer();
         }
 
-        window.onkeydown = e => keys[e.code] = true;
-        window.onkeyup = e => keys[e.code] = false;
+        window.onkeydown = e => keys[e.code]=true; window.onkeyup = e => keys[e.code]=false;
 
         function loop() {
             if(!gameActive) return;
-            const p1E = document.getElementById('player-1'), cpuE = document.getElementById('player-ia');
-            
+
             // P1
-            if(keys['ArrowLeft']) p1.vx -= conf.speed;
-            if(keys['ArrowRight']) p1.vx += conf.speed;
-            if(keys['ArrowUp'] && !p1.jumping) { p1.vy = conf.jump; p1.jumping = true; }
-            if(keys['Space']) atacar(p1, cpu);
+            if(keys['KeyA']) { p1.vx -= 1.4; spawnDust(p1.x+80, p1.y+160); }
+            if(keys['KeyD']) { p1.vx += 1.4; spawnDust(p1.x+80, p1.y+160); }
+            if(keys['KeyW'] && p1.y > 450) p1.vy = -20;
+            if(keys['KeyK']) atacar(p1, cpu);
+
+            // IA PRO
+            if(p1.x > cpu.x) cpu.vx += 1.1; else cpu.vx -= 1.1;
+            if(Math.abs(p1.x - cpu.x) < 130 && Math.random() > 0.94) atacar(cpu, p1);
+
+            phys(p1); phys(cpu);
+
+            // CÁMARA DINÁMICA (Zoom suave)
+            const dist = Math.abs(p1.x - cpu.x);
+            const zoom = Math.max(0.7, 1.2 - (dist / 1500));
+            const centerX = (p1.x + cpu.x) / 2;
+            document.getElementById('viewport').style.transform = `scale(${zoom}) translateX(${(window.innerWidth/2 - centerX)*0.3}px)`;
+
+            p1.el.style.transform = `translate(${p1.x}px, ${p1.y}px)`;
+            cpu.el.style.transform = `translate(${cpu.x}px, ${cpu.y}px)`;
+
+            if(p1.y > 900 || p1.x < -300 || p1.x > window.innerWidth+300) morir(p1);
+            if(cpu.y > 900 || cpu.x < -300 || cpu.x > window.innerWidth+300) morir(cpu);
             
-            // IA
-            const d = p1.x - cpu.x;
-            if(Math.abs(d) > 60) cpu.vx += (d > 0 ? conf.speed : -conf.speed) * 0.75;
-            if(p1.y < cpu.y - 100 && Math.random() > 0.96) cpu.vy = conf.jump;
-            if(Math.abs(d) < 80 && Math.random() > 0.95) atacar(cpu, p1);
-
-            fisica(p1); fisica(cpu);
-            p1E.style.transform = `translate(${p1.x}px, ${p1.y}px)`;
-            cpuE.style.transform = `translate(${cpu.x}px, ${cpu.y}px)`;
-
-            if(p1.y > window.innerHeight || p1.x < 0 || p1.x > window.innerWidth) morir(p1);
-            if(cpu.y > window.innerHeight || cpu.x < 0 || cpu.x > window.innerWidth) morir(cpu);
-
             requestAnimationFrame(loop);
         }
 
-        function fisica(o) {
-            o.vy += conf.grav; o.x += o.vx; o.y += o.vy; o.vx *= conf.fric;
-            const stageY = window.innerHeight - 150;
-            const stageL = window.innerWidth/2 - 400, stageR = window.innerWidth/2 + 400;
-            if(o.y+130 > stageY && o.y < stageY && o.x+100 > stageL && o.x < stageR && o.vy > 0) {
-                o.y = stageY - 130; o.vy = 0; o.jumping = false;
-            }
+        function phys(o) {
+            o.vy += 0.8; o.x += o.vx; o.y += o.vy; o.vx *= 0.85;
+            if(o.y > 470 && o.x > window.innerWidth/2-500 && o.x < window.innerWidth/2+500) { o.y=470; o.vy=0; }
         }
 
         function atacar(a, v) {
-            if(v.inv) return;
-            if(Math.abs(a.x - v.x) < 90 && Math.abs(a.y - v.y) < 50) {
-                v.p += 7;
-                document.getElementById(v === p1 ? 'p1-p' : 'p2-p').innerText = v.p;
-                const f = (v.p / 5) + 12;
-                v.vx = (a.x < v.x ? 1 : -1) * f;
-                v.vy = -f/2;
+            if(Math.abs(a.x-v.x)<150 && Math.abs(a.y-v.y)<120) {
+                v.p += 8; document.getElementById(v.id === 'p1' ? 'p1-p' : 'p2-p').innerText = v.p + "%";
+                v.vx = (a.x < v.x ? 1 : -1) * (v.p/4 + 15); v.vy = -12;
+                
+                // EFECTO ANILLO
+                const r = document.createElement('div'); r.className='hit-ring'; r.style.left=v.x+'px'; r.style.top=v.y+'px';
+                document.getElementById('game-screen').appendChild(r); setTimeout(()=>r.remove(), 300);
             }
         }
 
+        function spawnDust(x, y) {
+            const d = document.createElement('div'); d.className='dust'; d.style.left=x+'px'; d.style.top=y+'px';
+            document.getElementById('game-screen').appendChild(d); setTimeout(()=>d.remove(), 500);
+        }
+
         function morir(o) {
-            if(o === p1) p1Stocks--; else cpuStocks--;
-            actualizarStocksUI();
-            if(p1Stocks <= 0 || cpuStocks <= 0) finalizar();
-            else respawn(o);
+            o.x=window.innerWidth/2; o.y=0; o.p=0; o.vx=0; o.vy=0;
+            document.getElementById(o.id+'-p').innerText = "0%";
+            if(o.id === 'p1') { gameActive=false; showVictory("CPU"); } else { gameActive=false; showVictory("PLAYER 1"); }
         }
 
-        function respawn(o) {
-            o.x = window.innerWidth/2; o.y = -100; o.vy = 2; o.p = 0; o.inv = true;
-            document.getElementById(o === p1 ? 'p1-p' : 'p2-p').innerText = "0";
-            const el = document.getElementById(o === p1 ? 'player-1' : 'player-ia');
-            el.classList.add('invincible');
-            setTimeout(() => { o.inv = false; el.classList.remove('invincible'); }, 5000);
+        function showVictory(winner) {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('results-screen').classList.add('active');
+            document.getElementById('winner-name').innerText = winner;
+            const winObj = winner === "CPU" ? cpuSel : p1Sel;
+            document.getElementById('winner-img').style.backgroundImage = `url('${spriteAssets[winObj.id]}')`;
         }
 
-        function iniciarReloj() {
-            const rt = setInterval(() => {
-                if(!gameActive) { clearInterval(rt); return; }
-                gameTime--;
-                let m = Math.floor(gameTime/60), s = gameTime%60;
-                document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                if(gameTime <= 0) finalizar();
-            }, 1000);
+        function startTimer() {
+            setInterval(() => { if(gameActive) { time--; let m=Math.floor(time/60), s=time%60; document.getElementById('timer').innerText=`${m}:${s<10?'0'+s:s}`; } }, 1000);
         }
-
-        function finalizar() {
-            gameActive = false;
-            const b = document.getElementById('finish-banner');
-            b.style.display = "block";
-            setTimeout(() => {
-                b.style.display = "none";
-                document.getElementById('game-screen').classList.remove('active');
-                document.getElementById('results-screen').classList.add('active');
-                const win = (p1Stocks > cpuStocks || (p1Stocks === cpuStocks && p1.p < cpu.p)) ? p1Sel : cpuSel;
-                const los = win === p1Sel ? cpuSel : p1Sel;
-                document.getElementById('res-name').innerText = win.id;
-                document.getElementById('res-winner-img').style.backgroundImage = `url('${spriteAssets[win.id]}')`;
-                document.getElementById('res-loser-img').style.backgroundImage = `url('${spriteAssets[los.id]}')`;
-            }, 4000);
-        }
-
-        /* =========================================
-           UTILIDADES
-           ========================================= */
         function openSettings() { document.getElementById('modal-settings').classList.add('active'); }
-        function openHelp() { document.getElementById('modal-help').classList.add('active'); }
-        function showBuild() { document.getElementById('modal-build').classList.add('active'); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function adjBri(v) { document.getElementById('brightness-overlay').style.opacity = v/100; }
-        function actualizarStocksUI() {
-            const h1 = document.getElementById('p1-stocks'), h2 = document.getElementById('p2-stocks');
-            h1.innerHTML = ""; h2.innerHTML = "";
-            for(let i=0; i<p1Stocks; i++) h1.innerHTML += '<div class="stock-dot" style="background:red"></div>';
-            for(let i=0; i<cpuStocks; i++) h2.innerHTML += '<div class="stock-dot" style="background:blue"></div>';
-        }
-        function changeLang(l) {
-            const t = { es: ["AJUSTES", "TECLAS", "IDIOMA", "BRILLO"], en: ["SETTINGS", "KEYS", "LANGUAGE", "BRIGHTNESS"], fr: ["RÉGLAGES", "TOUCHES", "LANGUE", "LUMINOSITÉ"] };
-            document.getElementById('t-sett').innerText = t[l][0];
-            document.getElementById('t-keys').innerText = t[l][1];
-            document.getElementById('t-lang').innerText = t[l][2];
-            document.getElementById('t-bri').innerText = t[l][3];
-        }
+        function showBuild() { alert("🏗️ PRÓXIMAMENTE..."); }
     </script>
 </body>
 </html>
