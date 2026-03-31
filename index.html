@@ -2,277 +2,201 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>ULTIMATE SMASH BROS 2.5D - EPIC EDITION</title>
+    <title>SMASH NINJA: BATTLEFIELD</title>
     <style>
         @import url('https://googleapis.com');
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Orbitron', sans-serif; color: white; user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Permanent Marker', cursive; color: white; user-select: none; }
         
-        /* CAPA DE UI PRINCIPAL */
-        #ui-system { position: absolute; inset: 0; z-index: 100; pointer-events: none; }
-        .pointer { pointer-events: auto; }
+        /* FONTO FANTÁSTICO ANIMADO */
+        #bg-fantastic { 
+            position: fixed; inset: 0; 
+            background: linear-gradient(to bottom, #1e3c72, #2a5298, #70e1ff);
+            z-index: -1;
+        }
+        .cloud { position: absolute; background: rgba(255,255,255,0.3); border-radius: 50%; filter: blur(20px); animation: moveCloud 30s linear infinite; }
+        .island { position: absolute; width: 200px; height: 100px; background: #444; border-radius: 50% / 20%; box-shadow: inset 0 -20px 0 #222; animation: floatIsland 5s ease-in-out infinite; }
 
-        /* MENÚ INICIAL ÉPICO */
-        #main-menu { 
-            position: absolute; inset: 0; background: radial-gradient(circle, #1a1a2e 0%, #000 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .title-anim { font-size: 80px; color: #00f2ff; text-shadow: 0 0 20px #00f2ff; animation: pulse 2s infinite; }
-        .menu-btn { 
-            width: 300px; padding: 20px; margin: 15px; background: rgba(255, 0, 85, 0.2); 
-            border: 2px solid #ff0055; color: white; font-size: 20px; cursor: pointer;
-            transition: all 0.3s; position: relative; overflow: hidden;
-        }
-        .menu-btn:hover { background: #ff0055; box-shadow: 0 0 30px #ff0055; transform: scale(1.1); }
+        /* INTRO Y MENÚS */
+        #intro-screen { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .fire-anim { font-size: 140px; animation: burn 0.2s infinite alternate; filter: drop-shadow(0 0 30px orange); }
+        .logo-smash { font-size: 110px; color: #ff2200; display: none; text-shadow: 0 0 50px red; text-align: center; }
+        .screen-crack { position: absolute; inset: 0; background: url('https://pngimg.com') center/cover; display: none; opacity: 0.8; pointer-events: none; }
 
-        /* SELECTOR DE PERSONAJES (PANTALLA AL LADO) */
-        #char-select { 
-            position: absolute; inset: 0; background: #0a0a0a; display: none; padding: 40px;
-            grid-template-columns: 1fr 1fr; gap: 40px;
-        }
-        .grid-chars { display: grid; grid-template-columns: repeat(3, 140px); gap: 20px; }
-        .char-card { 
-            height: 180px; border: 3px solid #444; position: relative; cursor: pointer;
-            transition: 0.3s; background-size: cover; filter: grayscale(1);
-        }
-        .char-card:hover { border-color: #00f2ff; filter: grayscale(0); transform: translateY(-5px); }
-        .preview-screen { 
-            border: 10px double gold; background: #000; height: 500px; position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .victory-dance { width: 100px; height: 160px; background: gold; animation: dance 0.5s infinite alternate; display: none; }
+        /* ESCENARIO BATTLEFIELD (Multiplataforma) */
+        #stage-container { display: none; position: absolute; inset: 0; }
+        #main-stage { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 800px; height: 40px; background: #5c3d2e; border-bottom: 10px solid #221100; border-radius: 10px; }
+        .plat { position: absolute; width: 180px; height: 15px; background: rgba(255,255,255,0.4); border-top: 5px solid gold; border-radius: 5px; box-shadow: 0 0 15px gold; }
 
-        /* HUD DE COMBATE */
-        #hud { 
-            position: absolute; bottom: 40px; width: 100%; display: none; 
-            justify-content: space-around; font-size: 50px; text-shadow: 4px 4px #000;
-        }
-        .dmg-perc { font-size: 80px; font-weight: 900; color: #ff0000; }
-        #timer { font-size: 40px; color: #fff; border: 3px solid #fff; padding: 10px 30px; border-radius: 50px; }
+        /* LUCHADORES (Basados en tu imagen) */
+        .fighter { position: absolute; width: 90px; height: 120px; background-size: contain; background-repeat: no-repeat; bottom: 220px; z-index: 10; transition: transform 0.05s; }
+        #ninja-p1 { background-image: url('https://ibb.co'); }
+        #rival-ia { background-image: url('https://ibb.co'); filter: hue-rotate(180deg) brightness(0.7); transform: scaleX(-1); }
 
-        /* ESCENARIO ANIMADO */
-        #game-world { position: absolute; inset: 0; display: none; perspective: 1000px; }
-        #stage { 
-            position: absolute; bottom: 200px; left: 50%; transform: translateX(-50%);
-            width: 800px; height: 40px; background: linear-gradient(90deg, #5c3d2e, #8b4513);
-            border: 5px solid #332211; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            animation: boatFloat 4s infinite ease-in-out;
-        }
-        
-        /* PERSONAJES */
-        .fighter { 
-            position: absolute; width: 60px; height: 100px; bottom: 45px; 
-            transition: transform 0.1s; transform-origin: bottom;
-        }
-        #p1 { background: #ff0055; box-shadow: 0 0 15px #ff0055; }
-        #p2 { background: #00f2ff; box-shadow: 0 0 15px #00f2ff; }
-
-        /* ESCENA FINAL */
-        #results { 
-            position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: none;
-            flex-direction: column; align-items: center; justify-content: center; z-index: 200;
-        }
-        .confetti { position: absolute; width: 10px; height: 10px; background: red; }
+        /* HUD */
+        #hud-smash { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-around; font-size: 45px; text-shadow: 3px 3px #000; }
+        .perc { font-size: 85px; color: #ff0000; font-weight: 900; }
 
         /* ANIMACIONES */
-        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; } }
-        @keyframes boatFloat { 0%, 100% { transform: translateX(-50%) rotate(2deg); } 50% { transform: translateX(-50%) rotate(-2deg); } }
-        @keyframes dance { from { transform: translateY(0) scaleX(1); } to { transform: translateY(-20px) scaleX(1.1); } }
-        @keyframes cry { 0% { transform: scaleY(1); } 100% { transform: scaleY(0.8); opacity: 0.5; } }
+        @keyframes moveCloud { from { left: -200px; } to { left: 100vw; } }
+        @keyframes floatIsland { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.15); } }
+        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(15px,-15px); } 75% { transform: translate(-15px,15px); } }
     </style>
 </head>
 <body>
 
-<div id="ui-system">
-    <!-- MENÚ PRINCIPAL -->
-    <div id="main-menu" class="pointer">
-        <h1 class="title-anim">ULTIMATE SMASH</h1>
-        <button class="menu-btn" onclick="alert('HISTORIA: EN PROGRESO...')">STORY MODE</button>
-        <button class="menu-btn" onclick="alert('ONLINE: EN PROGRESO...')">MULTIPLAYER</button>
-        <button class="menu-btn" onclick="openPartidas()">PARTIDAS</button>
-    </div>
-
-    <!-- SELECTOR DE PERSONAJES -->
-    <div id="char-select" class="pointer">
-        <div>
-            <h1>CHOOSE YOUR CHARACTER</h1>
-            <div class="grid-chars">
-                <div class="char-card" onclick="preview('NINJA', '#ff0055')" style="background: #300;">NINJA</div>
-                <div class="char-card" onclick="preview('ROBOT', '#00f2ff')" style="background: #033;">ROBOT</div>
-                <div class="char-card" onclick="preview('MAGO', '#a0f')" style="background: #203;">MAGO</div>
-                <div class="char-card" onclick="preview('BESTIA', '#0f0')" style="background: #020;">BESTIA</div>
-            </div>
-            <p style="margin-top:20px">PINCHA 1 VEZ: BAILE | 2 VECES: ELEGIR</p>
-        </div>
-        <div class="preview-screen">
-            <h2 id="pre-name">NAME</h2>
-            <div id="pre-visual" class="victory-dance"></div>
-            <h3 id="pre-msg" style="color: gold;"></h3>
-            <div id="portal-fx" style="width:10px; height:10px; background:cyan; border-radius:50%; display:none; box-shadow: 0 0 100px 50px cyan;"></div>
-        </div>
-    </div>
-
-    <!-- HUD -->
-    <div id="hud">
-        <div>P1: <span id="p1-perc" class="dmg-perc">0</span>%</div>
-        <div id="timer">20:00</div>
-        <div>P2: <span id="p2-perc" class="dmg-perc">0</span>%</div>
-    </div>
-
-    <!-- RESULTADOS -->
-    <div id="results" class="pointer">
-        <h1 id="res-banner" style="font-size: 120px;">YOU WIN!</h1>
-        <div style="display: flex; align-items: flex-end; gap: 50px; height: 300px;">
-            <div id="winner-act" style="width:80px; height:150px; animation: dance 0.4s infinite alternate;"></div>
-            <div id="loser-act" style="width:80px; height:150px; animation: cry 1s infinite alternate; opacity:0.6;"></div>
-        </div>
-        <button class="menu-btn" onclick="location.reload()">REPLAY</button>
-    </div>
+<div id="bg-fantastic">
+    <!-- Nubes e Islas de fondo -->
+    <div class="cloud" style="top:10%; width:300px; height:100px; animation-duration:40s"></div>
+    <div class="cloud" style="top:40%; width:200px; height:80px; animation-duration:25s; opacity:0.5"></div>
+    <div class="island" style="top:20%; left:15%"></div>
+    <div class="island" style="top:35%; right:20%; animation-delay:1s"></div>
 </div>
 
-<div id="game-world">
-    <div id="stage"></div>
-    <div id="p1" class="fighter"></div>
-    <div id="p2" class="fighter"></div>
-    <!-- Objetos que caen -->
-    <div id="item" style="position:absolute; width:30px; height:30px; background:gold; display:none; border-radius:50%;"></div>
+<div id="intro-screen">
+    <div class="fire-anim">🔥</div>
+    <div class="logo-smash" id="l-smash">SUPER NINJA<br><span style="font-size:150px">SMASH</span></div>
+    <div class="screen-crack" id="glass-fx"></div>
+    <p id="hint" style="font-size:30px; margin-top:50px">PULSA [ X ] PARA EL IMPACTO</p>
+</div>
+
+<div id="stage-container">
+    <!-- Campo de Batalla -->
+    <div id="main-stage"></div>
+    <div class="plat" id="p-top" style="bottom: 500px; left: 50%; transform: translateX(-50%);"></div>
+    <div class="plat" id="p-left" style="bottom: 350px; left: 35%;"></div>
+    <div class="plat" id="p-right" style="bottom: 350px; right: 35%;"></div>
+
+    <!-- Luchadores -->
+    <div id="ninja-p1" class="fighter"></div>
+    <div id="rival-ia" class="fighter"></div>
+
+    <!-- HUD -->
+    <div id="hud-smash">
+        <div style="text-align:center">P1: <span id="p1-p" class="perc">0</span>% <br> STOCKS: <span id="p1-s">●●●</span></div>
+        <div id="timer">20:00</div>
+        <div style="text-align:center">IA: <span id="p2-p" class="perc">0</span>% <br> STOCKS: <span id="p2-s">●●●</span></div>
+    </div>
 </div>
 
 <script>
-    /** LÓGICA DE MOTOR Y VARIABLES **/
-    let p1 = { x: 300, y: 0, vY: 0, dmg: 0, lives: 3, jumps: 0, color: '#ff0055' };
-    let p2 = { x: 500, y: 0, vY: 0, dmg: 0, lives: 3, color: '#00f2ff' };
-    let active = false;
-    let time = 1200;
-    const keys = {};
-
-    function openPartidas() {
-        document.getElementById('main-menu').style.display = 'none';
-        document.getElementById('char-select').style.display = 'grid';
-    }
-
-    let lastClick = 0;
-    function preview(name, col) {
-        let now = Date.now();
-        document.getElementById('pre-name').innerText = name;
-        const v = document.getElementById('pre-visual');
-        v.style.display = 'block';
-        v.style.background = col;
-        p1.color = col;
-
-        if(now - lastClick < 300) {
-            document.getElementById('pre-msg').innerText = "ELECCIÓN SABIA";
-            document.getElementById('portal-fx').style.display = 'block';
-            setTimeout(startMatch, 1200);
-        }
-        lastClick = now;
-    }
-
-    function startMatch() {
-        document.getElementById('char-select').style.display = 'none';
-        document.getElementById('game-world').style.display = 'block';
-        document.getElementById('hud').style.display = 'flex';
-        document.getElementById('p1').style.background = p1.color;
-        active = true;
-        countDown();
-        spawnItems();
-    }
+    /** MOTOR FÍSICO SMASH AVANZADO **/
+    let p1 = { x: 300, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0 };
+    let p2 = { x: 800, y: 0, vY: 0, vX: 0, dmg: 0, stocks: 3, jumps: 0 };
+    let state = "INTRO";
+    let timer = 1200;
+    const input = {};
 
     window.onkeydown = e => {
-        keys[e.code] = true;
-        if(e.code === 'KeyX' && active) console.log("PODER FINAL ACTIVADO!");
+        if(e.code === 'KeyX' && state === "INTRO") startIntro();
+        input[e.code] = true;
     };
-    window.onkeyup = e => keys[e.code] = false;
+    window.onkeyup = e => input[e.code] = false;
+
+    function startIntro() {
+        state = "ANIMATING";
+        document.querySelector('.fire-anim').style.display = 'none';
+        document.getElementById('hint').style.display = 'none';
+        document.getElementById('l-smash').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('glass-fx').style.display = 'block';
+            document.body.style.animation = "shake 0.4s 4";
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.display = 'none';
+                document.getElementById('stage-container').style.display = 'block';
+                state = "BATTLE";
+                setInterval(countDown, 1000);
+            }, 800);
+        }, 900);
+    }
 
     function loop() {
-        if(active) {
-            // Controles P1 (W A S D)
-            if(keys['KeyA']) p1.x -= 7;
-            if(keys['KeyD']) p1.x += 7;
-            if(keys['Space'] && p1.jumps < 2) { p1.vY = 18; p1.jumps++; keys['Space'] = false; }
+        if(state === "BATTLE") {
+            // JUGADOR 1 (W A S D + ESPACIO)
+            if(input['KeyA']) p1.vX = -10;
+            else if(input['KeyD']) p1.vX = 10;
+            else p1.vX *= 0.85;
 
-            // Física P1
-            p1.y += p1.vY;
-            if(p1.y > 0) p1.vY -= 0.9; else { p1.y = 0; p1.vY = 0; p1.jumps = 0; }
-
-            // IA P2 básica
-            if(p2.x < p1.x) p2.x += 3; else p2.x -= 3;
-
-            // Actualizar Visuales
-            updatePos('p1', p1);
-            updatePos('p2', p2);
-
-            // Ring Out (Explosión)
-            if(p1.x < 100 || p1.x > window.innerWidth-100 || p1.y < -100) {
-                p1.x = window.innerWidth/2; p1.y = 200; p1.dmg = 0;
-                document.getElementById('p1-perc').innerText = 0;
+            if(input['Space'] && p1.jumps < 2) { 
+                p1.vY = 22; p1.jumps++; input['Space'] = false; 
             }
+
+            // ATAQUE (K, M, E)
+            if(input['KeyK'] || input['KeyM'] || input['KeyE']) {
+                if(dist(p1, p2) < 120 && Math.abs(p1.y - p2.y) < 100) { hit(p1, p2); }
+            }
+
+            // IA INTELIGENTE (Battlefield Logic)
+            const gap = p1.x - p2.x;
+            const onStage = (p2.x > window.innerWidth/2 - 400 && p2.x < window.innerWidth/2 + 400);
+
+            if (!onStage && p2.y < 0) { // RECUPERACIÓN IA
+                p2.vX = (window.innerWidth/2 - p2.x) * 0.08;
+                if(p2.jumps < 2 && p2.vY < 0) { p2.vY = 22; p2.jumps++; }
+            } else { // PERSECUCIÓN
+                if(Math.abs(gap) > 80) p2.vX = gap > 0 ? 5 : -5;
+                else { p2.vX *= 0.8; if(Math.random() > 0.95) hit(p2, p1); }
+            }
+
+            physics(p1, 'ninja-p1');
+            physics(p2, 'rival-ia');
         }
         requestAnimationFrame(loop);
     }
 
-    function updatePos(id, data) {
-        const el = document.getElementById(id);
-        el.style.left = data.x + "px";
-        el.style.bottom = (245 + data.y) + "px";
+    function physics(obj, domId) {
+        obj.x += obj.vX;
+        obj.y += obj.vY;
+        obj.vY -= 1.1; // Gravedad
+
+        // Plataformas (Colisión)
+        checkCol(obj, window.innerWidth/2 - 400, window.innerWidth/2 + 400, 0); // Suelo
+        checkCol(obj, window.innerWidth/2 - 90, window.innerWidth/2 + 90, 320); // Top Plat
+        checkCol(obj, window.innerWidth/2 - 300, window.innerWidth/2 - 120, 170); // Left Plat
+        checkCol(obj, window.innerWidth/2 + 120, window.innerWidth/2 + 300, 170); // Right Plat
+
+        // Ring Out (Explosión)
+        if(obj.y < -500 || Math.abs(obj.x - window.innerWidth/2) > 900) {
+            obj.stocks--;
+            obj.dmg = 0;
+            obj.y = 800; obj.x = window.innerWidth/2; obj.vY = 0;
+            updateHUD();
+            if(obj.stocks <= 0) { alert("¡FIN DE LA PARTIDA!"); location.reload(); }
+        }
+
+        const el = document.getElementById(domId);
+        el.style.left = obj.x + "px";
+        el.style.bottom = (180 + obj.y + 40) + "px";
     }
 
-    function countDown() {
-        setInterval(() => {
-            if(!active) return;
-            time--;
-            let m = Math.floor(time/60), s = time % 60;
-            document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
-            if(time <= 0) finish();
-        }, 1000);
-    }
-
-    function spawnItems() {
-        const item = document.getElementById('item');
-        setInterval(() => {
-            if(!active) return;
-            item.style.display = 'block';
-            item.style.left = (Math.random()*600 + 200) + "px";
-            item.style.top = "0px";
-            // Caída de objeto
-            let itY = 0;
-            let fall = setInterval(() => {
-                itY += 5;
-                item.style.top = itY + "px";
-                if(itY > window.innerHeight - 250) clearInterval(fall);
-            }, 30);
-        }, 10000);
-    }
-
-    function finish() {
-        active = false;
-        document.getElementById('results').style.display = 'flex';
-        const win = p1.dmg <= p2.dmg; // Gana el de menos daño
-        document.getElementById('res-banner').innerText = win ? "YOU WIN!" : "YOU LOST";
-        document.getElementById('winner-act').style.background = win ? p1.color : p2.color;
-        document.getElementById('loser-act').style.background = win ? p2.color : p1.color;
-        if(win) createConfetti();
-    }
-
-    function createConfetti() {
-        for(let i=0; i<50; i++) {
-            let c = document.createElement('div');
-            c.className = 'confetti';
-            c.style.left = Math.random()*100 + "vw";
-            c.style.top = "-10px";
-            c.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
-            document.body.appendChild(c);
-            new TWEEN_simple(c);
+    function checkCol(obj, left, right, height) {
+        if(obj.vY <= 0 && obj.x > left && obj.x < right && obj.y <= height && obj.y > height - 30) {
+            obj.y = height; obj.vY = 0; obj.jumps = 0;
         }
     }
 
-    function TWEEN_simple(el) {
-        let top = 0;
-        setInterval(() => {
-            top += 5;
-            el.style.top = top + "px";
-            el.style.transform = `rotate(${top}deg)`;
-        }, 20);
+    function hit(atk, def) {
+        def.dmg += 8;
+        const dir = def.x > atk.x ? 1 : -1;
+        def.vX = dir * (def.dmg * 0.5);
+        def.vY = def.dmg * 0.2;
+        updateHUD();
     }
+
+    function updateHUD() {
+        document.getElementById('p1-p').innerText = p1.dmg;
+        document.getElementById('p2-p').innerText = p2.dmg;
+        document.getElementById('p1-s').innerText = "●".repeat(p1.stocks);
+        document.getElementById('p2-s').innerText = "●".repeat(p2.stocks);
+    }
+
+    function countDown() {
+        timer--;
+        let m = Math.floor(timer/60), s = timer % 60;
+        document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+    }
+
+    function dist(a, b) { return Math.abs(a.x - b.x); }
 
     loop();
 </script>
