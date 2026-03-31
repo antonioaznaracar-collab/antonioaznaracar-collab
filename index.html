@@ -2,139 +2,126 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NARCOS: Tiñi Games</title>
+    <title>NARCOS: DISPATCH | Tiñi Games Official</title>
     <style>
-        :root { --brightness: 100%; --accent: #39ff14; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; filter: brightness(var(--brightness)); overflow: hidden; }
+        :root { --accent: #39ff14; --purple: #8a2be2; --police-red: #ff0000; --police-blue: #0000ff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; }
 
-        /* --- EFECTO DISPATCH (SOMBRA Y LUZ) --- */
+        /* --- FONDO DINÁMICO --- */
+        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://redd.it') center/cover; z-index: 0; transition: transform 20s ease-out; }
         .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 200px rgba(0,0,0,0.9); z-index: 1; pointer-events: none; }
 
-        /* --- FONDOS DINÁMICOS POR CAPÍTULO --- */
-        #bg-container { position: fixed; width: 100%; height: 100%; background-size: cover; background-position: center; transition: 2s ease-in-out; z-index: 0; }
+        /* --- INTRO & HUMO --- */
+        #intro { position: fixed; width: 100%; height: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
+        .flash { position: absolute; width: 100%; height: 100%; animation: sirenas 0.1s infinite; opacity: 0; }
+        @keyframes sirenas { 0% { background: var(--police-red); opacity: 0.1; } 50% { background: var(--police-blue); opacity: 0.1; } }
         
-        /* --- INTRO TIÑI GAMES --- */
-        #intro { position: fixed; width: 100%; height: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; background: #000; }
-        .flash { position: absolute; width: 100%; height: 100%; opacity: 0; animation: sirenas 0.15s infinite; }
-        @keyframes sirenas { 0% { background: rgba(255,0,0,0.1); opacity:1; } 50% { background: rgba(0,0,255,0.1); opacity:1; } 100% { opacity:0; } }
-        #logo-tiñi { color: #fff; font-size: 3rem; letter-spacing: 10px; opacity: 0; transform: translateY(20px); transition: 2s; }
+        #humo-transicion { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle, var(--purple) 0%, transparent 80%); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 2s ease; filter: blur(60px); }
 
         /* --- MENÚ PRINCIPAL --- */
-        #menu { position: relative; z-index: 2; height: 100%; display: none; flex-direction: column; justify-content: flex-end; padding: 0 0 80px 80px; box-sizing: border-box; }
-        .logo-juego { font-size: 5rem; color: #fff; margin-bottom: 40px; text-transform: uppercase; font-weight: 900; letter-spacing: -2px; }
-        .btn-group { display: flex; flex-direction: column; gap: 15px; }
-        button { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 12px 40px; width: 300px; text-align: left; font-size: 1rem; cursor: pointer; backdrop-filter: blur(5px); transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; }
-        button:hover { background: rgba(255,255,255,0.2); color: #fff; border-color: #fff; padding-left: 55px; }
-        button:disabled { opacity: 0.3; cursor: not-allowed; }
+        #menu { position: relative; z-index: 10; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 100px; opacity: 0; transition: opacity 3s ease; }
+        
+        .logo-juego { font-size: 7rem; font-weight: 900; letter-spacing: -8px; margin-bottom: 5px; animation: glitch 5s infinite; position: relative; }
+        @keyframes glitch { 0% { text-shadow: 2px 2px var(--police-red); } 1% { transform: skew(2deg); } 2% { transform: skew(0deg); text-shadow: -2px -2px var(--police-blue); } 100% { text-shadow: 3px 3px rgba(0,0,0,0.5); } }
 
-        /* --- PANEL DE AJUSTES MEJORADO --- */
-        #settings-panel { display: none; position: fixed; top: 0; right: 0; width: 400px; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; padding: 60px 40px; box-sizing: border-box; border-left: 1px solid var(--accent); color: #fff; }
-        .setting-item { margin-bottom: 30px; }
-        label { display: block; margin-bottom: 10px; font-size: 0.8rem; color: var(--accent); letter-spacing: 2px; }
-        input[type="range"] { width: 100%; accent-color: var(--accent); }
-        select { width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #444; }
+        .capitulo-tag { color: var(--accent); letter-spacing: 5px; font-size: 0.8rem; margin-bottom: 50px; opacity: 0.8; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 20px; }
+        button { background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1); padding: 18px 40px; width: 320px; text-align: left; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(10px); letter-spacing: 3px; }
+        button:hover { color: #fff; border-color: var(--accent); box-shadow: 0 0 30px rgba(57, 255, 20, 0.3); padding-left: 60px; background: rgba(57, 255, 20, 0.05); }
+
+        /* --- INTERFAZ RADAR --- */
+        .radar { position: absolute; bottom: 40px; right: 40px; width: 80px; height: 80px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.3; }
+        .radar::after { content: ''; position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: spin 2s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .ui-top { position: absolute; top: 30px; right: 50px; text-align: right; color: var(--accent); font-size: 0.7rem; opacity: 0.5; line-height: 1.5; }
     </style>
 </head>
 <body>
 
+    <!-- Audio (Sirenas) -->
+    <audio id="sirena-audio" loop>
+        <source src="https://soundjay.com" type="audio/mpeg">
+    </audio>
+
+    <div id="humo-transicion"></div>
     <div class="vignette"></div>
     <div id="bg-container"></div>
 
-    <!-- Intro -->
-    <div id="intro">
-        <div class="flash"></div>
-        <h1 id="logo-tiñi">TIÑI GAMES</h1>
+    <!-- Pantalla de Inicio / Intro -->
+    <div id="intro" onclick="iniciarExperiencia()">
+        <div class="flash" id="flash-efecto"></div>
+        <h1 id="logo-tiñi" style="font-size: 3rem; letter-spacing: 20px; transition: 3s; opacity:0;">TIÑI GAMES</h1>
+        <p id="tap-msg" style="position:absolute; bottom:20%; font-size:0.8rem; color:#444;">[ HAZ CLIC PARA INICIAR SISTEMA ]</p>
     </div>
 
-    <!-- Menú -->
+    <!-- Decoración UI -->
+    <div class="ui-top">
+        FREQ: 460.125 MHz (DEA_BAND)<br>
+        ALBUQUERQUE SECTOR: 7-G<br>
+        <span id="reloj">00:00:00</span>
+    </div>
+    <div class="radar"></div>
+
+    <!-- Menú Principal -->
     <div id="menu">
-        <div class="logo-juego" id="txt-titulo">NARCOS</div>
+        <div class="capitulo-tag">CAPÍTULO 1 // DESIERTO DE CRISTAL</div>
+        <div class="logo-juego">NARCOS</div>
         <div class="btn-group">
-            <button onclick="nuevaPartida()" id="btn-nueva">Nueva Partida</button>
-            <button onclick="continuar()" id="btn-continuar" disabled>Continuar</button>
-            <button onclick="toggleSettings(true)" id="btn-ajustes">Ajustes</button>
+            <button onclick="alert('Iniciando Conexión con Jesse...')">NUEVA PARTIDA</button>
+            <button onclick="alert('No hay grabaciones previas.')">CONTINUAR</button>
+            <button onclick="alert('Ajustes no disponibles en v1.0')">CONFIGURACIÓN</button>
         </div>
-    </div>
-
-    <!-- Ajustes -->
-    <div id="settings-panel">
-        <h2 id="st-tit">AJUSTES</h2>
-        <div class="setting-item">
-            <label id="st-bri">BRILLO</label>
-            <input type="range" min="40" max="130" value="100" oninput="cambiarBrillo(this.value)">
-        </div>
-        <div class="setting-item">
-            <label id="st-idi">IDIOMA</label>
-            <select onchange="cambiarIdioma(this.value)">
-                <option value="es">Español</option>
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-                <option value="de">Deutsch</option>
-            </select>
-        </div>
-        <button onclick="toggleSettings(false)" style="width: 100%; text-align: center;">VOLVER</button>
     </div>
 
     <script>
-        const langData = {
-            es: { titulo: "NARCOS", nueva: "Nueva Partida", continuar: "Continuar", ajustes: "Ajustes", st_tit: "CONFIGURACIÓN", st_bri: "BRILLO", st_idi: "IDIOMA" },
-            en: { titulo: "NARCOS", nueva: "New Game", continuar: "Continue", ajustes: "Settings", st_tit: "SETTINGS", st_bri: "BRIGHTNESS", st_idi: "LANGUAGE" },
-            fr: { titulo: "NARCOS", nueva: "Nouvelle Partie", continuar: "Continuer", ajustes: "Paramètres", st_tit: "PARAMÈTRES", st_bri: "LUMINOSITÉ", st_idi: "LANGUE" },
-            de: { titulo: "NARCOS", nueva: "Neues Spiel", continuar: "Weiter", ajustes: "Einstellungen", st_tit: "EINSTELLUNGEN", st_bri: "HELLIGKEIT", st_idi: "SPRACHE" }
-        };
+        function iniciarExperiencia() {
+            const audio = document.getElementById('sirena-audio');
+            const flash = document.getElementById('flash-efecto');
+            const logo = document.getElementById('logo-tiñi');
+            const intro = document.getElementById('intro');
+            const humo = document.getElementById('humo-transicion');
+            const menu = document.getElementById('menu');
 
-        // Imágenes para los capítulos (puedes cambiarlas por otras URLs)
-        const fondosCapitulos = {
-            0: "https://external-preview.redd.it/my-favorite-breaking-bad-wallpaper-v0-ZNA0MGcAqL7rcilANwXWnO7g7G2EAI5t2nbV-XuoB7c.jpg?width=1080&crop=smart&auto=webp&s=caaacc0a76a9ed8c32cc3c53f54e339c032d22ea", // Capítulo 1: Caravana
-            1: "https://wallpaperaccess.com", // Capítulo 2: Laboratorio
-            2: "https://wallpapercave.com"  // Ejemplo Capítulo 3
-        };
+            // Quitar mensaje de clic
+            document.getElementById('tap-msg').style.opacity = '0';
 
-        window.onload = () => {
-            // Animación Intro
-            setTimeout(() => { document.getElementById('logo-tiñi').style.opacity = '1'; }, 500);
-            setTimeout(() => { 
-                document.getElementById('intro').style.display = 'none';
-                document.getElementById('menu').style.display = 'flex';
-                actualizarFondo();
-                comprobarPartida();
-            }, 4000);
-        };
+            // Iniciar Audio y Luces
+            audio.play();
+            flash.style.opacity = '1';
+            logo.style.opacity = '1';
 
-        function actualizarFondo() {
-            let cap = localStorage.getItem('narcos_capitulo') || 0;
-            document.getElementById('bg-container').style.backgroundImage = `url('${fondosCapitulos[cap]}')`;
+            // 3 segundos después: Humo Púrpura y transición
+            setTimeout(() => {
+                humo.style.opacity = '1';
+                logo.style.transform = 'scale(1.3)';
+                logo.style.filter = 'blur(10px)';
+                logo.style.opacity = '0';
+            }, 3000);
+
+            // 5 segundos después: Aparece Menú y baja volumen
+            setTimeout(() => {
+                intro.style.display = 'none';
+                humo.style.opacity = '0';
+                menu.style.display = 'flex';
+                setTimeout(() => { menu.style.opacity = '1'; }, 100);
+                
+                // Efecto zoom suave en el fondo
+                document.getElementById('bg-container').style.transform = 'scale(1.15)';
+                
+                // Bajar volumen poco a poco
+                let fadeAudio = setInterval(() => {
+                    if (audio.volume > 0.1) { audio.volume -= 0.1; } 
+                    else { clearInterval(fadeAudio); }
+                }, 200);
+            }, 5000);
         }
 
-        function nuevaPartida() {
-            localStorage.setItem('narcos_capitulo', 0);
-            alert("Capítulo 1: La Caravana - Iniciado");
-            comprobarPartida();
-            actualizarFondo();
-        }
-
-        function comprobarPartida() {
-            if(localStorage.getItem('narcos_capitulo')) {
-                document.getElementById('btn-continuar').disabled = false;
-            }
-        }
-
-        function toggleSettings(show) {
-            document.getElementById('settings-panel').style.display = show ? 'block' : 'none';
-        }
-
-        function cambiarBrillo(v) { document.documentElement.style.setProperty('--brightness', v + '%'); }
-
-        function cambiarIdioma(l) {
-            let d = langData[l];
-            document.getElementById('txt-titulo').innerText = d.titulo;
-            document.getElementById('btn-nueva').innerText = d.nueva;
-            document.getElementById('btn-continuar').innerText = d.continuar;
-            document.getElementById('btn-ajustes').innerText = d.ajustes;
-            document.getElementById('st-tit').innerText = d.st_tit;
-            document.getElementById('st-bri').innerText = d.st_bri;
-            document.getElementById('st-idi').innerText = d.st_idi;
-        }
+        // Reloj UI
+        setInterval(() => {
+            document.getElementById('reloj').innerText = new Date().toLocaleTimeString();
+        }, 1000);
     </script>
 </body>
 </html>
