@@ -2,44 +2,133 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NARCO DISPATCH - SMASH BROS STYLE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NARCOS: Tiñi Games</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; }
-        #game-box { border: 5px solid #0f0; margin: 50px auto; width: 80%; padding: 20px; background: #111; }
-        button { background: #0f0; color: #000; font-weight: bold; padding: 15px 30px; cursor: pointer; border: none; margin: 10px; }
-        button:hover { background: #fff; }
-        #log { margin-top: 20px; color: #ff0; font-size: 1.2em; }
+        :root { --brightness: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Courier New', Courier, monospace; filter: brightness(var(--brightness)); }
+
+        /* --- ANIMACIÓN INTRO --- */
+        #intro { position: fixed; width: 100%; height: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; background: #000; }
+        .policia-flash { position: absolute; width: 100%; height: 100%; opacity: 0; animation: luces 0.2s infinite; pointer-events: none; }
+        @keyframes luces { 
+            0% { background: rgba(255, 0, 0, 0.2); opacity: 1; }
+            50% { background: rgba(0, 0, 255, 0.2); opacity: 1; }
+            100% { background: transparent; }
+        }
+        .humo { position: absolute; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: humoMove 10s infinite; filter: blur(30px); }
+        @keyframes humoMove { from { transform: translate(-20%, -20%); } to { transform: translate(10%, 10%); } }
+        
+        #logo-tiñi { font-size: 4rem; color: #fff; text-shadow: 0 0 20px #fff; opacity: 0; transform: scale(0.5); }
+        .show-logo { animation: logoAnim 3s forwards; }
+        @keyframes logoAnim { 20% { opacity: 1; transform: scale(1.1); } 80% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+
+        /* --- MENÚ PRINCIPAL --- */
+        #menu { display: none; width: 100%; height: 100%; background: url('https://alphacoders.com') center/cover; /* Interior furgo BB */
+                 flex-direction: column; align-items: center; justify-content: center; }
+        .overlay { position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+        .content { position: relative; z-index: 2; text-align: center; }
+        h1 { font-size: 5rem; color: #39ff14; text-shadow: 3px 3px #000; margin-bottom: 50px; }
+        button { background: rgba(0,0,0,0.8); color: #fff; border: 2px solid #39ff14; padding: 15px 40px; margin: 10px; font-size: 1.2rem; cursor: pointer; transition: 0.3s; width: 300px; }
+        button:hover { background: #39ff14; color: #000; box-shadow: 0 0 20px #39ff14; }
+        button:disabled { border-color: #444; color: #444; cursor: not-allowed; }
+
+        /* --- AJUSTES --- */
+        #settings { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                    background: #111; padding: 40px; border: 2px solid #39ff14; z-index: 100; text-align: left; }
     </style>
 </head>
 <body>
-    <div id="game-box">
-        <h1>NARCO DISPATCH: REPARTO CRÍTICO</h1>
-        <p>Robert (Jesse): "¡Heisenberg, la poli está cerca! ¿Qué hacemos?"</p>
-        <div id="stats">DINERO: $500 | SOSPECHA: 10%</div>
-        <br>
-        <button onclick="jugar('moto')">ENVIAR MOTO (ESTILO SMASH - RÁPIDO)</button>
-        <button onclick="jugar('camion')">ENVIAR CAMIÓN DE POLLOS (SEGURO)</button>
-        <div id="log"></div>
+
+    <!-- Intro de Tiñi Games -->
+    <div id="intro">
+        <div class="policia-flash" id="luces"></div>
+        <div class="humo"></div>
+        <h1 id="logo-tiñi">TIÑI GAMES</h1>
+    </div>
+
+    <!-- Menú Principal -->
+    <div id="menu">
+        <div class="overlay"></div>
+        <div class="content">
+            <h1 id="txt-titulo">NARCOS: DISPATCH</h1>
+            <button onclick="nuevaPartida()" id="btn-nueva">NUEVA PARTIDA</button><br>
+            <button onclick="continuar()" id="btn-continuar" disabled>CONTINUAR</button><br>
+            <button onclick="abrirAjustes()" id="btn-ajustes">AJUSTES</button>
+        </div>
+    </div>
+
+    <!-- Modal Ajustes -->
+    <div id="settings">
+        <h2 id="st-titulo">AJUSTES</h2>
+        <label id="st-brillo">BRILLO:</label>
+        <input type="range" min="30" max="150" value="100" oninput="cambiarBrillo(this.value)"><br><br>
+        <label id="st-idioma">IDIOMA:</label>
+        <select onchange="cambiarIdioma(this.value)" id="lang-select">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+        </select><br><br>
+        <button onclick="cerrarAjustes()">CERRAR</button>
     </div>
 
     <script>
-        let dinero = 500;
-        let sospecha = 10;
-        function jugar(tipo) {
-            let res = document.getElementById('log');
-            if(tipo === 'moto') {
-                if(Math.random() > 0.4) {
-                    dinero += 1000; sospecha += 20;
-                    res.innerHTML = "¡Bitch! El reparto llegó volando. +$1000";
-                } else {
-                    sospecha += 40;
-                    res.innerHTML = "¡LA PASMA! Tuviste que huir a lo loco. Sospecha sube.";
-                }
-            } else {
-                dinero += 300; sospecha += 2;
-                res.innerHTML = "Lento pero seguro. Los Pollos Hermanos no fallan.";
+        const langData = {
+            es: { titulo: "NARCOS: DISPATCH", nueva: "NUEVA PARTIDA", continuar: "CONTINUAR", ajustes: "AJUSTES", st_tit: "CONFIGURACIÓN", st_bri: "BRILLO", st_idi: "IDIOMA" },
+            en: { titulo: "NARCOS: DISPATCH", nueva: "NEW GAME", continuar: "CONTINUE", ajustes: "SETTINGS", st_tit: "SETTINGS", st_bri: "BRIGHTNESS", st_idi: "LANGUAGE" },
+            fr: { titulo: "NARCOS: DISPATCH", nueva: "NOUVELLE PARTIE", continuar: "CONTINUER", ajustes: "PARAMÈTRES", st_tit: "PARAMÈTRES", st_bri: "LUMINOSITÉ", st_idi: "LANGUE" },
+            de: { titulo: "NARCOS: DISPATCH", nueva: "NEUES SPIEL", continuar: "WEITER", ajustes: "EINSTELLUNGEN", st_tit: "EINSTELLUNGEN", st_bri: "HELLIGKEIT", st_idi: "SPRACHE" }
+        };
+
+        // 1. LÓGICA DE INTRO
+        window.onload = () => {
+            const logo = document.getElementById('logo-tiñi');
+            logo.classList.add('show-logo');
+            
+            // Sonido de sirena (ficticio, el navegador bloquea audio auto, pero lo preparamos)
+            console.log("POLICE SIRENS SOUNDING...");
+
+            setTimeout(() => {
+                document.getElementById('intro').style.display = 'none';
+                document.getElementById('menu').style.display = 'flex';
+                comprobarPartida();
+            }, 4000); // 4 segundos de intro
+        };
+
+        // 2. SISTEMA DE GUARDADO
+        function nuevaPartida() {
+            localStorage.setItem('narcos_progreso', 'nivel_1');
+            alert("Nueva partida creada. Guardando en memoria...");
+            comprobarPartida();
+        }
+
+        function comprobarPartida() {
+            if(localStorage.getItem('narcos_progreso')) {
+                document.getElementById('btn-continuar').disabled = false;
             }
-            document.getElementById('stats').innerHTML = "DINERO: $" + dinero + " | SOSPECHA: " + sospecha + "%";
+        }
+
+        function continuar() {
+            alert("Cargando progreso: " + localStorage.getItem('narcos_progreso'));
+        }
+
+        // 3. AJUSTES (BRILLO E IDIOMA)
+        function abrirAjustes() { document.getElementById('settings').style.display = 'block'; }
+        function cerrarAjustes() { document.getElementById('settings').style.display = 'none'; }
+
+        function cambiarBrillo(val) {
+            document.documentElement.style.setProperty('--brightness', val + '%');
+        }
+
+        function cambiarIdioma(lang) {
+            document.getElementById('txt-titulo').innerText = langData[lang].titulo;
+            document.getElementById('btn-nueva').innerText = langData[lang].nueva;
+            document.getElementById('btn-continuar').innerText = langData[lang].continuar;
+            document.getElementById('btn-ajustes').innerText = langData[lang].ajustes;
+            document.getElementById('st-titulo').innerText = langData[lang].st_tit;
+            document.getElementById('st-brillo').innerText = langData[lang].st_bri;
+            document.getElementById('st-idioma').innerText = langData[lang].st_idi;
         }
     </script>
 </body>
