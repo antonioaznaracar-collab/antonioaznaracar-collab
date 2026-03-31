@@ -2,244 +2,279 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Ultimate Smash 2.5D - GitHub Edition</title>
+    <title>ULTIMATE SMASH BROS 2.5D - EPIC EDITION</title>
     <style>
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000; color: white; }
-        canvas { display: block; }
+        @import url('https://googleapis.com');
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Orbitron', sans-serif; color: white; user-select: none; }
         
-        /* UI CAPA SUPERIOR */
-        #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        
-        /* MENÚ X */
-        #menu-x { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9); padding: 30px; border: 4px solid #00f2ff;
-            display: none; pointer-events: auto; text-align: center; border-radius: 15px;
-            box-shadow: 0 0 20px #00f2ff;
-        }
+        /* CAPA DE UI PRINCIPAL */
+        #ui-system { position: absolute; inset: 0; z-index: 100; pointer-events: none; }
+        .pointer { pointer-events: auto; }
 
-        /* SELECCIÓN DE PERSONAJES */
+        /* MENÚ INICIAL ÉPICO */
+        #main-menu { 
+            position: absolute; inset: 0; background: radial-gradient(circle, #1a1a2e 0%, #000 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .title-anim { font-size: 80px; color: #00f2ff; text-shadow: 0 0 20px #00f2ff; animation: pulse 2s infinite; }
+        .menu-btn { 
+            width: 300px; padding: 20px; margin: 15px; background: rgba(255, 0, 85, 0.2); 
+            border: 2px solid #ff0055; color: white; font-size: 20px; cursor: pointer;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .menu-btn:hover { background: #ff0055; box-shadow: 0 0 30px #ff0055; transform: scale(1.1); }
+
+        /* SELECTOR DE PERSONAJES (PANTALLA AL LADO) */
         #char-select { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: linear-gradient(45deg, #1a1a1a, #4b0082); display: none; pointer-events: auto; 
+            position: absolute; inset: 0; background: #0a0a0a; display: none; padding: 40px;
+            grid-template-columns: 1fr 1fr; gap: 40px;
         }
-        .grid { display: grid; grid-template-columns: repeat(3, 120px); gap: 20px; padding: 60px; }
+        .grid-chars { display: grid; grid-template-columns: repeat(3, 140px); gap: 20px; }
         .char-card { 
-            width: 120px; height: 150px; background: #333; border: 3px solid #fff; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;
+            height: 180px; border: 3px solid #444; position: relative; cursor: pointer;
+            transition: 0.3s; background-size: cover; filter: grayscale(1);
         }
-        #preview-box { 
-            position: absolute; right: 10%; top: 20%; width: 400px; height: 400px; 
-            border: 5px solid gold; background: rgba(0,0,0,0.5); text-align: center; 
+        .char-card:hover { border-color: #00f2ff; filter: grayscale(0); transform: translateY(-5px); }
+        .preview-screen { 
+            border: 10px double gold; background: #000; height: 500px; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
+        .victory-dance { width: 100px; height: 160px; background: gold; animation: dance 0.5s infinite alternate; display: none; }
 
-        /* HUD COMBATE */
+        /* HUD DE COMBATE */
         #hud { 
-            position: absolute; bottom: 30px; width: 100%; display: flex; 
-            justify-content: space-around; font-size: 45px; font-weight: 900;
-            text-shadow: 3px 3px 5px #000;
+            position: absolute; bottom: 40px; width: 100%; display: none; 
+            justify-content: space-around; font-size: 50px; text-shadow: 4px 4px #000;
         }
-        .percent { color: #ff0000; font-size: 60px; }
+        .dmg-perc { font-size: 80px; font-weight: 900; color: #ff0000; }
+        #timer { font-size: 40px; color: #fff; border: 3px solid #fff; padding: 10px 30px; border-radius: 50px; }
 
-        /* PANTALLA FINAL */
-        #end-screen { 
-            position: absolute; top: 0; width: 100%; height: 100%; 
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.9); z-index: 100;
+        /* ESCENARIO ANIMADO */
+        #game-world { position: absolute; inset: 0; display: none; perspective: 1000px; }
+        #stage { 
+            position: absolute; bottom: 200px; left: 50%; transform: translateX(-50%);
+            width: 800px; height: 40px; background: linear-gradient(90deg, #5c3d2e, #8b4513);
+            border: 5px solid #332211; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            animation: boatFloat 4s infinite ease-in-out;
         }
-        .win-banner { font-size: 100px; color: gold; text-transform: uppercase; }
         
-        button { padding: 15px 30px; font-size: 20px; cursor: pointer; margin: 10px; background: #00f2ff; border: none; }
+        /* PERSONAJES */
+        .fighter { 
+            position: absolute; width: 60px; height: 100px; bottom: 45px; 
+            transition: transform 0.1s; transform-origin: bottom;
+        }
+        #p1 { background: #ff0055; box-shadow: 0 0 15px #ff0055; }
+        #p2 { background: #00f2ff; box-shadow: 0 0 15px #00f2ff; }
+
+        /* ESCENA FINAL */
+        #results { 
+            position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: none;
+            flex-direction: column; align-items: center; justify-content: center; z-index: 200;
+        }
+        .confetti { position: absolute; width: 10px; height: 10px; background: red; }
+
+        /* ANIMACIONES */
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; } }
+        @keyframes boatFloat { 0%, 100% { transform: translateX(-50%) rotate(2deg); } 50% { transform: translateX(-50%) rotate(-2deg); } }
+        @keyframes dance { from { transform: translateY(0) scaleX(1); } to { transform: translateY(-20px) scaleX(1.1); } }
+        @keyframes cry { 0% { transform: scaleY(1); } 100% { transform: scaleY(0.8); opacity: 0.5; } }
     </style>
 </head>
 <body>
 
-<div id="ui">
-    <!-- MENÚ AL PULSAR X -->
-    <div id="menu-x">
-        <h1>PAUSA - MENU</h1>
-        <button onclick="alert('Modo Historia: En Progreso...')">MODO HISTORIA</button>
-        <button onclick="alert('Multijugador: En Progreso...')">MULTIJUGADOR</button>
-        <button onclick="showSelect()">PARTIDAS</button>
-        <p>Pulsa X para volver</p>
+<div id="ui-system">
+    <!-- MENÚ PRINCIPAL -->
+    <div id="main-menu" class="pointer">
+        <h1 class="title-anim">ULTIMATE SMASH</h1>
+        <button class="menu-btn" onclick="alert('HISTORIA: EN PROGRESO...')">STORY MODE</button>
+        <button class="menu-btn" onclick="alert('ONLINE: EN PROGRESO...')">MULTIPLAYER</button>
+        <button class="menu-btn" onclick="openPartidas()">PARTIDAS</button>
     </div>
 
-    <!-- SELECCIÓN -->
-    <div id="char-select">
-        <h1 style="text-align:center">CHOOSE YOUR CHARACTER</h1>
-        <div class="grid">
-            <div class="char-card" onclick="previewChar('NINJA')">NINJA</div>
-            <div class="char-card" onclick="previewChar('ROBOT')">ROBOT</div>
-            <div class="char-card" onclick="previewChar('MAGO')">MAGO</div>
+    <!-- SELECTOR DE PERSONAJES -->
+    <div id="char-select" class="pointer">
+        <div>
+            <h1>CHOOSE YOUR CHARACTER</h1>
+            <div class="grid-chars">
+                <div class="char-card" onclick="preview('NINJA', '#ff0055')" style="background: #300;">NINJA</div>
+                <div class="char-card" onclick="preview('ROBOT', '#00f2ff')" style="background: #033;">ROBOT</div>
+                <div class="char-card" onclick="preview('MAGO', '#a0f')" style="background: #203;">MAGO</div>
+                <div class="char-card" onclick="preview('BESTIA', '#0f0')" style="background: #020;">BESTIA</div>
+            </div>
+            <p style="margin-top:20px">PINCHA 1 VEZ: BAILE | 2 VECES: ELEGIR</p>
         </div>
-        <div id="preview-box">
-            <h2 id="preview-name">NAME</h2>
-            <div id="status-msg">...</div>
-            <button onclick="selectFinal()" style="margin-top:250px">ELEGIR</button>
+        <div class="preview-screen">
+            <h2 id="pre-name">NAME</h2>
+            <div id="pre-visual" class="victory-dance"></div>
+            <h3 id="pre-msg" style="color: gold;"></h3>
+            <div id="portal-fx" style="width:10px; height:10px; background:cyan; border-radius:50%; display:none; box-shadow: 0 0 100px 50px cyan;"></div>
         </div>
     </div>
 
     <!-- HUD -->
     <div id="hud">
-        <div>P1: <span id="p1-perc" class="percent">0</span>%</div>
+        <div>P1: <span id="p1-perc" class="dmg-perc">0</span>%</div>
         <div id="timer">20:00</div>
-        <div>P2: <span id="p2-perc" class="percent">0</span>%</div>
+        <div>P2: <span id="p2-perc" class="dmg-perc">0</span>%</div>
     </div>
 
-    <!-- FINAL -->
-    <div id="end-screen">
-        <div id="banner" class="win-banner">YOU WIN!</div>
-        <div id="dance-scene" style="font-size:30px">🕺 <span style="font-size:20px">😭</span></div>
-        <button onclick="location.reload()">REPLAY</button>
+    <!-- RESULTADOS -->
+    <div id="results" class="pointer">
+        <h1 id="res-banner" style="font-size: 120px;">YOU WIN!</h1>
+        <div style="display: flex; align-items: flex-end; gap: 50px; height: 300px;">
+            <div id="winner-act" style="width:80px; height:150px; animation: dance 0.4s infinite alternate;"></div>
+            <div id="loser-act" style="width:80px; height:150px; animation: cry 1s infinite alternate; opacity:0.6;"></div>
+        </div>
+        <button class="menu-btn" onclick="location.reload()">REPLAY</button>
     </div>
 </div>
 
-<script src="https://cloudflare.com"></script>
-<script src="https://cloudflare.com"></script>
+<div id="game-world">
+    <div id="stage"></div>
+    <div id="p1" class="fighter"></div>
+    <div id="p2" class="fighter"></div>
+    <!-- Objetos que caen -->
+    <div id="item" style="position:absolute; width:30px; height:30px; background:gold; display:none; border-radius:50%;"></div>
+</div>
 
 <script>
-// --- MOTOR 3D ---
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+    /** LÓGICA DE MOTOR Y VARIABLES **/
+    let p1 = { x: 300, y: 0, vY: 0, dmg: 0, lives: 3, jumps: 0, color: '#ff0055' };
+    let p2 = { x: 500, y: 0, vY: 0, dmg: 0, lives: 3, color: '#00f2ff' };
+    let active = false;
+    let time = 1200;
+    const keys = {};
 
-// ILUMINACIÓN
-const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-sun.position.set(5, 15, 10);
-scene.add(sun, new THREE.AmbientLight(0x404040, 1.5));
+    function openPartidas() {
+        document.getElementById('main-menu').style.display = 'none';
+        document.getElementById('char-select').style.display = 'grid';
+    }
 
-// ESCENARIO ANIMADO (Barco Pirata)
-const ship = new THREE.Group();
-const deck = new THREE.Mesh(new THREE.BoxGeometry(14, 1, 5), new THREE.MeshPhongMaterial({color: 0x5c3d2e}));
-ship.add(deck);
-scene.add(ship);
+    let lastClick = 0;
+    function preview(name, col) {
+        let now = Date.now();
+        document.getElementById('pre-name').innerText = name;
+        const v = document.getElementById('pre-visual');
+        v.style.display = 'block';
+        v.style.background = col;
+        p1.color = col;
 
-// MAR
-const sea = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshPhongMaterial({color: 0x0044ff, transparent:true, opacity:0.7}));
-sea.rotation.x = -Math.PI/2;
-sea.position.y = -6;
-scene.add(sea);
+        if(now - lastClick < 300) {
+            document.getElementById('pre-msg').innerText = "ELECCIÓN SABIA";
+            document.getElementById('portal-fx').style.display = 'block';
+            setTimeout(startMatch, 1200);
+        }
+        lastClick = now;
+    }
 
-// PERSONAJES
-const p1 = createPlayer(0xff0000, -4);
-const p2 = createPlayer(0x0000ff, 4);
-
-function createPlayer(col, x) {
-    const g = new THREE.Group();
-    const b = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), new THREE.MeshPhongMaterial({color: col}));
-    g.add(b);
-    g.position.set(x, 2, 0);
-    scene.add(g);
-    return { obj: g, perc: 0, stocks: 3, jumps: 0, velY: 0, power: 0 };
-}
-
-camera.position.set(0, 6, 14);
-camera.lookAt(0, 0, 0);
-
-// --- LÓGICA ---
-let active = false;
-let mode = "START"; 
-const keys = {};
-
-window.onkeydown = (e) => {
-    keys[e.code] = true;
-    if(e.code === 'KeyX') toggleXMenu();
-};
-window.onkeyup = (e) => keys[e.code] = false;
-
-function toggleXMenu() {
-    const m = document.getElementById('menu-x');
-    m.style.display = m.style.display === 'block' ? 'none' : 'block';
-}
-
-function showSelect() {
-    document.getElementById('menu-x').style.display = 'none';
-    document.getElementById('char-select').style.display = 'block';
-}
-
-function previewChar(n) {
-    document.getElementById('preview-name').innerText = n;
-    document.getElementById('status-msg').innerText = "BAILE DE VICTORIA!";
-    // Pequeña animación de salto del preview
-    new TWEEN.Tween(p1.obj.position).to({y: 4}, 300).yoyo(true).repeat(1).start();
-}
-
-function selectFinal() {
-    document.getElementById('status-msg').innerText = "ELECCIÓN SABIA";
-    // Animación portal
-    new TWEEN.Tween(p1.obj.position).to({y: 15, z: -10}, 800).easing(TWEEN.Easing.Quadratic.In).onComplete(()=>{
+    function startMatch() {
         document.getElementById('char-select').style.display = 'none';
-        p1.obj.position.set(-4, 2, 0);
+        document.getElementById('game-world').style.display = 'block';
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('p1').style.background = p1.color;
         active = true;
-    }).start();
-}
-
-// BUCLE DE JUEGO
-function gameLoop(t) {
-    requestAnimationFrame(gameLoop);
-    TWEEN.update(t);
-
-    if(active) {
-        // MOVIMIENTO P1 (W A S D)
-        if(keys['KeyA']) p1.obj.position.x -= 0.15;
-        if(keys['KeyD']) p1.obj.position.x += 0.15;
-        
-        // SALTO DOBLE (Espacio)
-        if(keys['Space'] && p1.jumps < 2) {
-            p1.velY = 0.22;
-            p1.jumps++;
-            keys['Space'] = false; // Evita salto infinito
-        }
-
-        // FÍSICAS
-        p1.obj.position.y += p1.velY;
-        if(p1.obj.position.y > 1) {
-            p1.velY -= 0.01;
-        } else {
-            p1.obj.position.y = 1;
-            p1.velY = 0;
-            p1.jumps = 0;
-        }
-
-        // ATAQUES (M, K, E)
-        if(keys['KeyK']) { /* Animación Golpe */ p2.perc += 5; updateHUD(); }
-
-        // RING OUT (EXPLOSIÓN)
-        if(Math.abs(p1.obj.position.x) > 10 || p1.obj.position.y < -3) {
-            p1.obj.position.set(0, 10, 0);
-            p1.perc = 0;
-            updateHUD();
-        }
-
-        // BARCO SE MUEVE
-        ship.rotation.z = Math.sin(t/1000) * 0.05;
-        sea.position.y = -6 + Math.sin(t/800) * 0.3;
+        countDown();
+        spawnItems();
     }
 
-    renderer.render(scene, camera);
-}
+    window.onkeydown = e => {
+        keys[e.code] = true;
+        if(e.code === 'KeyX' && active) console.log("PODER FINAL ACTIVADO!");
+    };
+    window.onkeyup = e => keys[e.code] = false;
 
-function updateHUD() {
-    document.getElementById('p1-perc').innerText = p1.perc;
-    document.getElementById('p2-perc').innerText = p2.perc;
-}
+    function loop() {
+        if(active) {
+            // Controles P1 (W A S D)
+            if(keys['KeyA']) p1.x -= 7;
+            if(keys['KeyD']) p1.x += 7;
+            if(keys['Space'] && p1.jumps < 2) { p1.vY = 18; p1.jumps++; keys['Space'] = false; }
 
-function showWinner(isP1) {
-    active = false;
-    document.getElementById('end-screen').style.display = 'flex';
-    if(isP1) {
-        document.getElementById('banner').innerText = "YOU WIN!";
-        document.getElementById('banner').style.color = "gold";
-    } else {
-        document.getElementById('banner').innerText = "YOU LOST";
-        document.getElementById('banner').style.color = "red";
+            // Física P1
+            p1.y += p1.vY;
+            if(p1.y > 0) p1.vY -= 0.9; else { p1.y = 0; p1.vY = 0; p1.jumps = 0; }
+
+            // IA P2 básica
+            if(p2.x < p1.x) p2.x += 3; else p2.x -= 3;
+
+            // Actualizar Visuales
+            updatePos('p1', p1);
+            updatePos('p2', p2);
+
+            // Ring Out (Explosión)
+            if(p1.x < 100 || p1.x > window.innerWidth-100 || p1.y < -100) {
+                p1.x = window.innerWidth/2; p1.y = 200; p1.dmg = 0;
+                document.getElementById('p1-perc').innerText = 0;
+            }
+        }
+        requestAnimationFrame(loop);
     }
-}
 
-gameLoop();
+    function updatePos(id, data) {
+        const el = document.getElementById(id);
+        el.style.left = data.x + "px";
+        el.style.bottom = (245 + data.y) + "px";
+    }
+
+    function countDown() {
+        setInterval(() => {
+            if(!active) return;
+            time--;
+            let m = Math.floor(time/60), s = time % 60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+            if(time <= 0) finish();
+        }, 1000);
+    }
+
+    function spawnItems() {
+        const item = document.getElementById('item');
+        setInterval(() => {
+            if(!active) return;
+            item.style.display = 'block';
+            item.style.left = (Math.random()*600 + 200) + "px";
+            item.style.top = "0px";
+            // Caída de objeto
+            let itY = 0;
+            let fall = setInterval(() => {
+                itY += 5;
+                item.style.top = itY + "px";
+                if(itY > window.innerHeight - 250) clearInterval(fall);
+            }, 30);
+        }, 10000);
+    }
+
+    function finish() {
+        active = false;
+        document.getElementById('results').style.display = 'flex';
+        const win = p1.dmg <= p2.dmg; // Gana el de menos daño
+        document.getElementById('res-banner').innerText = win ? "YOU WIN!" : "YOU LOST";
+        document.getElementById('winner-act').style.background = win ? p1.color : p2.color;
+        document.getElementById('loser-act').style.background = win ? p2.color : p1.color;
+        if(win) createConfetti();
+    }
+
+    function createConfetti() {
+        for(let i=0; i<50; i++) {
+            let c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = Math.random()*100 + "vw";
+            c.style.top = "-10px";
+            c.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
+            document.body.appendChild(c);
+            new TWEEN_simple(c);
+        }
+    }
+
+    function TWEEN_simple(el) {
+        let top = 0;
+        setInterval(() => {
+            top += 5;
+            el.style.top = top + "px";
+            el.style.transform = `rotate(${top}deg)`;
+        }, 20);
+    }
+
+    loop();
 </script>
 </body>
 </html>
-
