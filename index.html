@@ -2,34 +2,32 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NARCOS: DISPATCH | Tiñi Games Official</title>
+    <title>NARCOS: DISPATCH | Tiñi Games</title>
     <style>
-        :root { --accent: #39ff14; --bg-dark: rgba(2, 10, 2, 0.98); --brightness: 100%; --sens: 1; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); cursor: none; /* Quitamos el nativo para usar el nuestro con sensibilidad */ }
+        :root { --accent: #39ff14; --brightness: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); }
 
-        /* --- CURSOR CON SENSIBILIDAD --- */
-        #custom-cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; box-shadow: 0 0 10px var(--accent); }
-
-        /* --- FONDO LIMPIO (SIN MORADO) --- */
-        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://redd.it') center/cover; z-index: 0; transition: 1s; opacity: 0; }
+        /* --- FONDO LIMPIO --- */
+        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://redd.it') center/cover; z-index: 0; opacity: 0; transition: opacity 2s; }
         .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 300px #000; z-index: 1; pointer-events: none; }
 
         /* --- INTRO --- */
-        #intro { position: fixed; width: 100%; height: 100%; z-index: 2000; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
-        #humo { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle, #8a2be2 0%, transparent 80%); z-index: 1999; opacity: 0; transition: 1.5s; filter: blur(60px); }
+        #intro { position: fixed; width: 100%; height: 100%; z-index: 5000; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
+        .flash { position: absolute; width: 100%; height: 100%; animation: sirenas 0.1s infinite; opacity: 0; pointer-events: none; }
+        @keyframes sirenas { 0% { background: #f00; opacity: 0.1; } 50% { background: #00f; opacity: 0.1; } }
 
-        /* --- MENÚ --- */
-        #menu { position: relative; z-index: 10; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 80px; opacity: 0; transition: 2s; }
+        /* --- MENÚ PRINCIPAL --- */
+        #menu { position: relative; z-index: 100; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 80px; opacity: 0; transition: 1s; }
         .logo { font-size: 7rem; font-weight: 900; letter-spacing: -6px; margin-bottom: 20px; }
-        .btn-main { background: rgba(0,0,0,0.8); color: var(--accent); border: 1px solid var(--accent); padding: 15px 45px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-weight: bold; transition: 0.3s; text-transform: uppercase; }
-        .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); transform: translateX(10px); }
+        .btn-main { background: rgba(0,0,0,0.8); color: var(--accent); border: 1px solid var(--accent); padding: 15px 45px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-weight: bold; text-transform: uppercase; }
+        .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
 
         /* --- AJUSTES --- */
-        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 3000; padding: 40px 10%; border: 1px solid var(--accent); }
-        .tabs { display: flex; gap: 10px; margin-bottom: 40px; border-bottom: 1px solid var(--accent); }
-        .tab { padding: 15px 40px; border: 1px solid var(--accent); border-bottom: none; cursor: pointer; color: var(--accent); background: rgba(0,255,0,0.05); }
+        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,0,0.98); z-index: 9999; padding: 50px 10%; border: 2px solid var(--accent); box-sizing: border-box; overflow-y: auto; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--accent); }
+        .tab { padding: 15px 30px; border: 1px solid var(--accent); border-bottom: none; cursor: pointer; color: var(--accent); background: rgba(0,255,0,0.05); }
         .tab.active { background: var(--accent); color: #000; }
-        .row { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.1); padding: 25px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .row { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.2); padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -42,27 +40,26 @@
 </head>
 <body>
 
-    <div id="custom-cursor"></div>
     <audio id="siren" loop src="https://soundjay.com"></audio>
-    <div id="humo"></div>
     <div id="bg-container"></div>
     <div class="vignette"></div>
 
     <div id="intro" onclick="start()">
-        <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
+        <div class="flash" id="f"></div>
+        <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2s;">TIÑI GAMES</h1>
     </div>
 
     <div class="ui-top">
         LOC: 35.0844 N / 106.6504 W<br>
-        DEPT: DEA_SURVEILLANCE_ABQ<br>
+        DEPT: DEA_SURVEILLANCE<br>
         TIME: <span id="clock">00:00:00</span>
     </div>
     <div class="radar"><div class="radar-line"></div></div>
 
     <div id="menu">
-        <div class="cap-tag" id="txt-cap">CAPÍTULO 1 // LA CARAVANA</div>
+        <div id="txt-cap" style="color:var(--accent); letter-spacing:4px; font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
         <div class="logo">NARCOS</div>
-        <button class="btn-main" id="btn-new" onclick="alert('Starting...')">Nueva Partida</button>
+        <button class="btn-main" id="btn-new" onclick="nuevaPartida()">Nueva Partida</button>
         <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">Ajustes</button>
     </div>
 
@@ -75,8 +72,8 @@
         </div>
 
         <div id="general" class="tab-content active">
-            <div class="row"><span id="lb-fs">PANTALLA COMPLETA</span><button onclick="toggleFS()" id="fs-txt" style="background:var(--accent); border:none; padding:10px 20px; font-weight:bold;">ON</button></div>
-            <div class="row"><span id="lb-sens">SENSIBILIDAD</span><input type="range" min="0.1" max="5" step="0.1" value="1" oninput="changeSens(this.value)"></div>
+            <div class="row"><span id="lb-fs">PANTALLA COMPLETA</span><button onclick="toggleFS()" id="fs-txt" style="background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:bold; cursor:pointer;">ON</button></div>
+            <div class="row"><span id="lb-sens">SENSIBILIDAD</span><input type="range" min="1" max="100" value="50"></div>
             <div class="row"><span id="lb-lang">IDIOMA</span>
                 <select onchange="translateAll(this.value)" style="background:#000; color:var(--accent); border:1px solid var(--accent); padding:5px;">
                     <option value="es">ESPAÑOL</option>
@@ -89,27 +86,50 @@
 
         <div id="video" class="tab-content">
             <div class="row"><span id="lb-bri">BRILLO</span><input type="range" min="30" max="150" value="100" oninput="document.documentElement.style.setProperty('--brightness', this.value + '%')"></div>
-            <div class="row"><span id="lb-ins">INSULTOS</span><button onclick="toggleOpt('ins')" id="opt-ins" style="border:1px solid var(--accent); color:var(--accent); background:none; padding:5px 20px;">OFF</button></div>
-            <div class="row"><span id="lb-bld">SANGRE</span><button onclick="toggleOpt('bld')" id="opt-bld" style="border:1px solid var(--accent); color:var(--accent); background:none; padding:5px 20px;">OFF</button></div>
+            <div class="row"><span id="lb-ins">CENSURA INSULTOS</span><button onclick="toggleOpt('ins')" id="opt-ins" style="border:1px solid var(--accent); color:var(--accent); background:none; padding:5px 20px;">OFF</button></div>
+            <div class="row"><span id="lb-bld">CENSURA SANGRE</span><button onclick="toggleOpt('bld')" id="opt-bld" style="border:1px solid var(--accent); color:var(--accent); background:none; padding:5px 20px;">OFF</button></div>
         </div>
 
         <div id="audio" class="tab-content">
-            <div class="row"><span id="lb-mvol">VOLUMEN</span><input type="range" min="0" max="100" value="80" oninput="document.getElementById('siren').volume = this.value/100"></div>
+            <div class="row"><span id="lb-vol">VOLUMEN MAESTRO</span><input type="range" min="0" max="100" value="80" oninput="document.getElementById('siren').volume = this.value/100"></div>
         </div>
-
         <button class="btn-main" id="btn-back" style="margin-top:40px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER</button>
     </div>
 
     <script>
         const translations = {
-            es: { cap: "CAPÍTULO 1 // LA CARAVANA", new: "NUEVA PARTIDA", sett: "AJUSTES", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SONIDO", lb_fs: "PANTALLA COMPLETA", lb_sens: "SENSIBILIDAD", lb_lang: "IDIOMA", lb_bri: "BRILLO", lb_ins: "INSULTOS", lb_bld: "SANGRE", lb_mvol: "VOLUMEN", back: "VOLVER", sett_tit: "AJUSTES" },
-            en: { cap: "CHAPTER 1 // THE RV", new: "NEW GAME", sett: "SETTINGS", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "AUDIO", lb_fs: "FULLSCREEN", lb_sens: "SENSITIVITY", lb_lang: "LANGUAGE", lb_bri: "BRIGHTNESS", lb_ins: "PROFANITY", lb_bld: "BLOOD", lb_mvol: "VOLUME", back: "BACK", sett_tit: "SETTINGS" },
-            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", new: "NOUVELLE PARTIE", sett: "PARAMÈTRES", t_gen: "GÉNÉRAL", t_vid: "VIDÉO", t_aud: "SON", lb_fs: "PLEIN ÉCRAN", lb_sens: "SENSIBILITÉ", lb_lang: "LANGUE", lb_bri: "LUMINOSITÉ", lb_ins: "INSULTES", lb_bld: "SANG", lb_mvol: "VOLUME", back: "RETOUR", sett_tit: "PARAMÈTRES" },
-            de: { cap: "KAPITEL 1 // DAS WOHNMOBIL", new: "NEUES SPIEL", sett: "EINSTELLUNGEN", t_gen: "ALLGEMEIN", t_vid: "VIDEO", t_aud: "SOUND", lb_fs: "VOLLBILD", lb_sens: "EMPFINDLICHKEIT", lb_lang: "SPRACHE", lb_bri: "HELLIGKEIT", lb_ins: "BELEIDIGUNGEN", lb_bld: "BLUT", lb_mvol: "LAUTSTÄRKE", back: "ZURÜCK", sett_tit: "EINSTELLUNGEN" }
+            es: { cap: "CAPÍTULO 1 // LA CARAVANA", new: "NUEVA PARTIDA", sett: "AJUSTES", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SONIDO", lb_fs: "PANTALLA COMPLETA", lb_sens: "SENSIBILIDAD", lb_lang: "IDIOMA", lb_bri: "BRILLO", lb_ins: "CENSURA INSULTOS", lb_bld: "CENSURA SANGRE", lb_vol: "VOLUMEN MAESTRO", back: "VOLVER", sett_tit: "AJUSTES" },
+            en: { cap: "CHAPTER 1 // THE RV", new: "NEW GAME", sett: "SETTINGS", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "AUDIO", lb_fs: "FULLSCREEN", lb_sens: "SENSITIVITY", lb_lang: "LANGUAGE", lb_bri: "BRIGHTNESS", lb_ins: "PROFANITY CENSOR", lb_bld: "BLOOD CENSOR", lb_vol: "MASTER VOLUME", back: "BACK", sett_tit: "SETTINGS" },
+            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", new: "NOUVELLE PARTIE", sett: "PARAMÈTRES", t_gen: "GÉNÉRAL", t_vid: "VIDÉO", t_aud: "SON", lb_fs: "PLEIN ÉCRAN", lb_sens: "SENSIBILITÉ", lb_lang: "LANGUE", lb_bri: "LUMINOSITÉ", lb_ins: "CENSURE INSULTES", lb_bld: "CENSURE SANG", lb_vol: "VOLUME GÉNÉRAL", back: "RETOUR", sett_tit: "PARAMÈTRES" },
+            de: { cap: "KAPITEL 1 // DAS WOHNMOBIL", new: "NEUES SPIEL", sett: "EINSTELLUNGEN", t_gen: "ALLGEMEIN", t_vid: "VIDEO", t_aud: "SOUND", lb_fs: "VOLLBILD", lb_sens: "EMPFINDLICHKEIT", lb_lang: "SPRACHE", lb_bri: "HELLIGKEIT", lb_ins: "BELEIDIGUNGEN", lb_bld: "BLUT ZENSIEREN", lb_vol: "GESAMTVOLUMEN", back: "ZURÜCK", sett_tit: "EINSTELLUNGEN" }
         };
 
+        function start() {
+            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(()=>{}); }
+            document.getElementById('siren').play();
+            document.getElementById('f').style.opacity = '1';
+            document.getElementById('lt').style.opacity = '1';
+            setTimeout(() => { 
+                document.getElementById('intro').style.display = 'none'; // ELIMINA LA CAPA DE LA INTRO PARA SIEMPRE
+                document.getElementById('bg-container').style.opacity = '1';
+                document.getElementById('menu').style.display = 'flex'; 
+                setTimeout(() => { document.getElementById('menu').style.opacity = '1'; }, 100);
+            }, 3000);
+        }
+
+        function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? 'block' : 'none'; }
+        
+        function switchTab(evt, name) {
+            let contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+            let tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+            document.getElementById(name).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
         function translateAll(lang) {
-            const d = translations[lang];
+            const d = translations[lang] || translations.es;
             document.getElementById('txt-cap').innerText = d.cap;
             document.getElementById('btn-new').innerText = d.new;
             document.getElementById('btn-sett').innerText = d.sett;
@@ -124,59 +144,26 @@
             document.getElementById('lb-bri').innerText = d.lb_bri;
             document.getElementById('lb-ins').innerText = d.lb_ins;
             document.getElementById('lb-bld').innerText = d.lb_bld;
-            document.getElementById('lb-mvol').innerText = d.lb_mvol;
+            document.getElementById('lb-vol').innerText = d.lb_vol;
         }
 
-        // Lógica de Cursor y Sensibilidad
-        let curX = window.innerWidth/2, curY = window.innerHeight/2;
-        let sens = 1;
-        const cursor = document.getElementById('custom-cursor');
-
-        window.addEventListener('mousemove', (e) => {
-            curX += e.movementX * sens;
-            curY += e.movementY * sens;
-            curX = Math.max(0, Math.min(window.innerWidth, curX));
-            curY = Math.max(0, Math.min(window.innerHeight, curY));
-            cursor.style.left = curX + 'px';
-            cursor.style.top = curY + 'px';
-        });
-
-        function changeSens(val) { sens = parseFloat(val); }
-
-        function start() {
-            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
-            document.getElementById('siren').play();
-            document.getElementById('lt').style.opacity = '1';
-            setTimeout(() => { document.getElementById('humo').style.opacity = '1'; document.getElementById('lt').style.opacity = '0'; }, 2000);
-            setTimeout(() => { 
-                document.getElementById('intro').style.display = 'none'; 
-                document.getElementById('bg-container').style.opacity = '1';
-                document.getElementById('menu').style.display = 'flex'; 
-                setTimeout(() => { document.getElementById('menu').style.opacity = '1'; }, 100);
-            }, 3500);
-        }
-
-        function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? 'block' : 'none'; }
-        function switchTab(evt, name) {
-            let contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-            let tabs = document.getElementsByClassName("tab");
-            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
-            document.getElementById(name).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
         function toggleFS() {
             let txt = document.getElementById('fs-txt');
-            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); txt.innerText = "ON"; }
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(()=>{}); txt.innerText = "ON"; }
             else { document.exitFullscreen(); txt.innerText = "OFF"; }
         }
+
         function toggleOpt(id) {
             let el = document.getElementById('opt-' + id);
             el.innerText = el.innerText === "OFF" ? "ON" : "OFF";
         }
+
+        function nuevaPartida() { alert("Iniciando conexión con Jesse..."); }
+
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
+
 
 
