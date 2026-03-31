@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>NARCO DISPATCH - SMASH BROS STYLE</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; }
+        #game-box { border: 5px solid #0f0; margin: 50px auto; width: 80%; padding: 20px; background: #111; }
+        button { background: #0f0; color: #000; font-weight: bold; padding: 15px 30px; cursor: pointer; border: none; margin: 10px; }
+        button:hover { background: #fff; }
+        #log { margin-top: 20px; color: #ff0; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <div id="game-box">
+        <h1>NARCO DISPATCH: REPARTO CRÍTICO</h1>
+        <p>Robert (Jesse): "¡Heisenberg, la poli está cerca! ¿Qué hacemos?"</p>
+        <div id="stats">DINERO: $500 | SOSPECHA: 10%</div>
+        <br>
+        <button onclick="jugar('moto')">ENVIAR MOTO (ESTILO SMASH - RÁPIDO)</button>
+        <button onclick="jugar('camion')">ENVIAR CAMIÓN DE POLLOS (SEGURO)</button>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        let dinero = 500;
+        let sospecha = 10;
+        function jugar(tipo) {
+            let res = document.getElementById('log');
+            if(tipo === 'moto') {
+                if(Math.random() > 0.4) {
+                    dinero += 1000; sospecha += 20;
+                    res.innerHTML = "¡Bitch! El reparto llegó volando. +$1000";
+                } else {
+                    sospecha += 40;
+                    res.innerHTML = "¡LA PASMA! Tuviste que huir a lo loco. Sospecha sube.";
+                }
+            } else {
+                dinero += 300; sospecha += 2;
+                res.innerHTML = "Lento pero seguro. Los Pollos Hermanos no fallan.";
+            }
+            document.getElementById('stats').innerHTML = "DINERO: $" + dinero + " | SOSPECHA: " + sospecha + "%";
+        }
+    </script>
+</body>
+</html>
