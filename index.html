@@ -4,44 +4,46 @@
     <meta charset="UTF-8">
     <title>NARCOS: DISPATCH | Tiñi Games</title>
     <style>
-        :root { --accent: #4ec9f0; --accent-dark: #1a3c4d; --police-red: #ff0000; --police-blue: #0000ff; --brightness: 100%; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Segoe UI', sans-serif; overflow: hidden; color: white; filter: brightness(var(--brightness)); }
+        :root { --accent: #39ff14; --bg-dark: rgba(5, 15, 5, 0.95); --brightness: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); }
 
-        /* --- FONDO --- */
-        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://redd.it') center/cover; z-index: 0; transition: transform 15s ease-out; }
-        .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 250px rgba(0,0,0,0.95); z-index: 1; pointer-events: none; }
+        /* --- FONDO Y VIGNETTE --- */
+        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://redd.it') center/cover; z-index: 0; transition: 15s; }
+        .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 200px rgba(0,0,0,0.9); z-index: 1; pointer-events: none; }
 
-        /* --- INTRO --- */
+        /* --- INTRO & HUMO --- */
         #intro { position: fixed; width: 100%; height: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
         .flash { position: absolute; width: 100%; height: 100%; animation: sirenas 0.1s infinite; opacity: 0; }
-        @keyframes sirenas { 0% { background: var(--police-red); opacity: 0.1; } 50% { background: var(--police-blue); opacity: 0.1; } }
+        @keyframes sirenas { 0% { background: #f00; opacity: 0.1; } 50% { background: #00f; opacity: 0.1; } }
         #humo { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle, #8a2be2 0%, transparent 80%); z-index: 999; opacity: 0; pointer-events: none; transition: 1.5s; filter: blur(60px); }
 
         /* --- MENÚ PRINCIPAL --- */
         #menu { position: relative; z-index: 10; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 80px; opacity: 0; transition: 2s; }
-        .logo-juego { font-size: 6rem; font-weight: 900; letter-spacing: -5px; margin-bottom: 30px; text-shadow: 0 0 30px rgba(0,0,0,1); }
-        .btn-main { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px 40px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-size: 1.1rem; letter-spacing: 2px; clip-path: polygon(0 0, 95% 0, 100% 20%, 100% 100%, 5% 100%, 0 80%); transition: 0.3s; }
-        .btn-main:hover { border-color: var(--accent); background: var(--accent-dark); padding-left: 55px; }
+        .logo-juego { font-size: 6rem; font-weight: 900; letter-spacing: -5px; margin-bottom: 30px; text-shadow: 0 0 20px #000; }
+        .btn-main { background: rgba(0,0,0,0.7); color: var(--accent); border: 1px solid var(--accent); padding: 15px 40px; width: 300px; text-align: left; cursor: pointer; margin: 10px 0; letter-spacing: 2px; transition: 0.3s; }
+        .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
 
-        /* --- AJUSTES ESTILO DISPATCH (MÁXIMO NIVEL) --- */
-        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.95); z-index: 200; padding: 50px 100px; box-sizing: border-box; backdrop-filter: blur(10px); }
-        .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
-        .tab { padding: 15px 40px; border: 1px solid rgba(255,255,255,0.2); border-bottom: none; border-radius: 10px 10px 0 0; cursor: pointer; background: rgba(255,255,255,0.05); color: #888; font-weight: bold; margin-right: 5px; }
-        .tab.active { background: var(--accent-dark); color: var(--accent); border-top: 3px solid var(--accent); }
+        /* --- PANEL DE AJUSTES (ESTILO DISPATCH) --- */
+        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 200; padding: 50px 100px; box-sizing: border-box; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 40px; border-bottom: 1px solid var(--accent); }
+        .tab { padding: 15px 30px; border: 1px solid var(--accent); border-bottom: none; cursor: pointer; background: rgba(0,255,0,0.05); color: var(--accent); font-weight: bold; }
+        .tab.active { background: var(--accent); color: #000; }
         
-        .setting-row { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .setting-row:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
-        .st-name { font-weight: bold; letter-spacing: 1px; }
-        
-        /* Controles */
-        .control { background: #000; border: 1px solid #333; padding: 10px 20px; color: var(--accent); font-weight: bold; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 20px; }
-        input[type="range"] { width: 200px; accent-color: var(--accent); }
-        select { background: transparent; color: var(--accent); border: none; font-size: 1rem; font-family: inherit; cursor: pointer; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        /* --- UI RADAR --- */
-        .radar { position: absolute; bottom: 40px; right: 40px; width: 100px; height: 100px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.3; }
+        .row { background: rgba(255,255,255,0.02); border: 1px solid rgba(57, 255, 20, 0.2); padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 5px; }
+        .row:hover { border-color: var(--accent); background: rgba(57, 255, 20, 0.05); }
+
+        /* --- UI DECO VERDE --- */
+        .radar { position: absolute; bottom: 40px; right: 40px; width: 100px; height: 100px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.5; }
         .radar-line { position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: spin 3s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .ui-top { position: fixed; top: 30px; right: 40px; text-align: right; color: var(--accent); font-size: 0.8rem; line-height: 1.5; z-index: 100; }
+
+        /* Controles */
+        input[type="range"] { accent-color: var(--accent); cursor: pointer; }
+        select { background: #000; color: var(--accent); border: 1px solid var(--accent); padding: 5px; }
     </style>
 </head>
 <body>
@@ -52,86 +54,142 @@
     <div class="vignette"></div>
     <div id="bg-container"></div>
 
-    <!-- Intro -->
     <div id="intro" onclick="start()">
         <div class="flash" id="f"></div>
-        <h1 id="lt" style="font-size: 4rem; letter-spacing: 15px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
+        <h1 id="lt" style="font-size: 4rem; letter-spacing: 15px; opacity:0; transition: 2s;">TIÑI GAMES</h1>
     </div>
 
-    <!-- Radar y Coordenadas -->
+    <!-- UI VERDE FIJA -->
+    <div class="ui-top">
+        LOC: 35.0844 N / 106.6504 W<br>
+        SAT: ENCRYPTED_LINK_08<br>
+        TIME: <span id="clock">00:00:00</span>
+    </div>
     <div class="radar"><div class="radar-line"></div></div>
-    <div style="position:fixed; top:30px; right:40px; color:var(--accent); text-align:right; font-size:0.8rem; opacity:0.6;">
-        COORD: 35.0844 N / 106.6504 W<br>SYSTEM: ACTIVE_SCAN_001
-    </div>
 
-    <!-- Menú Principal -->
+    <!-- MENÚ PRINCIPAL -->
     <div id="menu">
-        <div style="color:var(--accent); letter-spacing:4px; font-size:0.8rem; margin-bottom:10px;">CAPÍTULO 1 // DESIERTO</div>
+        <div id="txt-cap" style="color:var(--accent); letter-spacing:4px; font-size:0.8rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
         <div class="logo-juego">NARCOS</div>
-        <button class="btn-main" onclick="alert('Iniciando...')">NUEVA PARTIDA</button>
-        <button class="btn-main" onclick="alert('Cargando...')">CONTINUAR</button>
-        <button class="btn-main" onclick="toggleSettings(true)">AJUSTES</button>
+        <button class="btn-main" id="btn-new" onclick="alert('Iniciando...')">NUEVA PARTIDA</button>
+        <button class="btn-main" id="btn-cont" onclick="alert('Cargando...')">CONTINUAR</button>
+        <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">AJUSTES</button>
     </div>
 
-    <!-- Panel Ajustes (Estilo Dispatch) -->
+    <!-- PANEL AJUSTES INTERACTIVO -->
     <div id="settings-panel">
-        <h1 style="margin-top:0; letter-spacing:5px;">SETTINGS</h1>
+        <h1 id="sett-tit" style="margin-top:0; letter-spacing:10px; color:var(--accent);">SETTINGS</h1>
+        
         <div class="tabs">
-            <div class="tab active">GENERAL</div>
-            <div class="tab">DISPLAY</div>
-            <div class="tab">SOUND</div>
+            <div class="tab active" onclick="switchTab(event, 'general')" id="t-gen">GENERAL</div>
+            <div class="tab" onclick="switchTab(event, 'video')" id="t-vid">VIDEO</div>
+            <div class="tab" onclick="switchTab(event, 'audio')" id="t-aud">SONIDO</div>
         </div>
 
-        <div class="setting-row">
-            <div class="st-name">BRILLO DE PANTALLA</div>
-            <div class="control">
-                <input type="range" min="30" max="150" value="100" oninput="document.documentElement.style.setProperty('--brightness', this.value + '%')">
-            </div>
-        </div>
-
-        <div class="setting-row">
-            <div class="st-name">LANGUAGE</div>
-            <div class="control">
-                <select>
-                    <option>ENGLISH</option>
-                    <option selected>ESPAÑOL</option>
-                    <option>DEUTSCH</option>
+        <!-- Tab General -->
+        <div id="general" class="tab-content active">
+            <div class="row">
+                <span id="lb-lang">IDIOMA DEL SISTEMA</span>
+                <select onchange="changeLang(this.value)">
+                    <option value="es">ESPAÑOL</option>
+                    <option value="en">ENGLISH</option>
+                    <option value="fr">FRANÇAIS</option>
+                    <option value="de">DEUTSCH</option>
                 </select>
             </div>
+            <div class="row">
+                <span id="lb-save">GUARDADO AUTOMÁTICO</span>
+                <button style="background:var(--accent); color:#000; border:none; padding:5px 15px;">ON</button>
+            </div>
         </div>
 
-        <div class="setting-row">
-            <div class="st-name">MODO PANTALLA COMPLETA</div>
-            <div class="control">ACTIVO (ON)</div>
+        <!-- Tab Video -->
+        <div id="video" class="tab-content">
+            <div class="row">
+                <span id="lb-bri">BRILLO DE PANTALLA</span>
+                <input type="range" min="30" max="150" value="100" oninput="document.documentElement.style.setProperty('--brightness', this.value + '%')">
+            </div>
+            <div class="row">
+                <span id="lb-cens">CENSURAR SANGRE</span>
+                <button onclick="this.innerText = this.innerText == 'OFF' ? 'ON' : 'OFF'" style="border:1px solid var(--accent); background:none; color:var(--accent); padding:5px 15px;">OFF</button>
+            </div>
+            <div class="row">
+                <span id="lb-ins">CENSURAR INSULTOS</span>
+                <button onclick="this.innerText = this.innerText == 'OFF' ? 'ON' : 'OFF'" style="border:1px solid var(--accent); background:none; color:var(--accent); padding:5px 15px;">OFF</button>
+            </div>
         </div>
 
-        <button class="btn-main" style="margin-top:40px;" onclick="toggleSettings(false)">BACK / ATRÁS</button>
+        <!-- Tab Audio -->
+        <div id="audio" class="tab-content">
+            <div class="row">
+                <span id="lb-vol">VOLUMEN MAESTRO</span>
+                <input type="range" min="0" max="100" value="80" oninput="document.getElementById('siren').volume = this.value/100">
+            </div>
+            <div class="row">
+                <span id="lb-mus">MÚSICA</span>
+                <input type="range" min="0" max="100" value="50">
+            </div>
+        </div>
+
+        <button class="btn-main" style="margin-top:40px;" id="btn-back" onclick="toggleSettings(false)">BACK / VOLVER</button>
     </div>
 
     <script>
+        const langDict = {
+            es: { cap: "CAPÍTULO 1 // LA CARAVANA", new: "NUEVA PARTIDA", cont: "CONTINUAR", sett: "AJUSTES", back: "VOLVER", sett_tit: "AJUSTES", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SONIDO", lb_lang: "IDIOMA DEL SISTEMA", lb_save: "GUARDADO AUTOMÁTICO", lb_bri: "BRILLO DE PANTALLA", lb_cens: "CENSURAR SANGRE", lb_ins: "CENSURAR INSULTOS", lb_vol: "VOLUMEN MAESTRO", lb_mus: "MÚSICA" },
+            en: { cap: "CHAPTER 1 // THE RV", new: "NEW GAME", cont: "CONTINUE", sett: "SETTINGS", back: "BACK", sett_tit: "SETTINGS", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SOUND", lb_lang: "SYSTEM LANGUAGE", lb_save: "AUTO SAVE", lb_bri: "SCREEN BRIGHTNESS", lb_cens: "CENSOR BLOOD", lb_ins: "CENSOR PROFANITY", lb_vol: "MASTER VOLUME", lb_mus: "MUSIC" },
+            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", new: "NOUVELLE PARTIE", cont: "CONTINUER", sett: "PARAMÈTRES", back: "RETOUR", sett_tit: "PARAMÈTRES", t_gen: "GÉNÉRAL", t_vid: "VIDÉO", t_aud: "SON", lb_lang: "LANGUE DU SYSTÈME", lb_save: "SAUVEGARDE AUTO", lb_bri: "LUMINOSITÉ", lb_cens: "CENSURER LE SANG", lb_ins: "CENSURER INSULTES", lb_vol: "VOLUME GÉNÉRAL", lb_mus: "MUSIQUE" },
+            de: { cap: "KAPITEL 1 // DAS WOHNMOBIL", new: "NEUES SPIEL", cont: "WEITER", sett: "EINSTELLUNGEN", back: "ZURÜCK", sett_tit: "EINSTELLUNGEN", t_gen: "ALLGEMEIN", t_vid: "VIDEO", t_aud: "SOUND", lb_lang: "SYSTEMSPRACHE", lb_save: "AUTO-SPEICHERN", lb_bri: "BILDSCHIRMHELLIGKEIT", lb_cens: "BLUT ZENSIEREN", lb_ins: "BELEIDIGUNGEN ZENSIEREN", lb_vol: "GESAMTVOLUMEN", lb_mus: "MUSIK" }
+        };
+
         function start() {
-            // Pantalla Completa Automática
             if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
-            
             document.getElementById('siren').play();
             document.getElementById('f').style.opacity = '1';
             document.getElementById('lt').style.opacity = '1';
-
-            setTimeout(() => {
-                document.getElementById('humo').style.opacity = '1';
-                document.getElementById('lt').style.opacity = '0';
-            }, 3000);
-
-            setTimeout(() => {
-                document.getElementById('intro').style.display = 'none';
-                document.getElementById('humo').style.opacity = '0';
-                document.getElementById('menu').style.display = 'flex';
+            setTimeout(() => { document.getElementById('humo').style.opacity = '1'; document.getElementById('lt').style.opacity = '0'; }, 3000);
+            setTimeout(() => { 
+                document.getElementById('intro').style.display = 'none'; 
+                document.getElementById('humo').style.opacity = '0'; 
+                document.getElementById('menu').style.display = 'flex'; 
                 setTimeout(() => { document.getElementById('menu').style.opacity = '1'; }, 100);
-                document.getElementById('bg-container').style.transform = 'scale(1.15)';
+                document.getElementById('bg-container').style.transform = 'scale(1.1)';
             }, 4500);
         }
 
         function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? 'block' : 'none'; }
+
+        function switchTab(evt, tabName) {
+            let contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+            let tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function changeLang(l) {
+            const d = langDict[l];
+            document.getElementById('txt-cap').innerText = d.cap;
+            document.getElementById('btn-new').innerText = d.new;
+            document.getElementById('btn-cont').innerText = d.cont;
+            document.getElementById('btn-sett').innerText = d.sett;
+            document.getElementById('btn-back').innerText = d.back;
+            document.getElementById('sett-tit').innerText = d.sett_tit;
+            document.getElementById('t-gen').innerText = d.t_gen;
+            document.getElementById('t-vid').innerText = d.t_vid;
+            document.getElementById('t-aud').innerText = d.t_aud;
+            document.getElementById('lb-lang').innerText = d.lb_lang;
+            document.getElementById('lb-save').innerText = d.lb_save;
+            document.getElementById('lb-bri').innerText = d.lb_bri;
+            document.getElementById('lb-cens').innerText = d.lb_cens;
+            document.getElementById('lb-ins').innerText = d.lb_ins;
+            document.getElementById('lb-vol').innerText = d.lb_vol;
+            document.getElementById('lb-mus').innerText = d.lb_mus;
+        }
+
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
+
