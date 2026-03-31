@@ -21,6 +21,7 @@
         .logo { font-size: 7rem; font-weight: 900; letter-spacing: -6px; margin-bottom: 20px; }
         .btn-main { background: rgba(0,0,0,0.8); color: var(--accent); border: 1px solid var(--accent); padding: 15px 45px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-weight: bold; text-transform: uppercase; }
         .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
+        .btn-main:disabled { opacity: 0.3; cursor: not-allowed; border-color: #444; color: #444; }
 
         /* --- AJUSTES --- */
         #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,0,0.98); z-index: 9999; padding: 50px 10%; border: 2px solid var(--accent); box-sizing: border-box; overflow-y: auto; }
@@ -36,6 +37,11 @@
         .radar-line { position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: spin 4s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .ui-top { position: fixed; top: 40px; right: 80px; text-align: right; color: var(--accent); font-size: 0.8rem; line-height: 1.8; z-index: 101; }
+
+        /* --- NUEVO: PANTALLA DE CARGA Y POKÉBOX --- */
+        #loading-screen { display:none; position:fixed; z-index:9000; width:100%; height:100%; background:black; flex-direction:column; align-items:center; justify-content:center; }
+        #story-box { display:none; position:fixed; z-index:8000; width:100%; height:100%; background:black; }
+        .pkmn-msg { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:90%; height:150px; background:white; border:5px solid #444; border-radius:15px; padding:25px; color:black; font-size:1.6rem; font-weight:bold; cursor:pointer; }
     </style>
 </head>
 <body>
@@ -44,9 +50,26 @@
     <div id="bg-container"></div>
     <div class="vignette"></div>
 
+    <!-- Intro -->
     <div id="intro" onclick="start()">
         <div class="flash" id="f"></div>
-        <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2s;">TIÑI GAMES</h1>
+        <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
+    </div>
+
+    <!-- Pantalla de Carga -->
+    <div id="loading-screen">
+        <div style="width:300px; height:4px; background:#111; border:1px solid var(--accent);">
+            <div id="load-bar" style="width:0%; height:100%; background:var(--accent); transition:10s linear;"></div>
+        </div>
+        <p id="load-quote" style="margin-top:20px; color:white; font-style:italic;"></p>
+    </div>
+
+    <!-- Escena Historia -->
+    <div id="story-box">
+        <div id="story-bg" style="width:100%; height:100%; background-size:cover; background-position:center;"></div>
+        <div class="pkmn-msg" onclick="nextStep()">
+            <span id="story-txt"></span>
+        </div>
     </div>
 
     <div class="ui-top">
@@ -60,6 +83,7 @@
         <div id="txt-cap" style="color:var(--accent); letter-spacing:4px; font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
         <div class="logo">NARCOS</div>
         <button class="btn-main" id="btn-new" onclick="nuevaPartida()">Nueva Partida</button>
+        <button class="btn-main" id="btn-cont" onclick="continuar()" disabled>Seguir con partida</button>
         <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">Ajustes</button>
     </div>
 
@@ -83,42 +107,71 @@
                 </select>
             </div>
         </div>
-
-        <div id="video" class="tab-content">
-            <div class="row"><span id="lb-bri">BRILLO</span><input type="range" min="30" max="150" value="100" oninput="document.documentElement.style.setProperty('--brightness', this.value + '%')"></div>
-            <div class="row"><span id="lb-ins">CENSURA INSULTOS</span><button onclick="toggleOpt('ins')" id="opt-ins" style="border:1px solid var(--accent); color:var(--accent); background:none; padding:5px 20px;">OFF</button></div>
-            <div class="row"><span id="lb-bld">CENSURA SANGRE</span><button onclick="toggleOpt('bld')" id="opt-bld" style="border:1px solid var(--accent); color:var(--accent); background:none; padding:5px 20px;">OFF</button></div>
-        </div>
-
-        <div id="audio" class="tab-content">
-            <div class="row"><span id="lb-vol">VOLUMEN MAESTRO</span><input type="range" min="0" max="100" value="80" oninput="document.getElementById('siren').volume = this.value/100"></div>
-        </div>
         <button class="btn-main" id="btn-back" style="margin-top:40px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER</button>
     </div>
 
     <script>
         const translations = {
-            es: { cap: "CAPÍTULO 1 // LA CARAVANA", new: "NUEVA PARTIDA", sett: "AJUSTES", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SONIDO", lb_fs: "PANTALLA COMPLETA", lb_sens: "SENSIBILIDAD", lb_lang: "IDIOMA", lb_bri: "BRILLO", lb_ins: "CENSURA INSULTOS", lb_bld: "CENSURA SANGRE", lb_vol: "VOLUMEN MAESTRO", back: "VOLVER", sett_tit: "AJUSTES" },
-            en: { cap: "CHAPTER 1 // THE RV", new: "NEW GAME", sett: "SETTINGS", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "AUDIO", lb_fs: "FULLSCREEN", lb_sens: "SENSITIVITY", lb_lang: "LANGUAGE", lb_bri: "BRIGHTNESS", lb_ins: "PROFANITY CENSOR", lb_bld: "BLOOD CENSOR", lb_vol: "MASTER VOLUME", back: "BACK", sett_tit: "SETTINGS" },
-            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", new: "NOUVELLE PARTIE", sett: "PARAMÈTRES", t_gen: "GÉNÉRAL", t_vid: "VIDÉO", t_aud: "SON", lb_fs: "PLEIN ÉCRAN", lb_sens: "SENSIBILITÉ", lb_lang: "LANGUE", lb_bri: "LUMINOSITÉ", lb_ins: "CENSURE INSULTES", lb_bld: "CENSURE SANG", lb_vol: "VOLUME GÉNÉRAL", back: "RETOUR", sett_tit: "PARAMÈTRES" },
-            de: { cap: "KAPITEL 1 // DAS WOHNMOBIL", new: "NEUES SPIEL", sett: "EINSTELLUNGEN", t_gen: "ALLGEMEIN", t_vid: "VIDEO", t_aud: "SOUND", lb_fs: "VOLLBILD", lb_sens: "EMPFINDLICHKEIT", lb_lang: "SPRACHE", lb_bri: "HELLIGKEIT", lb_ins: "BELEIDIGUNGEN", lb_bld: "BLUT ZENSIEREN", lb_vol: "GESAMTVOLUMEN", back: "ZURÜCK", sett_tit: "EINSTELLUNGEN" }
+            es: { cap: "CAPÍTULO 1 // LA CARAVANA", new: "NUEVA PARTIDA", cont: "Seguir con partida", sett: "AJUSTES", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SONIDO", lb_fs: "PANTALLA COMPLETA", lb_sens: "SENSIBILIDAD", lb_lang: "IDIOMA", back: "VOLVER", sett_tit: "AJUSTES" },
+            en: { cap: "CHAPTER 1 // THE RV", new: "NEW GAME", cont: "Continue Game", sett: "SETTINGS", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "AUDIO", lb_fs: "FULLSCREEN", lb_sens: "SENSITIVITY", lb_lang: "LANGUAGE", back: "BACK", sett_tit: "SETTINGS" },
+            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", new: "NOUVELLE PARTIE", cont: "Continuer", sett: "PARAMÈTRES", t_gen: "GÉNÉRAL", t_vid: "VIDÉO", t_aud: "SON", lb_fs: "PLEIN ÉCRAN", lb_sens: "SENSIBILITÉ", lb_lang: "LANGUE", back: "RETOUR", sett_tit: "PARAMÈTRES" },
+            de: { cap: "KAPITEL 1 // DAS WOHNMOBIL", new: "NEUES SPIEL", cont: "Weiter", sett: "EINSTELLUNGEN", t_gen: "ALLGEMEIN", t_vid: "VIDEO", t_aud: "SOUND", lb_fs: "VOLLBILD", lb_sens: "EMPFINDLICHKEIT", lb_lang: "SPRACHE", back: "ZURÜCK", sett_tit: "EINSTELLUNGEN" }
         };
+
+        const storyData = [
+            { img: "https://imgur.com", txt: "Walter White es un genio de la química atrapado en una vida mediocre..." },
+            { img: "https://wallpapercave.com", txt: "Tras un diagnóstico inesperado, decide que el sistema ya no le sirve." },
+            { img: "https://imgur.com", txt: "Walt: 'Jesse, es hora de cocinar. Pero lo haremos a mi manera.'" }
+        ];
+
+        let currentStep = 0;
 
         function start() {
             if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(()=>{}); }
             document.getElementById('siren').play();
-            document.getElementById('f').style.opacity = '1';
             document.getElementById('lt').style.opacity = '1';
             setTimeout(() => { 
-                document.getElementById('intro').style.display = 'none'; // ELIMINA LA CAPA DE LA INTRO PARA SIEMPRE
+                document.getElementById('intro').style.display = 'none'; 
                 document.getElementById('bg-container').style.opacity = '1';
                 document.getElementById('menu').style.display = 'flex'; 
                 setTimeout(() => { document.getElementById('menu').style.opacity = '1'; }, 100);
             }, 3000);
         }
 
+        function nuevaPartida() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('loading-screen').style.display = 'flex';
+            document.getElementById('load-quote').innerText = "«No estoy en peligro, yo soy el peligro»";
+            localStorage.setItem('narco_save', 'true');
+            setTimeout(() => { document.getElementById('load-bar').style.width = "100%"; }, 100);
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                continuar();
+            }, 10000);
+        }
+
+        function continuar() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('story-box').style.display = 'block';
+            updateStory();
+        }
+
+        function updateStory() {
+            if(currentStep < storyData.length) {
+                let d = storyData[currentStep];
+                document.getElementById('story-bg').style.backgroundImage = `url('${d.img}')`;
+                document.getElementById('story-txt').innerText = d.txt;
+            } else {
+                alert("FIN DE LA INTRODUCCIÓN");
+                location.reload();
+            }
+        }
+
+        function nextStep() { currentStep++; updateStory(); }
+
+        window.onload = () => { if(localStorage.getItem('narco_save')) document.getElementById('btn-cont').disabled = false; };
+
         function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? 'block' : 'none'; }
-        
         function switchTab(evt, name) {
             let contents = document.getElementsByClassName("tab-content");
             for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -127,43 +180,25 @@
             document.getElementById(name).classList.add("active");
             evt.currentTarget.classList.add("active");
         }
-
         function translateAll(lang) {
             const d = translations[lang] || translations.es;
             document.getElementById('txt-cap').innerText = d.cap;
             document.getElementById('btn-new').innerText = d.new;
+            document.getElementById('btn-cont').innerText = d.cont;
             document.getElementById('btn-sett').innerText = d.sett;
             document.getElementById('btn-back').innerText = d.back;
             document.getElementById('sett-tit').innerText = d.sett_tit;
             document.getElementById('t-gen').innerText = d.t_gen;
-            document.getElementById('t-vid').innerText = d.t_vid;
-            document.getElementById('t-aud').innerText = d.t_aud;
             document.getElementById('lb-fs').innerText = d.lb_fs;
             document.getElementById('lb-sens').innerText = d.lb_sens;
             document.getElementById('lb-lang').innerText = d.lb_lang;
-            document.getElementById('lb-bri').innerText = d.lb_bri;
-            document.getElementById('lb-ins').innerText = d.lb_ins;
-            document.getElementById('lb-bld').innerText = d.lb_bld;
-            document.getElementById('lb-vol').innerText = d.lb_vol;
         }
-
         function toggleFS() {
             let txt = document.getElementById('fs-txt');
             if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(()=>{}); txt.innerText = "ON"; }
             else { document.exitFullscreen(); txt.innerText = "OFF"; }
         }
-
-        function toggleOpt(id) {
-            let el = document.getElementById('opt-' + id);
-            el.innerText = el.innerText === "OFF" ? "ON" : "OFF";
-        }
-
-        function nuevaPartida() { alert("Iniciando conexión con Jesse..."); }
-
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
-
-
-
