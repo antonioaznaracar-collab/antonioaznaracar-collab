@@ -2,151 +2,195 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NARCOS: DISPATCH | Tiñi Games Official</title>
+    <title>NARCOS: DISPATCH | Tiñi Games</title>
     <style>
-        :root { --accent: #39ff14; --bg-dark: rgba(2, 10, 2, 0.98); --brightness: 100%; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); }
+        :root { --accent: #4ec9f0; --accent-glow: rgba(78, 201, 240, 0.3); --bg-card: rgba(20, 30, 45, 0.9); --brightness: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Segoe UI', sans-serif; overflow: hidden; color: #fff; filter: brightness(var(--brightness)); }
 
-        /* --- EFECTO MONITOR --- */
-        body::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 100; background-size: 100% 4px, 3px 100%; pointer-events: none; }
+        /* --- FONDO Y VIGNETTE --- */
+        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://redd.it') center/cover; z-index: 0; transition: 2s; }
+        .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 300px #000; z-index: 1; pointer-events: none; }
 
-        /* --- FONDO DINÁMICO --- */
-        #bg-container { position: fixed; width: 100%; height: 100%; background-size: cover; background-position: center; z-index: 0; transition: 2s ease-in-out, transform 20s linear; opacity: 0; }
-        .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 250px rgba(0,0,0,1); z-index: 1; pointer-events: none; }
-
-        /* --- INTRO & HUMO --- */
+        /* --- INTRO --- */
         #intro { position: fixed; width: 100%; height: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
-        .flash { position: absolute; width: 100%; height: 100%; animation: sirenas 0.1s infinite; opacity: 0; }
-        @keyframes sirenas { 0% { background: #f00; opacity: 0.1; } 50% { background: #00f; opacity: 0.1; } }
-        #humo-trans { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle, #8a2be2 0%, transparent 80%); z-index: 999; opacity: 0; pointer-events: none; transition: 1.5s; filter: blur(60px); }
+        #humo { position: fixed; width: 100%; height: 100%; background: radial-gradient(circle, #8a2be2 0%, transparent 80%); z-index: 999; opacity: 0; transition: 1.5s; filter: blur(60px); }
 
-        /* --- MENÚ --- */
-        #menu { position: relative; z-index: 10; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 80px; opacity: 0; transition: 2s; }
-        .logo-juego { font-size: 7rem; font-weight: 900; letter-spacing: -5px; margin-bottom: 30px; text-shadow: 0 0 20px #000; }
-        .btn-main { background: rgba(0,0,0,0.8); color: var(--accent); border: 1px solid var(--accent); padding: 15px 40px; width: 320px; text-align: left; cursor: pointer; margin: 12px 0; letter-spacing: 3px; transition: 0.3s; }
-        .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); transform: translateX(10px); }
+        /* --- MENÚ PRINCIPAL --- */
+        #menu { position: relative; z-index: 10; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 80px; }
+        .logo { font-size: 6.5rem; font-weight: 900; letter-spacing: -5px; margin-bottom: 30px; text-shadow: 0 0 30px #000; }
+        .cap-tag { color: var(--accent); letter-spacing: 4px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; }
+        .btn-main { background: rgba(0,0,0,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 16px 45px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-weight: bold; transition: 0.3s; text-transform: uppercase; }
+        .btn-main:hover { border-color: var(--accent); box-shadow: 0 0 25px var(--accent-glow); padding-left: 60px; background: rgba(78, 201, 240, 0.1); }
 
-        /* --- AJUSTES --- */
-        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 200; padding: 50px 100px; box-sizing: border-box; }
-        .tab-btn { padding: 15px 40px; border: 1px solid var(--accent); background: none; color: var(--accent); cursor: pointer; margin-right: 5px; }
-        .tab-btn.active { background: var(--accent); color: #000; }
-        .row { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.2); padding: 25px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        /* --- PANEL AJUSTES (ESTILO DISPATCH) --- */
+        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 15, 25, 0.98); z-index: 200; padding: 40px 10%; box-sizing: border-box; }
+        .tabs-header { display: flex; justify-content: center; gap: 8px; margin-bottom: 45px; }
+        .tab { padding: 14px 65px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; cursor: pointer; color: #777; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; transition: 0.3s; }
+        .tab.active { background: var(--bg-card); color: #fff; border-bottom: 3px solid var(--accent); box-shadow: 0 5px 15px var(--accent-glow); }
 
-        /* --- UI RADAR --- */
-        .radar { position: absolute; bottom: 50px; right: 80px; width: 120px; height: 120px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.4; }
-        .radar-line { position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: spin 4s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .ui-top { position: fixed; top: 40px; right: 80px; text-align: right; color: var(--accent); font-size: 0.8rem; line-height: 1.8; opacity: 0.8; z-index: 101; }
+        .setting-block { background: var(--bg-card); border: 1px solid rgba(78, 201, 240, 0.15); border-radius: 6px; padding: 22px 35px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .label { font-weight: bold; letter-spacing: 1px; color: #ddd; text-transform: uppercase; font-size: 0.85rem; }
+        
+        .control-box { display: flex; align-items: center; gap: 20px; background: rgba(0,0,0,0.4); padding: 10px 25px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); min-width: 220px; justify-content: center; color: var(--accent); font-weight: bold; }
+        .arrow { cursor: pointer; color: var(--accent); font-size: 1.3rem; user-select: none; }
+        select { background: transparent; color: var(--accent); border: none; font-weight: bold; cursor: pointer; outline: none; font-family: inherit; font-size: 0.9rem; }
+        input[type="range"] { accent-color: var(--accent); width: 160px; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
 
     <audio id="siren" loop src="https://soundjay.com"></audio>
-
-    <div id="humo-trans"></div>
+    <div id="humo"></div>
     <div id="bg-container"></div>
     <div class="vignette"></div>
 
     <div id="intro" onclick="start()">
-        <div class="flash" id="f"></div>
-        <h1 id="lt" style="font-size: 3.5rem; letter-spacing: 25px; opacity:0; transition: 3s;">TIÑI GAMES</h1>
+        <h1 id="lt" style="font-size: 3.5rem; letter-spacing: 20px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
     </div>
 
-    <div class="ui-top">
-        LOC: 35.0844 N / 106.6504 W<br>
-        DEPT: DEA_SURVEILLANCE<br>
-        <span id="clock">00:00:00</span>
-    </div>
-    <div class="radar"><div class="radar-line"></div></div>
-
+    <!-- Menú Principal -->
     <div id="menu">
-        <div id="txt-cap" style="color:var(--accent); letter-spacing:5px; font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
-        <div class="logo-juego">NARCOS</div>
-        <button class="btn-main" onclick="nuevaPartida()">NUEVA PARTIDA</button>
-        <button class="btn-main" id="btn-cont" disabled onclick="continuar()">CONTINUAR</button>
-        <button class="btn-main" onclick="toggleSettings(true)">AJUSTES</button>
+        <div class="cap-tag" id="txt-cap">CAPÍTULO 1 // LA CARAVANA</div>
+        <div class="logo">NARCOS</div>
+        <button class="btn-main" id="btn-new" onclick="alert('Iniciando...')">Nueva Partida</button>
+        <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">Ajustes</button>
     </div>
 
-    <!-- Ajustes Interactivos -->
+    <!-- Ajustes -->
     <div id="settings-panel">
-        <h1 style="color:var(--accent); letter-spacing:15px;">SETTINGS</h1>
-        <div class="row">
-            <span>PANTALLA COMPLETA</span>
-            <button onclick="toggleFS()" id="fs-status" style="background:var(--accent); border:none; padding:10px 20px; font-weight:bold;">ON</button>
+        <div class="tabs-header">
+            <div class="tab active" id="t-gen" onclick="switchTab(event, 'general')">GENERAL</div>
+            <div class="tab" id="t-vid" onclick="switchTab(event, 'video')">VIDEO</div>
+            <div class="tab" id="t-aud" onclick="switchTab(event, 'sound')">SONIDO</div>
         </div>
-        <div class="row">
-            <span>BRILLO</span>
-            <input type="range" min="30" max="150" value="100" oninput="document.documentElement.style.setProperty('--brightness', this.value + '%')">
+
+        <!-- GENERAL -->
+        <div id="general" class="tab-content active">
+            <div class="setting-block">
+                <span class="label" id="lb-fs">PANTALLA COMPLETA</span>
+                <div class="control-box">
+                    <span class="arrow" onclick="toggleFS()"> < </span>
+                    <span id="fs-txt">ON</span>
+                    <span class="arrow" onclick="toggleFS()"> > </span>
+                </div>
+            </div>
+            <div class="setting-block">
+                <span class="label" id="lb-sens">SENSIBILIDAD</span>
+                <div class="control-box"><input type="range" min="1" max="100" value="50"></div>
+            </div>
+            <div class="setting-block">
+                <span class="label" id="lb-lang">IDIOMA</span>
+                <div class="control-box">
+                    <select onchange="translateGame(this.value)">
+                        <option value="es">ESPAÑOL</option>
+                        <option value="en">ENGLISH</option>
+                        <option value="fr">FRANÇAIS</option>
+                        <option value="de">DEUTSCH</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <button class="btn-main" style="margin-top:40px;" onclick="toggleSettings(false)">VOLVER</button>
+
+        <!-- VIDEO -->
+        <div id="video" class="tab-content">
+            <div class="setting-block">
+                <span class="label" id="lb-bri">BRILLO</span>
+                <div class="control-box">
+                    <input type="range" min="30" max="150" value="100" oninput="document.documentElement.style.setProperty('--brightness', this.value + '%')">
+                </div>
+            </div>
+            <div class="setting-block">
+                <span class="label" id="lb-bld">CENSURAR SANGRE</span>
+                <div class="control-box">
+                    <span class="arrow" onclick="toggleOpt('sangre')"> < </span>
+                    <span id="opt-sangre">OFF</span>
+                    <span class="arrow" onclick="toggleOpt('sangre')"> > </span>
+                </div>
+            </div>
+            <div class="setting-block">
+                <span class="label" id="lb-ins">CENSURAR INSULTOS</span>
+                <div class="control-box">
+                    <span class="arrow" onclick="toggleOpt('insultos')"> < </span>
+                    <span id="opt-insultos">OFF</span>
+                    <span class="arrow" onclick="toggleOpt('insultos')"> > </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SONIDO -->
+        <div id="sound" class="tab-content">
+            <div class="setting-block">
+                <span class="label" id="lb-mvol">VOLUMEN MAESTRO</span>
+                <div class="control-box"><input type="range" min="0" max="100" value="80" oninput="document.getElementById('siren').volume = this.value/100"></div>
+            </div>
+            <div class="setting-block">
+                <span class="label" id="lb-mus">MÚSICA</span>
+                <div class="control-box"><input type="range" min="0" max="100" value="50"></div>
+            </div>
+        </div>
+
+        <button class="btn-main" id="btn-back" style="margin-top:40px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER</button>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE CAPÍTULOS E IMÁGENES
-        const capitulos = {
-            1: { 
-                nombre: "CAPÍTULO 1 // LA CARAVANA", 
-                img: "https://redd.it" 
-            },
-            2: { 
-                nombre: "CAPÍTULO 2 // EL LABORATORIO", 
-                img: "https://imgur.com" 
-            }
+        const langData = {
+            es: { cap: "CAPÍTULO 1 // LA CARAVANA", new: "Nueva Partida", sett: "Ajustes", back: "Volver", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SONIDO", lb_fs: "PANTALLA COMPLETA", lb_sens: "SENSIBILIDAD", lb_lang: "IDIOMA", lb_bri: "BRILLO", lb_bld: "CENSURAR SANGRE", lb_ins: "CENSURAR INSULTOS", lb_mvol: "VOLUMEN MAESTRO", lb_mus: "MÚSICA" },
+            en: { cap: "CHAPTER 1 // THE RV", new: "New Game", sett: "Settings", back: "Back", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SOUND", lb_fs: "FULLSCREEN", lb_sens: "SENSITIVITY", lb_lang: "LANGUAGE", lb_bri: "BRIGHTNESS", lb_bld: "CENSOR BLOOD", lb_ins: "CENSOR PROFANITY", lb_mvol: "MASTER VOLUME", lb_mus: "MUSIC" },
+            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", new: "Nouvelle Partie", sett: "Paramètres", back: "Retour", t_gen: "GÉNÉRAL", t_vid: "VIDÉO", t_aud: "SON", lb_fs: "PLEIN ÉCRAN", lb_sens: "SENSIBILITÉ", lb_lang: "LANGUE", lb_bri: "LUMINOSITÉ", lb_bld: "CENSURER SANG", lb_ins: "CENSURER INSULTES", lb_mvol: "VOLUME GÉNÉRAL", lb_mus: "MUSIQUE" },
+            de: { cap: "KAPITEL 1 // DAS WOHNMOBIL", new: "Neues Spiel", sett: "Einstellungen", back: "Zurück", t_gen: "ALLGEMEIN", t_vid: "VIDEO", t_aud: "SOUND", lb_fs: "VOLLBILD", lb_sens: "EMPFINDLICHKEIT", lb_lang: "SPRACHE", lb_bri: "HELLIGKEIT", lb_bld: "BLUT ZENSIEREN", lb_ins: "BELEIDIGUNGEN ZENSIEREN", lb_mvol: "GESAMTVOLUMEN", lb_mus: "MUSIK" }
         };
 
+        function translateGame(lang) {
+            const d = langData[lang];
+            document.getElementById('txt-cap').innerText = d.cap;
+            document.getElementById('btn-new').innerText = d.new;
+            document.getElementById('btn-sett').innerText = d.sett;
+            document.getElementById('btn-back').innerText = d.back;
+            document.getElementById('t-gen').innerText = d.t_gen;
+            document.getElementById('t-vid').innerText = d.t_vid;
+            document.getElementById('t-aud').innerText = d.t_aud;
+            document.getElementById('lb-fs').innerText = d.lb_fs;
+            document.getElementById('lb-sens').innerText = d.lb_sens;
+            document.getElementById('lb-lang').innerText = d.lb_lang;
+            document.getElementById('lb-bri').innerText = d.lb_bri;
+            document.getElementById('lb-bld').innerText = d.lb_bld;
+            document.getElementById('lb-ins').innerText = d.lb_ins;
+            document.getElementById('lb-mvol').innerText = d.lb_mvol;
+            document.getElementById('lb-mus').innerText = d.lb_mus;
+        }
+
         function start() {
-            toggleFS(true);
+            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
             document.getElementById('siren').play();
-            document.getElementById('f').style.opacity = '1';
             document.getElementById('lt').style.opacity = '1';
-            
-            // Cargar imagen según capítulo guardado
-            let capActual = localStorage.getItem('narco_cap') || 1;
-            document.getElementById('bg-container').style.backgroundImage = `url('${capitulos[capActual].img}')`;
-            document.getElementById('txt-cap').innerText = capitulos[capActual].nombre;
-
-            setTimeout(() => { 
-                document.getElementById('humo-trans').style.opacity = '1';
-                document.getElementById('lt').style.opacity = '0';
-            }, 3000);
-
-            setTimeout(() => { 
-                document.getElementById('intro').style.display = 'none'; 
-                document.getElementById('humo-trans').style.opacity = '0'; 
-                document.getElementById('bg-container').style.opacity = '1';
-                document.getElementById('menu').style.display = 'flex'; 
-                setTimeout(() => { document.getElementById('menu').style.opacity = '1'; }, 100);
-                document.getElementById('bg-container').style.transform = 'scale(1.2)';
-            }, 4500);
+            setTimeout(() => { document.getElementById('humo').style.opacity = '1'; document.getElementById('lt').style.opacity = '0'; }, 2500);
+            setTimeout(() => { document.getElementById('intro').style.display = 'none'; document.getElementById('menu').style.display = 'flex'; setTimeout(() => { document.getElementById('menu').style.opacity = '1'; }, 100); }, 4000);
         }
 
-        function nuevaPartida() {
-            localStorage.setItem('narco_cap', 1);
-            alert("Iniciando Capítulo 1...");
-            location.reload();
+        function switchTab(evt, name) {
+            let contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+            let tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+            document.getElementById(name).classList.add("active");
+            evt.currentTarget.classList.add("active");
         }
 
-        function continuar() {
-            let cap = localStorage.getItem('narco_cap');
-            alert("Cargando Capítulo " + cap + "...");
+        function toggleFS() {
+            let txt = document.getElementById('fs-txt');
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); txt.innerText = "ON"; }
+            else { document.exitFullscreen(); txt.innerText = "OFF"; }
         }
 
-        if(localStorage.getItem('narco_cap')) {
-            document.getElementById('btn-cont').disabled = false;
-        }
-
-        function toggleFS(force = false) {
-            if (!document.fullscreenElement || force) {
-                document.documentElement.requestFullscreen().catch(() => {});
-                document.getElementById('fs-status').innerText = "ON";
-            } else {
-                document.exitFullscreen();
-                document.getElementById('fs-status').innerText = "OFF";
-            }
+        function toggleOpt(id) {
+            let el = document.getElementById('opt-' + id);
+            el.innerText = el.innerText === "OFF" ? "ON" : "OFF";
         }
 
         function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? 'block' : 'none'; }
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
