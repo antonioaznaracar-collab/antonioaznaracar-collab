@@ -1,1 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ultimate Smash 2.5D - GitHub Edition</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000; color: white; }
+        canvas { display: block; }
+        
+        /* UI CAPA SUPERIOR */
+        #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        /* MENÚ X */
+        #menu-x { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9); padding: 30px; border: 4px solid #00f2ff;
+            display: none; pointer-events: auto; text-align: center; border-radius: 15px;
+            box-shadow: 0 0 20px #00f2ff;
+        }
+
+        /* SELECCIÓN DE PERSONAJES */
+        #char-select { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(45deg, #1a1a1a, #4b0082); display: none; pointer-events: auto; 
+        }
+        .grid { display: grid; grid-template-columns: repeat(3, 120px); gap: 20px; padding: 60px; }
+        .char-card { 
+            width: 120px; height: 150px; background: #333; border: 3px solid #fff; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        #preview-box { 
+            position: absolute; right: 10%; top: 20%; width: 400px; height: 400px; 
+            border: 5px solid gold; background: rgba(0,0,0,0.5); text-align: center; 
+        }
+
+        /* HUD COMBATE */
+        #hud { 
+            position: absolute; bottom: 30px; width: 100%; display: flex; 
+            justify-content: space-around; font-size: 45px; font-weight: 900;
+            text-shadow: 3px 3px 5px #000;
+        }
+        .percent { color: #ff0000; font-size: 60px; }
+
+        /* PANTALLA FINAL */
+        #end-screen { 
+            position: absolute; top: 0; width: 100%; height: 100%; 
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.9); z-index: 100;
+        }
+        .win-banner { font-size: 100px; color: gold; text-transform: uppercase; }
+        
+        button { padding: 15px 30px; font-size: 20px; cursor: pointer; margin: 10px; background: #00f2ff; border: none; }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <!-- MENÚ AL PULSAR X -->
+    <div id="menu-x">
+        <h1>PAUSA - MENU</h1>
+        <button onclick="alert('Modo Historia: En Progreso...')">MODO HISTORIA</button>
+        <button onclick="alert('Multijugador: En Progreso...')">MULTIJUGADOR</button>
+        <button onclick="showSelect()">PARTIDAS</button>
+        <p>Pulsa X para volver</p>
+    </div>
+
+    <!-- SELECCIÓN -->
+    <div id="char-select">
+        <h1 style="text-align:center">CHOOSE YOUR CHARACTER</h1>
+        <div class="grid">
+            <div class="char-card" onclick="previewChar('NINJA')">NINJA</div>
+            <div class="char-card" onclick="previewChar('ROBOT')">ROBOT</div>
+            <div class="char-card" onclick="previewChar('MAGO')">MAGO</div>
+        </div>
+        <div id="preview-box">
+            <h2 id="preview-name">NAME</h2>
+            <div id="status-msg">...</div>
+            <button onclick="selectFinal()" style="margin-top:250px">ELEGIR</button>
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud">
+        <div>P1: <span id="p1-perc" class="percent">0</span>%</div>
+        <div id="timer">20:00</div>
+        <div>P2: <span id="p2-perc" class="percent">0</span>%</div>
+    </div>
+
+    <!-- FINAL -->
+    <div id="end-screen">
+        <div id="banner" class="win-banner">YOU WIN!</div>
+        <div id="dance-scene" style="font-size:30px">🕺 <span style="font-size:20px">😭</span></div>
+        <button onclick="location.reload()">REPLAY</button>
+    </div>
+</div>
+
+<script src="https://cloudflare.com"></script>
+<script src="https://cloudflare.com"></script>
+
+<script>
+// --- MOTOR 3D ---
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// ILUMINACIÓN
+const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+sun.position.set(5, 15, 10);
+scene.add(sun, new THREE.AmbientLight(0x404040, 1.5));
+
+// ESCENARIO ANIMADO (Barco Pirata)
+const ship = new THREE.Group();
+const deck = new THREE.Mesh(new THREE.BoxGeometry(14, 1, 5), new THREE.MeshPhongMaterial({color: 0x5c3d2e}));
+ship.add(deck);
+scene.add(ship);
+
+// MAR
+const sea = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshPhongMaterial({color: 0x0044ff, transparent:true, opacity:0.7}));
+sea.rotation.x = -Math.PI/2;
+sea.position.y = -6;
+scene.add(sea);
+
+// PERSONAJES
+const p1 = createPlayer(0xff0000, -4);
+const p2 = createPlayer(0x0000ff, 4);
+
+function createPlayer(col, x) {
+    const g = new THREE.Group();
+    const b = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), new THREE.MeshPhongMaterial({color: col}));
+    g.add(b);
+    g.position.set(x, 2, 0);
+    scene.add(g);
+    return { obj: g, perc: 0, stocks: 3, jumps: 0, velY: 0, power: 0 };
+}
+
+camera.position.set(0, 6, 14);
+camera.lookAt(0, 0, 0);
+
+// --- LÓGICA ---
+let active = false;
+let mode = "START"; 
+const keys = {};
+
+window.onkeydown = (e) => {
+    keys[e.code] = true;
+    if(e.code === 'KeyX') toggleXMenu();
+};
+window.onkeyup = (e) => keys[e.code] = false;
+
+function toggleXMenu() {
+    const m = document.getElementById('menu-x');
+    m.style.display = m.style.display === 'block' ? 'none' : 'block';
+}
+
+function showSelect() {
+    document.getElementById('menu-x').style.display = 'none';
+    document.getElementById('char-select').style.display = 'block';
+}
+
+function previewChar(n) {
+    document.getElementById('preview-name').innerText = n;
+    document.getElementById('status-msg').innerText = "BAILE DE VICTORIA!";
+    // Pequeña animación de salto del preview
+    new TWEEN.Tween(p1.obj.position).to({y: 4}, 300).yoyo(true).repeat(1).start();
+}
+
+function selectFinal() {
+    document.getElementById('status-msg').innerText = "ELECCIÓN SABIA";
+    // Animación portal
+    new TWEEN.Tween(p1.obj.position).to({y: 15, z: -10}, 800).easing(TWEEN.Easing.Quadratic.In).onComplete(()=>{
+        document.getElementById('char-select').style.display = 'none';
+        p1.obj.position.set(-4, 2, 0);
+        active = true;
+    }).start();
+}
+
+// BUCLE DE JUEGO
+function gameLoop(t) {
+    requestAnimationFrame(gameLoop);
+    TWEEN.update(t);
+
+    if(active) {
+        // MOVIMIENTO P1 (W A S D)
+        if(keys['KeyA']) p1.obj.position.x -= 0.15;
+        if(keys['KeyD']) p1.obj.position.x += 0.15;
+        
+        // SALTO DOBLE (Espacio)
+        if(keys['Space'] && p1.jumps < 2) {
+            p1.velY = 0.22;
+            p1.jumps++;
+            keys['Space'] = false; // Evita salto infinito
+        }
+
+        // FÍSICAS
+        p1.obj.position.y += p1.velY;
+        if(p1.obj.position.y > 1) {
+            p1.velY -= 0.01;
+        } else {
+            p1.obj.position.y = 1;
+            p1.velY = 0;
+            p1.jumps = 0;
+        }
+
+        // ATAQUES (M, K, E)
+        if(keys['KeyK']) { /* Animación Golpe */ p2.perc += 5; updateHUD(); }
+
+        // RING OUT (EXPLOSIÓN)
+        if(Math.abs(p1.obj.position.x) > 10 || p1.obj.position.y < -3) {
+            p1.obj.position.set(0, 10, 0);
+            p1.perc = 0;
+            updateHUD();
+        }
+
+        // BARCO SE MUEVE
+        ship.rotation.z = Math.sin(t/1000) * 0.05;
+        sea.position.y = -6 + Math.sin(t/800) * 0.3;
+    }
+
+    renderer.render(scene, camera);
+}
+
+function updateHUD() {
+    document.getElementById('p1-perc').innerText = p1.perc;
+    document.getElementById('p2-perc').innerText = p2.perc;
+}
+
+function showWinner(isP1) {
+    active = false;
+    document.getElementById('end-screen').style.display = 'flex';
+    if(isP1) {
+        document.getElementById('banner').innerText = "YOU WIN!";
+        document.getElementById('banner').style.color = "gold";
+    } else {
+        document.getElementById('banner').innerText = "YOU LOST";
+        document.getElementById('banner').style.color = "red";
+    }
+}
+
+gameLoop();
+</script>
+</body>
+</html>
 
