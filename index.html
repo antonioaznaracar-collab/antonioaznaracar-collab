@@ -3,469 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | TIÑI GAMES MASTER BUILD v20.0 FINAL</title>
+    <title>NARCOS: DISPATCH | PS5 TACTICAL OS v7.5 FINAL</title>
     <style>
-        /* --- NÚCLEO TÉCNICO Y VARIABLES --- */
-        :root {
-            --accent: #39ff14;
+        /* --- NÚCLEO DE ESTILOS: ESTILO TRIPLE A (PS5/COD) --- */
+        :root { 
+            --accent: #39ff14; 
             --accent-dim: rgba(57, 255, 20, 0.15);
             --danger: #ff4d4d;
-            --bg-master: #000000;
-            --font-tactical: 'Courier New', Courier, monospace;
-            --font-display: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            --rockstar-neon: #ff00ff;
-            --rockstar-orange: #ff8c00;
-            --ps5-glow: 0 0 35px rgba(57, 255, 20, 0.3);
+            --bg-deep: #050505;
+            --ui-card: rgba(255, 255, 255, 0.03);
+            --font-main: 'Courier New', Courier, monospace;
+            --ps5-glow: 0 0 25px rgba(57, 255, 20, 0.35);
         }
 
-        * { box-sizing: border-box; outline: none; margin: 0; padding: 0; }
-        
+        * { box-sizing: border-box; outline: none; }
         body, html { 
-            width: 100%; height: 100%; background: var(--bg-master); 
-            font-family: var(--font-tactical); overflow: hidden; 
-            color: white; -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg-deep); font-family: var(--font-main); 
+            overflow: hidden; color: white; -webkit-font-smoothing: antialiased;
         }
 
-        /* CAPAS DE ATMÓSFERA AAA */
-        .crt-scanlines {
-            position: fixed; inset: 0; z-index: 10000; pointer-events: none;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px; opacity: 0.12;
+        /* --- POST-PROCESADO Y ATMÓSFERA --- */
+        .crt-overlay {
+            position: fixed; inset: 0; pointer-events: none; z-index: 99999;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%; opacity: 0.4;
         }
+
         .vignette {
-            position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+            position: fixed; inset: 0; pointer-events: none; z-index: 99998;
             background: radial-gradient(circle, transparent 40%, black 150%);
         }
-        .noise {
-            position: fixed; inset: 0; z-index: 9998; pointer-events: none;
-            background: url('https://wikimedia.org');
-            opacity: 0.02; animation: noiseShift 0.2s steps(2) infinite;
-        }
-        @keyframes noiseShift { from { transform: translate(0,0); } to { transform: translate(-5%, -5%); } }
 
-        /* --- 1. INTRO: TIÑI GAMES (ESTILO ROCKSTAR NEON) --- */
-        #intro-layer {
-            position: fixed; inset: 0; z-index: 9000; background: #000;
+        #master-fade { 
+            position: fixed; inset: 0; background: black; z-index: 100000; 
+            pointer-events: none; opacity: 0; transition: 2s; 
+        }
+
+        /* --- INTRO: TIÑI GAMES --- */
+        #intro-layer { 
+            position: fixed; inset: 0; z-index: 80000; background: #000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer;
+            cursor: pointer; transition: 1.2s cubic-bezier(1, 0, 0, 1);
         }
-        .tg-frame {
-            width: 280px; height: 280px; border: 8px solid #fff; border-radius: 55px;
-            display: flex; align-items: center; justify-content: center; position: relative;
-            animation: neonPulse 4s infinite, introEntry 6s cubic-bezier(0.1, 0, 0, 1) forwards;
-        }
-        .tg-initials { font-size: 9rem; font-weight: 900; font-style: italic; color: #fff; line-height: 1; }
-        .tg-star { position: absolute; bottom: 20px; right: 20px; font-size: 4.5rem; color: #fff; animation: starFlicker 1.5s infinite; }
+        #intro-layer h1 { font-size: 5rem; letter-spacing: 25px; transition: 0.8s; margin: 0; }
+        #intro-layer:hover h1 { color: var(--accent); text-shadow: var(--ps5-glow); }
 
-        @keyframes neonPulse {
-            0%, 100% { box-shadow: 0 0 50px var(--rockstar-neon), inset 0 0 25px var(--rockstar-neon); border-color: #fff; }
-            50% { box-shadow: 0 0 80px var(--rockstar-orange), inset 0 0 35px var(--rockstar-orange); border-color: var(--rockstar-orange); }
+        /* --- INTERFAZ PRINCIPAL (ESCALA CORREGIDA) --- */
+        #game-interface { 
+            opacity: 0; visibility: hidden; transition: 2s ease-in-out;
+            height: 100vh; width: 100vw; position: relative;
+            display: flex; align-items: center;
         }
-        @keyframes introEntry {
-            0% { opacity: 0; transform: scale(0.6) rotate(-15deg); filter: blur(30px); }
-            35% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
-            100% { opacity: 0; transform: scale(1.4); filter: blur(70px); }
-        }
-        @keyframes starFlicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        /* --- 2. MENÚ PRINCIPAL (ESTILO AAA) --- */
-        #main-ui {
-            display: none; height: 100vh; width: 100vw;
-            background: linear-gradient(90deg, #000 35%, transparent 100%),
+        #bg-particles { position: fixed; inset: 0; z-index: -1; opacity: 0.4; }
+        #bg-cinematic { 
+            position: fixed; inset: 0; z-index: -2; 
+            background: linear-gradient(90deg, black 30%, transparent 100%),
                         url('https://alphacoders.com') center/cover;
-            padding: 6% 10%; position: relative; animation: fadeMenu 3s ease;
-        }
-        @keyframes fadeMenu { from { opacity: 0; filter: brightness(0); } to { opacity: 1; filter: brightness(1); } }
-
-        .brand-block { margin-bottom: 80px; border-left: 8px solid var(--accent); padding-left: 45px; }
-        .title-txt { font-size: 13rem; font-weight: 900; line-height: 0.75; letter-spacing: -12px; margin: 0; }
-        .sub-txt { 
-            display: block; color: var(--accent); font-size: 1.3rem; 
-            letter-spacing: 18px; margin-top: 25px; font-weight: bold;
-            text-transform: uppercase; text-shadow: 0 0 25px var(--accent);
+            filter: grayscale(100%) brightness(0.4);
         }
 
-        .btn-column { display: flex; flex-direction: column; gap: 12px; margin-top: 60px; }
-        .btn-nav {
-            background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.5); padding: 25px 50px; width: 550px;
-            text-align: left; font-size: 1.2rem; font-weight: 900;
-            letter-spacing: 6px; text-transform: uppercase; cursor: pointer;
-            transition: 0.4s cubic-bezier(0.1, 0, 0, 1);
-            font-family: inherit;
-        }
-        .btn-nav:hover:not(:disabled) {
-            background: #fff; color: #000; transform: translateX(35px);
-            box-shadow: 0 20px 50px rgba(255,255,255,0.15); border-color: #fff;
-        }
-        .btn-nav:disabled { opacity: 0.1; cursor: not-allowed; }
+        /* --- BRANDING --- */
+        #brand-box { padding-left: 8%; z-index: 100; }
+        .logo-main { font-size: 8rem; font-weight: 900; margin: 0; letter-spacing: -6px; line-height: 0.8; }
+        .sub-brand { display: block; color: var(--accent); font-size: 1.2rem; letter-spacing: 10px; margin-top: 25px; opacity: 0.8; font-weight: bold; }
+        .cap-tag { display: block; color: #fff; font-size: 0.9rem; letter-spacing: 5px; margin-top: 15px; font-weight: bold; opacity: 0.6; }
 
-        /* HUD TÁCTICO */
-        .hud-clock-small { position: fixed; top: 60px; right: 100px; font-size: 3rem; font-weight: 900; color: var(--accent); opacity: 0.8; }
-        .radar-tactical { 
-            position: fixed; bottom: 60px; left: 80px; width: 300px; height: 180px; 
-            border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.6);
+        /* --- BOTONES TÁCTICOS --- */
+        .btn-ps5 {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--accent-dim);
+            color: var(--accent); padding: 22px 55px; width: 450px;
+            text-align: left; font-family: inherit; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; margin-top: 18px;
+            transition: 0.4s; position: relative; letter-spacing: 3px; font-size: 0.95rem;
         }
-        .radar-beam { width: 100%; height: 3px; background: var(--accent); position: absolute; animation: scanRadar 5s infinite linear; }
-        @keyframes scanRadar { 0% { top: 0; } 100% { top: 100%; } }
+        .btn-ps5:hover:not(:disabled) {
+            background: var(--accent); color: black; transform: translateX(30px);
+            box-shadow: var(--ps5-glow);
+        }
+        .btn-ps5:disabled { border-color: #222; color: #444; cursor: not-allowed; opacity: 0.4; }
 
-        .meta-data { position: fixed; bottom: 60px; right: 100px; text-align: right; font-size: 0.85rem; line-height: 2.2; opacity: 0.3; letter-spacing: 4px; }
-
-        /* --- 3. AJUSTES (ESTILO DISPATCH - 100% INTERACTIVO) --- */
+        /* --- PANEL DE AJUSTES --- */
         #settings-ui { 
-            display: none; position: fixed; inset: 0; z-index: 8500; 
-            background: rgba(5, 5, 10, 0.99); padding: 60px 10%;
-            border-top: 12px solid var(--accent); overflow-y: auto;
+            display: none; position: fixed; inset: 0; background: rgba(0,6,0,0.99); 
+            z-index: 50000; padding: 80px 12%; border-left: 10px solid var(--accent);
+            overflow-y: auto;
         }
-        .tabs-header { display: flex; justify-content: center; gap: 30px; border-bottom: 2px solid #111; padding-bottom: 35px; }
-        .tab-btn {
-            background: transparent; border: 2px solid #222; color: #444;
-            padding: 18px 50px; font-weight: 900; letter-spacing: 6px; cursor: pointer;
-            text-transform: uppercase; transition: 0.4s; min-width: 280px;
-        }
-        .tab-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(57,255,20,0.02); }
-
-        .set-container { margin-top: 60px; }
-        .set-row {
-            background: rgba(255,255,255,0.02); margin-bottom: 15px; padding: 30px 60px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid #0f0f0f;
-        }
-        .set-row:hover { border-color: #222; background: rgba(255,255,255,0.04); }
-        .set-label-box b { display: block; font-size: 1.3rem; letter-spacing: 4px; color: #777; text-transform: uppercase; }
-
-        /* SELECTORES CON FLECHAS (CALCADOS A DISPATCH) */
-        .arrow-selector { display: flex; align-items: center; gap: 35px; width: 450px; justify-content: space-between; }
-        .f-arrow { cursor: pointer; color: var(--accent); font-size: 2.5rem; user-select: none; transition: 0.2s; }
-        .f-arrow:hover { transform: scale(1.3); text-shadow: 0 0 20px var(--accent); }
-        .val-display { font-weight: 900; letter-spacing: 4px; text-align: center; width: 280px; font-size: 1.1rem; color: #fff; text-transform: uppercase; }
-
-        input[type="range"] { width: 400px; accent-color: var(--accent); cursor: pointer; }
-
-        /* --- 4. HISTORIA (DISEÑO ELEGANTE Y ESPACIADO) --- */
-        #story-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 7500; padding: 0 15%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .s-slide { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: left; width: 100%; }
-        .s-slide.active { display: flex; animation: slideReveal 3s cubic-bezier(0.1, 0, 0, 1) forwards; }
-        @keyframes slideReveal { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        .settings-header { border-bottom: 2px solid var(--accent); padding-bottom: 30px; margin-bottom: 50px; display: flex; justify-content: space-between; align-items: center; }
         
-        .s-img-frame { 
-            width: 100%; max-width: 1050px; height: 420px; 
-            background: #050505; border: 1px solid #111; 
-            margin-bottom: 70px; position: relative;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+        .setting-card { 
+            background: var(--ui-card); padding: 35px 50px; margin-bottom: 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border: 1px solid rgba(57,255,20,0.1); transition: 0.3s;
         }
-        .s-img-frame::before { content: "DATA_FILE_#00741"; position: absolute; top: -35px; left: 0; font-size: 0.8rem; color: #333; letter-spacing: 3px; }
+        .setting-card:hover { border-color: var(--accent); background: rgba(57,255,20,0.05); transform: scale(1.01); }
 
-        .s-txt-box { 
-            font-size: 1.9rem; line-height: 1.8; color: #ccc;
-            border-left: 12px solid var(--accent); padding-left: 60px; 
-            max-width: 950px; font-weight: 300; letter-spacing: 1px;
-            text-align: left;
+        .toggle-tactical { 
+            width: 140px; padding: 15px; cursor: pointer; border: 2px solid var(--accent);
+            background: transparent; color: var(--accent); font-weight: bold; transition: 0.4s; text-align: center;
         }
+        .toggle-tactical.on { background: var(--accent); color: black; box-shadow: var(--ps5-glow); }
+        .toggle-tactical.off { border-color: #444; color: #444; }
 
-        .continue-btn { 
-            position: fixed; bottom: 80px; right: 120px; background: transparent; 
-            border: none; color: #444; font-size: 1rem; font-weight: 900; 
-            letter-spacing: 6px; cursor: pointer; text-transform: uppercase; transition: 0.3s; 
-        }
-        .continue-btn:hover { color: #fff; letter-spacing: 10px; }
+        input[type=range] { -webkit-appearance: none; background: #222; height: 4px; width: 250px; accent-color: var(--accent); }
 
-        /* --- 5. PANTALLA DE CARGA (GALERÍA Y FRASES) --- */
-        #load-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 9500; }
-        .load-art-gallery { 
-            position: absolute; inset: 0; background-size: cover; background-position: center; 
-            transition: background-image 2.5s ease-in-out; filter: grayscale(100%) contrast(1.2) brightness(0.4); 
-            animation: zoomArt 25s infinite alternate; 
+        /* --- NARRATIVA Y CARGA --- */
+        #story-engine { 
+            display: none; position: fixed; inset: 0; background: #000; z-index: 20000; 
+            flex-direction: column; align-items: center; justify-content: center; padding: 8%;
         }
-        @keyframes zoomArt { from { transform: scale(1); } to { transform: scale(1.15); } }
+        .story-slide { display: none; width: 100%; max-width: 1000px; animation: slideIn 1.5s forwards; }
+        .story-slide.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; filter: blur(30px); transform: scale(1.1); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
+        .slide-media { width: 100%; height: 450px; background: #080808; border: 1px solid #333; margin-bottom: 40px; }
+        .slide-text { font-size: 1.8rem; line-height: 1.6; border-left: 8px solid var(--accent); padding-left: 45px; }
+
+        #loading-overlay { 
+            display: none; position: fixed; inset: 0; background: black; z-index: 40000; 
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        #load-label { color: var(--accent); font-size: 3rem; letter-spacing: 20px; margin-bottom: 40px; text-shadow: var(--ps5-glow); }
+        .progress-track { width: 550px; height: 3px; background: #111; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent); box-shadow: var(--ps5-glow); }
+
+        /* --- REVELACIÓN FINAL: NARCOS MASTER --- */
+        #mega-reveal { 
+            display: none; position: fixed; inset: 0; background: black; z-index: 90000; 
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        #reveal-logo { font-size: 10vw; letter-spacing: 40px; font-weight: 900; opacity: 0; transform: scale(0.7); filter: blur(40px); transition: 5s cubic-bezier(0.1, 0, 0, 1); }
         
-        .load-info-panel { position: absolute; bottom: 120px; right: 120px; width: 750px; text-align: right; z-index: 10; }
-        .quote-container { min-height: 120px; margin-bottom: 35px; }
-        .quote-txt { color: var(--accent); font-size: 1.5rem; font-style: italic; line-height: 1.4; text-shadow: 0 0 15px var(--accent); display: block; }
-        .quote-author { display: block; font-size: 0.85rem; margin-top: 15px; color: #666; letter-spacing: 6px; text-transform: uppercase; font-weight: 900; }
+        #reveal-sub { 
+            color: var(--accent); font-size: 1.5rem; letter-spacing: 12px; margin-top: 30px; 
+            opacity: 0; transition: 2.5s; font-weight: bold; 
+        }
+        #reveal-cap { 
+            color: white; font-size: 1.1rem; letter-spacing: 6px; margin-top: 15px; 
+            opacity: 0; transition: 2.5s; 
+        }
 
-        .status-msg { font-size: 2.2rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
-        .bar-track { width: 100%; height: 4px; background: rgba(255,255,255,0.08); margin-top: 35px; overflow: hidden; }
-        .bar-fill { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 30px var(--accent); }
-
-        /* --- 6. REVELACIÓN FINAL DE TÍTULO --- */
-        #final-reveal-ui { 
-            display: none; position: fixed; inset: 0; z-index: 9999; background: #000; 
-            flex-direction: column; align-items: center; justify-content: center; 
-        }
-        .rev-main-title { 
-            font-size: 16vw; font-weight: 900; letter-spacing: 65px; opacity: 0; 
-            transform: scale(0.85); filter: blur(40px); text-transform: uppercase; 
-        }
-        .rev-cap-small { 
-            font-size: 2.2rem; color: var(--accent); letter-spacing: 18px; 
-            margin-top: 60px; opacity: 0; font-weight: 900; text-transform: uppercase; 
-        }
+        /* HUD */
+        .hud-top { position: fixed; top: 40px; right: 60px; text-align: right; color: var(--accent); font-size: 0.85rem; opacity: 0.6; line-height: 2; }
     </style>
 </head>
-<body id="master-game-body">
+<body onload="initNarcosSystem()">
 
-    <!-- FX CAPAS -->
-    <div class="crt-scanlines"></div>
+    <div class="crt-overlay"></div>
     <div class="vignette"></div>
-    <div class="noise"></div>
+    <div id="master-fade"></div>
 
-    <!-- 1. INTRO: TIÑI GAMES -->
-    <div id="intro-layer" onclick="bootSystem()">
-        <div class="tg-frame">
-            <span class="tg-initials">TG</span>
-            <span class="tg-star">★</span>
-        </div>
-        <p style="color: #444; letter-spacing: 10px; margin-top: 60px; font-weight: 900; font-size: 0.9rem;">[ CLICK PARA INICIALIZAR SISTEMA ]</p>
+    <!-- INTRO -->
+    <div id="intro-layer" onclick="executeBoot()">
+        <h1>TIÑI GAMES</h1>
+        <p style="letter-spacing: 8px; color: #444; margin-top: 30px;">[ INITIALIZING_DEA_LINK ]</p>
     </div>
 
-    <!-- 2. MENÚ PRINCIPAL -->
-    <div id="main-ui">
-        <div class="hud-clock-small" id="clock">00:00:00</div>
-        
-        <div class="brand-block">
-            <h1 class="title-txt" id="ui-m-title">NARCOS</h1>
-            <span class="sub-txt" id="ui-m-sub">BREAKING BAD + DISPATCH</span>
-        </div>
-
-        <div class="btn-column">
-            <button class="btn-nav" onclick="triggerStory()" id="b-new">NUEVA OPERACIÓN</button>
-            <button class="btn-nav" disabled id="b-cont">CARGAR DATOS [SIN REGISTRO]</button>
-            <button class="btn-nav" onclick="toggleSettings(true)" id="b-set">AJUSTES TÁCTICOS</button>
-            <button class="btn-nav" onclick="surrender()" style="color: var(--danger);" id="b-exit">RENDIRSE</button>
-        </div>
-
-        <div class="radar-tactical"><div class="radar-beam"></div></div>
-        <div class="meta-data">
-            SYSTEM: TIÑI_OS_v20.0_FINAL<br>
-            LOC: 35.0844 N / 106.6504 W<br>
-            STATUS: <span style="color: var(--accent)">CONNECTION_STABLE</span>
-        </div>
-    </div>
-
-    <!-- 3. AJUSTES (ESTILO DISPATCH) -->
-    <div id="settings-ui">
-        <div class="tabs-header">
-            <button class="tab-btn active" id="tab-gene" onclick="changeTab('GENERAL')">GENERAL</button>
-            <button class="tab-btn" id="tab-disp" onclick="changeTab('DISPLAY')">PANTALLA</button>
-            <button class="tab-btn" id="tab-audi" onclick="changeTab('AUDIO')">AUDIO</button>
-        </div>
-
-        <div class="set-container">
-            <div id="pane-GENERAL">
-                <div class="set-row">
-                    <div class="set-label-box"><b id="lb-lan">IDIOMA DEL OPERATIVO</b></div>
-                    <div class="arrow-selector">
-                        <span class="f-arrow" onclick="cycleMenuOpt('lang', -1)">◄</span>
-                        <span class="val-display" id="val-lang">ESPAÑOL</span>
-                        <span class="f-arrow" onclick="cycleMenuOpt('lang', 1)">►</span>
-                    </div>
-                </div>
-                <div class="set-row">
-                    <div class="set-label-box"><b>CENSURA (LENGUAJE)</b></div>
-                    <div class="arrow-selector">
-                        <span class="f-arrow" onclick="cycleMenuOpt('cen', -1)">◄</span>
-                        <span class="val-display" id="val-cen">DESACTIVADO</span>
-                        <span class="f-arrow" onclick="cycleMenuOpt('cen', 1)">►</span>
-                    </div>
-                </div>
-            </div>
-            <div id="pane-DISPLAY" style="display:none">
-                <div class="set-row">
-                    <div class="set-label-box"><b>PANTALLA COMPLETA</b></div>
-                    <div class="arrow-selector">
-                        <span class="f-arrow" onclick="forceFullscreen()">◄</span>
-                        <span class="val-display" id="val-fs">ACTIVADO</span>
-                        <span class="f-arrow" onclick="forceFullscreen()">►</span>
-                    </div>
-                </div>
-                <div class="set-row">
-                    <div class="set-label-box"><b id="lb-br">BRILLO DEL MONITOR</b></div>
-                    <input type="range" min="40" max="150" value="100" oninput="applyBrightness(this.value)">
-                </div>
-            </div>
-        </div>
-        <button class="btn-nav" onclick="toggleSettings(false)" style="margin: 50px auto; display: block; text-align: center; width: 450px;">VOLVER AL MENÚ</button>
-    </div>
-
-    <!-- 4. HISTORIA (DISEÑO ARREGLADO) -->
-    <div id="story-ui">
-        <div class="s-slide active" id="st1">
-            <div class="s-img-frame"></div>
-            <p class="s-txt-box">"Mateo 'El Seco'. No elegí el desierto, el desierto me eligió a mí. Mi taller mecánico es ahora el centro de mando del imperio azul."</p>
-        </div>
-        <div class="s-slide" id="st2">
-            <div class="s-img-frame"></div>
-            <p class="s-txt-box">"Walter White me dio la llave de un imperio. 'Gestiona mis despachos', me dijo. El cristal azul no se mueve solo, necesita un Dispatch."</p>
-        </div>
-        <div class="s-slide" id="st3">
-            <div class="s-img-frame"></div>
-            <p class="s-txt-box">"Medellín quiere el control. El imperio del cristal azul no se detiene. Que empiece el despacho. Es hora de cobrar el precio."</p>
-        </div>
-        <button class="continue-btn" onclick="nextStorySlide()">CONTINUAR >>></button>
-    </div>
-
-    <!-- 5. PANTALLA DE CARGA DINÁMICA -->
-    <div id="load-ui">
-        <div class="load-art-gallery" id="bg-load"></div>
-        <div class="load-info-panel">
-            <div class="quote-container">
-                <span class="quote-txt" id="load-quote">"SAY MY NAME."</span>
-                <span class="quote-author" id="load-author">HEISENBERG</span>
-            </div>
-            <h2 class="status-msg" id="load-status">SINCRONIZANDO IMPERIO...</h2>
-            <div class="bar-track"><div class="bar-fill" id="bar"></div></div>
-        </div>
-    </div>
-
-    <!-- 6. REVELACIÓN FINAL -->
-    <div id="final-reveal-ui">
-        <h1 class="rev-main-title" id="f-title">NARCOS</h1>
-        <h2 class="rev-cap-small" id="f-cap">CAPÍTULO 1: EL PRECIO DEL CRISTAL</h2>
-    </div>
-
-    <script>
-        // --- ACTIVOS Y DATOS ---
-        const gameData = {
-            i18n: {
-                es: { t: "NARCOS", n: "NUEVA OPERACIÓN", set: "AJUSTES TÁCTICOS", ex: "RENDIRSE", load: "SINCRONIZANDO IMPERIO...", cap: "CAPÍTULO 1: EL PRECIO DEL CRISTAL", lan: "IDIOMA DEL OPERATIVO", br: "BRILLO DEL MONITOR" },
-                en: { t: "NARCOS", n: "NEW OPERATION", set: "TACTICAL SETTINGS", ex: "SURRENDER", load: "SYNCING EMPIRE...", cap: "CHAPTER 1: THE PRICE OF CRYSTAL", lan: "SYSTEM LANGUAGE", br: "MONITOR BRIGHTNESS" }
-            },
-            loading: {
-                imgs: [
-                    'https://alphacoders.com',
-                    'https://alphacoders.com',
-                    'https://alphacoders.com',
-                    'https://alphacoders.com'
-                ],
-                quotes: [
-                    {q: "SAY MY NAME.", a: "HEISENBERG"},
-                    {q: "PLATA O PLOMO.", a: "PABLO ESCOBAR"},
-                    {q: "NO ESTOY EN PELIGRO, YO SOY EL PELIGRO.", a: "WALTER WHITE"},
-                    {q: "UN HOMBRE PROVEE PARA SU FAMILIA.", a: "GUSTAVO FRING"},
-                    {q: "YO NO ESTOY EN EL NEGOCIO DEL DINERO. ESTOY EN EL NEGOCIO DEL IMPERIO.", a: "WALTER WHITE"}
-                ],
-                statuses: ["SINCRONIZANDO IMPERIO...", "ESTABLECIENDO CONEXIÓN CON MEDELLÍN...", "ENCRIPTANDO RUTAS...", "CARGANDO PROTOCOLOS DE DISPATCH..."]
-            }
-        };
-
-        const configOpts = {
-            lang: ["ESPAÑOL", "ENGLISH", "FRANÇAIS"],
-            cen: ["DESACTIVADO", "ACTIVADO"]
-        };
-
-        let currentCfg = { lang: 0, cen: 0 };
-
-        // --- SISTEMA CORE ---
-        function bootSystem() {
-            document.getElementById('intro-layer').style.display = 'none';
-            document.getElementById('main-ui').style.display = 'block';
-            forceFullscreen(true);
-            startClockCycle();
-        }
-
-        function startClockCycle() {
-            setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-            }, 1000);
-        }
-
-        function toggleSettings(show) { document.getElementById('settings-ui').style.display = show ? 'block' : 'none'; }
-
-        function changeTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tab.toLowerCase().substring(0,4)).classList.add('active');
-            
-            document.getElementById('pane-GENERAL').style.display = 'none';
-            document.getElementById('pane-DISPLAY').style.display = 'none';
-            document.getElementById('pane-' + tab).style.display = 'block';
-        }
-
-        function cycleMenuOpt(type, dir) {
-            currentCfg[type] = (currentCfg[type] + dir + configOpts[type].length) % configOpts[type].length;
-            document.getElementById('val-' + type).innerText = configOpts[type][currentCfg[type]];
-            if(type === 'lang') applyLangPack(configOpts.lang[currentCfg.lang].toLowerCase().substring(0,2));
-        }
-
-        function applyLangPack(l) {
-            const d = gameData.i18n[l === 'es' ? 'es' : 'en'];
-            document.getElementById('ui-m-title').innerText = d.t;
-            document.getElementById('b-new').innerText = d.n;
-            document.getElementById('b-set').innerText = d.set;
-            document.getElementById('b-exit').innerText = d.ex;
-            document.getElementById('load-status').innerText = d.load;
-            document.getElementById('f-cap').innerText = d.cap;
-            document.getElementById('lb-lan').innerText = d.lan;
-            document.getElementById('lb-br').innerText = d.br;
-        }
-
-        function forceFullscreen(on = false) {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-                document.getElementById('val-fs').innerText = "ACTIVADO";
-            } else if(!on) {
-                document.exitFullscreen();
-                document.getElementById('val-fs').innerText = "DESACTIVADO";
-            }
-        }
-
-        function applyBrightness(v) { document.getElementById('master-game-body').style.filter = `brightness(${v}%)`; }
-
-        // --- FLUJO ---
-        let sIdx = 1;
-        function triggerStory() { document.getElementById('main-ui').style.display = 'none'; document.getElementById('story-ui').style.display = 'flex'; }
-
-        function nextStorySlide() {
-            document.getElementById('st' + sIdx).classList.remove('active');
-            sIdx++;
-            if(sIdx <= 3) document.getElementById('st' + sIdx).classList.add('active');
-            else runLoadingFlow();
-        }
-
-        function runLoadingFlow() {
-            document.getElementById('story-ui').style.display = 'none';
-            document.getElementById('load-ui').style.display = 'block';
-            
-            const art = document.getElementById('bg-load');
-            const qTxt = document.getElementById('load-quote');
-            const qAuth = document.getElementById('load-author');
-            const sTxt = document.getElementById('load-status');
-
-            const cycle = setInterval(() => {
-                art.style.backgroundImage = `url('${gameData.loading.imgs[Math.floor(Math.random() * 4)]}')`;
-                const q = gameData.loading.quotes[Math.floor(Math.random() * 5)];
-                qTxt.innerText = `"${q.q}"`;
-                qAuth.innerText = q.a;
-                sTxt.innerText = gameData.loading.statuses[Math.floor(Math.random() * 4)];
-            }, 3000);
-
-            let p = 0;
-            const itv = setInterval(() => {
-                p += Math.random() * 1.5;
-                document.getElementById('bar').style.width = p + '%';
-                if(p >= 100) { clearInterval(itv); clearInterval(cycle); revealFinalTitle(); }
-            }, 80);
-        }
-
-        function revealFinalTitle() {
-            document.getElementById('load-ui').style.display = 'none';
-            document.getElementById('final-reveal-ui').style.display = 'flex';
-            
-            const t = document.getElementById('f-title');
-            const c = document.getElementById('f-cap');
-
-            setTimeout(() => {
-                t.style.transition = "8s cubic-bezier(0.1, 0, 0, 1)";
-                t.style.opacity = 1; t.style.filter = "blur(0)"; t.style.transform = "scale(1)";
-            }, 500);
-
-            setTimeout(() => {
-                c.style.transition = "4s"; c.style.opacity = 1;
-            }, 4500);
-        }
-
-        function surrender() { if(confirm("¿RENDIRSE?")) window.close(); }
-    </script>
-</body>
-</html>
-
+    <!-- INTERFAZ PRINCIPAL -->
+    <di
