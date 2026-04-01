@@ -2,57 +2,50 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NARCOS:| Tiñi Games</title>
+    <title>NARCOS: DISPATCH | Tiñi Games</title>
     <style>
         :root { --accent: #39ff14; --brightness: 100%; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); }
 
-        /* --- TU DISEÑO ORIGINAL --- */
-        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://alphacoders.com') center/cover; z-index: 0; opacity: 0; transition: opacity 2s; }
-        .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 300px #000; z-index: 1; pointer-events: none; }
-
-        /* --- INTRO ORIGINAL --- */
+        /* --- INTRO ORIGINAL (PROTEGIDA) --- */
         #intro { position: fixed; width: 100%; height: 100%; z-index: 5000; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
         .flash { position: absolute; width: 100%; height: 100%; animation: sirenas 0.1s infinite; opacity: 0; pointer-events: none; }
         @keyframes sirenas { 0% { background: #f00; opacity: 0.1; } 50% { background: #00f; opacity: 0.1; } }
 
-        /* --- MENÚ Y BOTONES --- */
+        /* --- FONDO Y VIGNETTE --- */
+        #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://alphacoders.com') center/cover; z-index: 0; opacity: 0; transition: opacity 2s; }
+        .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 300px #000; z-index: 1; pointer-events: none; }
+
+        /* --- MENÚ PRINCIPAL --- */
         #menu { position: relative; z-index: 100; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 80px; opacity: 0; transition: 1s; }
         .logo { font-size: 7rem; font-weight: 900; letter-spacing: -6px; margin-bottom: 20px; }
         .btn-main { background: rgba(0,0,0,0.8); color: var(--accent); border: 1px solid var(--accent); padding: 15px 45px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-weight: bold; text-transform: uppercase; }
         .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
 
-        /* --- AJUSTES (TU ESTRUCTURA ORIGINAL) --- */
-        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,0,0.98); z-index: 9999; padding: 50px 10%; border: 2px solid var(--accent); box-sizing: border-box; overflow-y: auto; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--accent); }
-        .tab { padding: 15px 30px; border: 1px solid var(--accent); border-bottom: none; cursor: pointer; color: var(--accent); }
-        .tab.active { background: var(--accent); color: #000; }
-        .row { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.2); padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        /* --- AJUSTES ESTILO DISPATCH (MIRA LA IMAGEN) --- */
+        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,5,0,0.95); z-index: 9999; padding: 40px 10%; border: 1px solid var(--accent); box-sizing: border-box; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 1px solid #222; }
+        .tab { padding: 10px 25px; border: 1px solid transparent; cursor: pointer; color: #666; text-transform: uppercase; font-size: 0.9rem; }
+        .tab.active { color: var(--accent); border: 1px solid var(--accent); border-bottom: 2px solid black; background: rgba(57,255,20,0.05); }
+        
+        .row { background: rgba(255,255,255,0.03); border: 1px solid rgba(57,255,20,0.1); padding: 15px 25px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .setting-val { background: #000; border: 1px solid var(--accent); color: var(--accent); padding: 5px 15px; cursor: pointer; min-width: 100px; text-align: center; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* --- PANTALLAS DE CARGA Y STORY --- */
+        /* --- CARGA Y STORY --- */
         #loading-screen { display:none; position:fixed; z-index:9000; width:100%; height:100%; background:black; flex-direction:column; align-items:center; justify-content:center; }
         #story-box { display:none; position:fixed; z-index:8000; width:100%; height:100%; background:black; }
         .pkmn-msg { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:90%; height:150px; background:white; border:5px solid #444; border-radius:15px; padding:25px; color:black; font-size:1.6rem; font-weight:bold; cursor:pointer; }
-
-        /* --- TÍTULO ÉPICO ESCALONADO --- */
+        
+        /* --- TÍTULO ÉPICO --- */
         #epic-title-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 12000; flex-direction: column; align-items: center; justify-content: center; }
-        .t-step { opacity: 0; transition: opacity 1.5s ease-in-out; }
-        
-        /* Capa de fundido para transiciones */
-        #fade-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 20000; pointer-events: none; opacity: 0; transition: opacity 1s; }
-        
-        .radar { position: absolute; bottom: 50px; right: 80px; width: 120px; height: 120px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.5; }
-        .radar-line { position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: spin 4s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .t-step { opacity: 0; transition: opacity 1.5s; }
     </style>
 </head>
-<body>
+<body id="game-body">
 
-    <div id="fade-layer"></div>
-
-    <!-- Intro Original -->
+    <!-- Intro de Tiñi Games -->
     <div id="intro" onclick="start()">
         <div class="flash" id="f"></div>
         <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
@@ -61,59 +54,107 @@
     <div id="bg-container"></div>
     <div class="vignette"></div>
 
-    <!-- Título Final Épico -->
-    <div id="epic-title-screen">
-        <h1 class="t-step" id="step1" style="font-size: 8rem; margin:0;">NARCOS</h1>
-        <p class="t-step" id="step2" style="color:var(--accent); font-size: 1.5rem; letter-spacing: 5px;">UN VIDEOJUEGO DE BREAKING BAD</p>
-        <p class="t-step" id="step3" style="color:#555; margin-top: 40px; letter-spacing: 3px;">CAPÍTULO 1 // LA CARAVANA</p>
-    </div>
-
-    <!-- Pantalla de Carga -->
-    <div id="loading-screen">
-        <div style="width:300px; height:6px; background:#111; border:1px solid var(--accent); position:relative;">
-            <div id="load-bar" style="width:0%; height:100%; background:var(--accent); transition: 4s linear;"></div>
-        </div>
-        <p id="load-quote" style="margin-top:20px; color:white; font-style:italic;"></p>
-    </div>
-
-    <!-- Historia Pokémon Style -->
-    <div id="story-box">
-        <div id="story-bg" style="width:100%; height:100%; background-size:cover; background-position:center;"></div>
-        <div class="pkmn-msg" onclick="handleStoryClick()">
-            <span id="story-txt"></span>
-        </div>
-    </div>
-
-    <!-- Menú Principal -->
-    <div id="menu">
-        <div id="txt-cap" style="color:var(--accent); letter-spacing:4px; font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
-        <div class="logo">NARCOS</div>
-        <button class="btn-main" id="btn-new" onclick="nuevaPartida()">Nueva Partida</button>
-        <button class="btn-main" id="btn-cont" disabled>Seguir con partida</button>
-        <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">Ajustes</button>
-    </div>
-
-    <!-- Panel de Ajustes Original -->
+    <!-- Ajustes -->
     <div id="settings-panel">
-        <h1 id="sett-tit" style="color:var(--accent); letter-spacing:10px;">AJUSTES</h1>
         <div class="tabs">
             <div class="tab active" onclick="switchTab(event, 'general')" id="t-gen">GENERAL</div>
-            <div class="tab" onclick="switchTab(event, 'video')">VIDEO</div>
+            <div class="tab" onclick="switchTab(event, 'video')" id="t-vid">VIDEO</div>
+            <div class="tab" onclick="switchTab(event, 'audio')" id="t-aud">SONIDO</div>
         </div>
+
         <div id="general" class="tab-content active">
+            <div class="row"><span>PANTALLA COMPLETA</span><div class="setting-val" onclick="toggleFS()" id="fs-val">OFF</div></div>
             <div class="row"><span>IDIOMA</span>
-                <select onchange="translateAll(this.value)" style="background:#000; color:var(--accent); border:1px solid var(--accent);">
+                <select onchange="translateAll(this.value)" id="lang-sel" style="background:black; color:var(--accent); border:1px solid var(--accent);">
                     <option value="es">ESPAÑOL</option>
                     <option value="en">ENGLISH</option>
                 </select>
             </div>
         </div>
-        <button class="btn-main" style="margin-top:40px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER</button>
+
+        <div id="video" class="tab-content">
+            <div class="row"><span>BRILLO</span><input type="range" min="50" max="150" value="100" oninput="changeBrightness(this.value)"></div>
+            <div class="row"><span>CENSURAR SANGRE</span><div class="setting-val" onclick="toggleSetting(this)">OFF</div></div>
+            <div class="row"><span>CENSURAR INSULTOS</span><div class="setting-val" onclick="toggleSetting(this)">OFF</div></div>
+        </div>
+
+        <div id="audio" class="tab-content">
+            <div class="row"><span>VOLUMEN MAESTRO</span><input type="range"></div>
+            <div class="row"><span>EFECTOS (SFX)</span><input type="range"></div>
+            <div class="row"><span>MÚSICA</span><input type="range"></div>
+        </div>
+        <button class="btn-main" onclick="toggleSettings(false)" style="width:100%; text-align:center;">VOLVER</button>
+    </div>
+
+    <!-- Pantalla de Carga y Título -->
+    <div id="loading-screen">
+        <div style="width:300px; height:4px; background:#111; border:1px solid var(--accent);"><div id="load-bar" style="width:0%; height:100%; background:var(--accent); transition:4s linear;"></div></div>
+        <p id="load-quote" style="margin-top:20px;"></p>
+    </div>
+
+    <div id="epic-title-screen">
+        <h1 class="t-step" id="step1" style="font-size:8rem;">NARCOS</h1>
+        <p class="t-step" id="step2" style="color:var(--accent);">UN VIDEOJUEGO DE BREAKING BAD</p>
+        <p class="t-step" id="step3" style="color:#444;">CAPÍTULO 1 // LA CARAVANA</p>
+    </div>
+
+    <div id="story-box">
+        <div id="story-bg" style="width:100%; height:100%; background-size:cover;"></div>
+        <div class="pkmn-msg" onclick="handleStoryClick()"><span id="story-txt"></span></div>
+    </div>
+
+    <div id="menu">
+        <div id="txt-cap" style="color:var(--accent); font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
+        <div class="logo">NARCOS</div>
+        <button class="btn-main" onclick="nuevaPartida()">Nueva Partida</button>
+        <button class="btn-main" onclick="toggleSettings(true)">AJUSTES</button>
     </div>
 
     <script>
-        // --- TU LÓGICA DE INTRO Y AJUSTES ---
+        const translations = {
+            es: { cap: "CAPÍTULO 1 // LA CARAVANA", game: "Un videojuego de Breaking Bad" },
+            en: { cap: "CHAPTER 1 // THE RV", game: "A Breaking Bad Video Game" }
+        };
+
+        // --- FUNCIONES DE AJUSTES REALES ---
+        function toggleFS() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                document.getElementById('fs-val').innerText = "ON";
+            } else {
+                document.exitFullscreen();
+                document.getElementById('fs-val').innerText = "OFF";
+            }
+        }
+
+        function changeBrightness(val) {
+            document.body.style.filter = `brightness(${val}%)`;
+        }
+
+        function translateAll(lang) {
+            const t = translations[lang];
+            document.getElementById('txt-cap').innerText = t.cap;
+            document.getElementById('step3').innerText = t.cap;
+            document.getElementById('step2').innerText = t.game;
+        }
+
+        function toggleSetting(el) {
+            el.innerText = el.innerText === "OFF" ? "ON" : "OFF";
+        }
+
+        function switchTab(evt, name) {
+            let contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) contents[i].style.display = "none";
+            let tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+            document.getElementById(name).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- LÓGICA DE INTRO Y CARGA ---
         function start() {
+            // Activa pantalla completa al entrar
+            document.documentElement.requestFullscreen().catch(() => {});
             document.getElementById('lt').style.opacity = "1";
             setTimeout(() => {
                 document.getElementById('intro').style.opacity = "0";
@@ -126,96 +167,46 @@
             }, 2500);
         }
 
-        function toggleSettings(show) { document.getElementById('settings-panel').style.display = show ? "block" : "none"; }
-        
-        function switchTab(evt, name) {
-            let contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) contents[i].style.display = "none";
-            document.getElementById(name).style.display = "block";
-        }
-
-        // --- CARGA CON FRASES ALEATORIAS ---
-        const frasesCarga = [
-            "Cocinando cristales...",
-            "No le tengo miedo a la muerte, la muerte me tiene miedo a mí.",
-            "Dí mi nombre...",
-            "Guardando progreso en el disco duro...",
-            "Evadiendo a la DEA...",
-            "Preparando la caravana..."
-        ];
-
+        const frases = ["Cocinando...", "Guardando en disco duro...", "No le tengo miedo a la muerte..."];
         function nuevaPartida() {
-            const fade = document.getElementById('fade-layer');
-            fade.style.opacity = "1";
-            
+            document.getElementById('menu').style.display = "none";
+            document.getElementById('loading-screen').style.display = "flex";
+            document.getElementById('load-quote').innerText = frases[Math.floor(Math.random()*frases.length)];
+            document.getElementById('load-bar').style.width = "100%";
             setTimeout(() => {
-                document.getElementById('menu').style.display = "none";
-                document.getElementById('loading-screen').style.display = "flex";
-                document.getElementById('load-quote').innerText = frasesCarga[Math.floor(Math.random() * frasesCarga.length)];
-                fade.style.opacity = "0";
-                
-                document.getElementById('load-bar').style.width = "100%"; // Barra cargando
-                
-                setTimeout(() => {
-                    fade.style.opacity = "1";
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').style.display = "none";
-                        document.getElementById('story-box').style.display = "block";
-                        fade.style.opacity = "0";
-                        startStory();
-                    }, 1000);
-                }, 4500);
-            }, 1000);
+                document.getElementById('loading-screen').style.display = "none";
+                document.getElementById('story-box').style.display = "block";
+                typeWriter("Walter White es un genio de la química...", "story-txt");
+            }, 4500);
         }
 
-        // --- TEXTO CON VIDA (POKÉMON STYLE) ---
-        let step = 0;
         let isTyping = false;
-        const historia = [
-            "Walter White es un genio de la química atrapado en una vida mediocre...",
-            "Pero tras el diagnóstico, ha decidido que el sistema ya no le sirve.",
-            "Es hora de cocinar. La caravana está lista."
-        ];
-
-        function startStory() {
-            typeWriter(historia[step], "story-txt");
-        }
-
-        function typeWriter(text, elementId) {
+        function typeWriter(text, id) {
             isTyping = true;
-            let i = 0;
-            const el = document.getElementById(elementId);
-            el.innerHTML = "";
-            const interval = setInterval(() => {
-                el.innerHTML += text.charAt(i);
-                i++;
-                if (i >= text.length) {
-                    clearInterval(interval);
-                    isTyping = false;
-                }
-            }, 40); // Velocidad de escritura
+            let i = 0; let el = document.getElementById(id); el.innerHTML = "";
+            let timer = setInterval(() => {
+                el.innerHTML += text.charAt(i); i++;
+                if(i >= text.length) { clearInterval(timer); isTyping = false; }
+            }, 40);
         }
 
         function handleStoryClick() {
-            if (isTyping) return;
-            step++;
-            if (step < historia.length) {
-                typeWriter(historia[step], "story-txt");
-            } else {
-                showEpicTitle();
-            }
+            if(isTyping) return;
+            // Aquí iría el siguiente paso o el título épico
+            document.getElementById('story-box').style.display = "none";
+            showEpicTitle();
         }
 
-        // --- FINAL ÉPICO ESCALONADO ---
         function showEpicTitle() {
-            document.getElementById('story-box').style.display = "none";
             document.getElementById('epic-title-screen').style.display = "flex";
-            
             setTimeout(() => { document.getElementById('step1').style.opacity = "1"; }, 500);
             setTimeout(() => { document.getElementById('step2').style.opacity = "1"; }, 2000);
             setTimeout(() => { document.getElementById('step3').style.opacity = "1"; }, 3500);
         }
+
+        function toggleSettings(show) { document.getElementById('settings-panel').style.display = show ? "block" : "none"; }
     </script>
 </body>
 </html>
+
 
