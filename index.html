@@ -3,357 +3,853 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | PRE-ALPHA BUILD v9.0</title>
+    <title>NARCOS | TIÑI GAMES MASTER BUILD v17.0</title>
     <style>
-        /* --- NÚCLEO TÉCNICO Y POST-PROCESADO --- */
+        /* --- CONFIGURACIÓN DE NÚCLEO CINEMÁTICO --- */
         :root {
             --accent: #39ff14;
             --accent-dim: rgba(57, 255, 20, 0.1);
             --danger: #ff4d4d;
-            --bg-deep: #020202;
-            --font-main: 'Segoe UI', 'Courier New', monospace;
-            --ps5-glow: 0 0 30px rgba(57, 255, 20, 0.3);
-            --crt-line: rgba(255, 255, 255, 0.03);
+            --bg-master: #000000;
+            --font-tactical: 'Segoe UI', 'Courier New', monospace;
+            --neon-pink: #ff00ff;
+            --neon-orange: #ff8c00;
+            --ps5-glow: 0 0 35px rgba(57, 255, 20, 0.3);
         }
 
-        * { box-sizing: border-box; outline: none; margin: 0; padding: 0; }
-        
-        body, html { 
-            width: 100%; height: 100%; background: var(--bg-deep); 
-            font-family: var(--font-main); overflow: hidden; 
-            color: white; -webkit-font-smoothing: antialiased;
+        * {
+            box-sizing: border-box;
+            outline: none;
+            margin: 0;
+            padding: 0;
         }
 
-        /* CAPAS DE ATMÓSFERA CRT (ALWAYS ON) */
-        .crt-master {
-            position: fixed; inset: 0; z-index: 10000; pointer-events: none;
-            background: linear-gradient(var(--crt-line) 50%, rgba(0,0,0,0.1) 50%);
-            background-size: 100% 4px; opacity: 0.2;
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-master);
+            font-family: var(--font-tactical);
+            overflow: hidden;
+            color: white;
+            -webkit-font-smoothing: antialiased;
         }
-        .vignette {
-            position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-            background: radial-gradient(circle, transparent 40%, black 140%);
-        }
-        .grain {
-            position: fixed; inset: 0; z-index: 9998; pointer-events: none;
-            background: url('https://wikimedia.org');
-            opacity: 0.03; animation: grainMove 0.2s steps(2) infinite;
-        }
-        @keyframes grainMove { from { transform: translate(0,0); } to { transform: translate(-5%, -5%); } }
 
-        /* --- 1. INTRO: TIÑI GAMES (ESTILO AAA) --- */
+        /* --- CAPAS DE ATMÓSFERA POST-PROCESADO --- */
+        .crt-scanlines {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            opacity: 0.12;
+        }
+
+        .vignette-fx {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            background: radial-gradient(circle, transparent 40%, black 150%);
+        }
+
+        /* --- 1. INTRO: TIÑI GAMES (ROCKSTAR NEON STYLE) --- */
         #intro-layer {
-            position: fixed; inset: 0; z-index: 9000; background: #000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
-        .brand-logo {
-            font-size: 5rem; font-weight: 900; letter-spacing: 40px; 
-            text-transform: uppercase; color: #fff;
-            animation: brandCinematic 6s cubic-bezier(0.1, 0, 0, 1) forwards;
+
+        .tg-logo-container {
+            width: 280px;
+            height: 280px;
+            border: 8px solid #fff;
+            border-radius: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
-        }
-        .brand-logo::after {
-            content: "TIÑI GAMES"; position: absolute; left: 0; top: 0;
-            color: var(--accent); opacity: 0; animation: chromatic 6s infinite;
-        }
-        @keyframes brandCinematic {
-            0% { filter: blur(40px); opacity: 0; transform: scale(0.8); }
-            30% { filter: blur(0); opacity: 1; transform: scale(1); letter-spacing: 40px; }
-            70% { filter: blur(2px); opacity: 1; transform: scale(1.05); letter-spacing: 50px; }
-            100% { filter: blur(60px); opacity: 0; transform: scale(1.2); }
-        }
-        @keyframes chromatic {
-            0%, 100% { opacity: 0; transform: translate(0); }
-            50% { opacity: 0.5; transform: translate(5px, -2px); filter: hue-rotate(90deg); }
+            animation: neonFlicker 4s infinite, introScale 6s cubic-bezier(0.1, 0, 0, 1) forwards;
         }
 
-        /* --- 2. MENÚ PRINCIPAL (ESTILO MODERN WARFARE / DISPATCH) --- */
-        #main-ui {
-            display: none; height: 100vh; width: 100vw;
-            background: linear-gradient(90deg, #000 30%, transparent 100%),
+        .tg-initials {
+            font-size: 9rem;
+            font-weight: 900;
+            font-style: italic;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .tg-star-icon {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 4.5rem;
+            color: #fff;
+            animation: starPulse 1.5s infinite;
+        }
+
+        @keyframes neonFlicker {
+            0%, 100% { 
+                box-shadow: 0 0 50px var(--neon-pink), inset 0 0 25px var(--neon-pink); 
+                border-color: #fff; 
+            }
+            50% { 
+                box-shadow: 0 0 80px var(--neon-orange), inset 0 0 35px var(--neon-orange); 
+                border-color: var(--neon-orange); 
+            }
+            52% { opacity: 0.7; }
+            54% { opacity: 1; }
+        }
+
+        @keyframes introScale {
+            0% { opacity: 0; transform: scale(0.5) rotate(-15deg); filter: blur(30px); }
+            35% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
+            85% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0; transform: scale(1.4); filter: blur(70px); }
+        }
+
+        @keyframes starPulse { 
+            0%, 100% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.3; transform: scale(0.9); } 
+        }
+
+        /* --- 2. MENÚ PRINCIPAL (ESTILO DISPATCH / NARCOS) --- */
+        #main-menu-ui {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(90deg, #000 35%, transparent 100%),
                         url('https://alphacoders.com') center/cover;
-            padding: 5% 8%; position: relative; animation: screenLoad 2s ease;
+            padding: 6% 10%;
+            position: relative;
+            animation: fadeMenuIn 3s ease-in-out;
         }
-        @keyframes screenLoad { from { opacity: 0; filter: brightness(0); } to { opacity: 1; filter: brightness(1); } }
 
-        .game-branding { margin-bottom: 80px; }
-        .logo-txt { font-size: 10rem; font-weight: 900; line-height: 0.75; letter-spacing: -8px; }
-        .sub-txt { 
-            display: block; color: var(--accent); font-size: 1.3rem; 
-            letter-spacing: 15px; margin-top: 25px; font-weight: bold;
+        @keyframes fadeMenuIn { from { opacity: 0; filter: brightness(0); } to { opacity: 1; filter: brightness(1); } }
+
+        .brand-header {
+            margin-bottom: 80px;
+            border-left: 8px solid var(--accent);
+            padding-left: 45px;
+        }
+
+        .main-title {
+            font-size: 11rem;
+            font-weight: 900;
+            line-height: 0.75;
+            letter-spacing: -12px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .main-subtitle {
+            display: block;
+            color: var(--accent);
+            font-size: 1.3rem;
+            letter-spacing: 16px;
+            margin-top: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 0 0 25px var(--accent);
+        }
+
+        .nav-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 60px;
+        }
+
+        .btn-dispatch {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.6);
+            padding: 28px 55px;
+            width: 550px;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.1, 0, 0, 1);
+            font-family: inherit;
+        }
+
+        .btn-dispatch:hover:not(:disabled) {
+            background: #fff;
+            color: #000;
+            transform: translateX(35px);
+            box-shadow: 0 20px 50px rgba(255,255,255,0.15);
+            border-color: #fff;
+        }
+
+        .btn-dispatch:disabled {
+            opacity: 0.15;
+            color: #444;
+            cursor: not-allowed;
+            border-color: #222;
+        }
+
+        /* HUD TÁCTICO */
+        .hud-clock-top {
+            position: fixed;
+            top: 60px;
+            right: 100px;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent);
             text-shadow: var(--ps5-glow);
         }
 
-        .nav-list { display: flex; flex-direction: column; gap: 15px; margin-top: 50px; }
-        .nav-item {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--accent-dim);
-            color: rgba(255,255,255,0.7); padding: 25px 50px; width: 500px;
-            text-align: left; font-size: 1.1rem; font-weight: bold;
-            letter-spacing: 4px; text-transform: uppercase; cursor: pointer;
-            transition: 0.4s cubic-bezier(0.1, 0, 0, 1);
-            clip-path: polygon(0 0, 95% 0, 100% 20%, 100% 100%, 5% 100%, 0 80%);
+        .hud-radar-bottom {
+            position: fixed;
+            bottom: 60px;
+            left: 80px;
+            width: 300px;
+            height: 200px;
+            border: 2px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.7);
         }
-        .nav-item:hover:not(:disabled) {
-            background: var(--accent); color: #000; transform: translateX(40px);
-            box-shadow: var(--ps5-glow); border-color: #fff;
+
+        .radar-scan-fx {
+            width: 100%;
+            height: 3px;
+            background: var(--accent);
+            position: absolute;
+            animation: radarMove 5s infinite linear;
+            box-shadow: 0 0 15px var(--accent);
         }
-        .nav-item:disabled { opacity: 0.2; cursor: not-allowed; border-color: #222; }
 
-        /* HUD ELEMENTS */
-        .hud-time { position: fixed; top: 50px; right: 80px; font-size: 3.5rem; font-weight: 900; color: var(--accent); }
-        .radar-tactical { 
-            position: fixed; bottom: 50px; left: 50px; width: 250px; height: 200px; 
-            border: 2px solid var(--accent-dim); background: rgba(57, 255, 20, 0.03);
-            display: flex; align-items: center; justify-content: center;
+        @keyframes radarMove { 0% { top: 0; } 100% { top: 100%; } }
+
+        .hud-metadata {
+            position: fixed;
+            bottom: 60px;
+            right: 100px;
+            text-align: right;
+            font-size: 0.85rem;
+            line-height: 2.5;
+            opacity: 0.3;
+            letter-spacing: 4px;
         }
-        .radar-beam { width: 100%; height: 2px; background: var(--accent); position: absolute; animation: radarScan 4s infinite linear; box-shadow: 0 0 20px var(--accent); }
-        @keyframes radarScan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
 
-        .hud-coords { position: fixed; bottom: 50px; right: 80px; text-align: right; font-size: 0.8rem; line-height: 2.5; opacity: 0.4; letter-spacing: 3px; }
-
-        /* --- 3. AJUSTES (ESTILO CYBERPUNK / MW) --- */
-        #settings-ui { 
-            display: none; position: fixed; inset: 0; z-index: 8500; 
-            background: rgba(0,0,0,0.98); padding: 80px 10%;
-            border-left: 20px solid var(--accent); overflow-y: auto;
+        /* --- 3. AJUSTES (ESTILO DISPATCH - INTERACTIVO TOTAL) --- */
+        #settings-overlay-ui {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8500;
+            background: rgba(5, 5, 10, 0.99);
+            padding: 70px 10%;
+            border-top: 12px solid var(--accent);
+            overflow-y: auto;
         }
-        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 60px; }
-        .set-group { background: rgba(255,255,255,0.03); padding: 30px; border-bottom: 2px solid #222; }
-        .set-group:hover { border-color: var(--accent); background: rgba(57,255,20,0.02); }
-        .set-label { color: var(--accent); font-weight: 900; margin-bottom: 15px; display: block; letter-spacing: 2px; }
 
-        input[type="range"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; font-family: inherit; }
-        .toggle-btn { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--accent); color: var(--accent); font-weight: bold; cursor: pointer; }
-        .toggle-btn.on { background: var(--accent); color: #000; }
-
-        /* --- 4. HISTORIA (NARRATIVA CINEMÁTICA) --- */
-        #story-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 7000; padding: 6% 12%; }
-        .story-slide { display: none; height: 100%; flex-direction: column; justify-content: center; }
-        .story-slide.active { display: flex; animation: slideIn 2s forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: scale(1.1) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .story-img-box { width: 100%; height: 550px; background: #080808; border: 1px solid #1a1a1a; margin-bottom: 50px; position: relative; }
-        .story-content { font-size: 2.5rem; line-height: 1.3; border-left: 10px solid var(--accent); padding-left: 50px; font-weight: 300; }
-
-        /* --- 5. CARGA Y REVELACIÓN FINAL --- */
-        #loading-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 9500; }
-        .load-bg { position: absolute; inset: 0; background: url('https://alphacoders.com') center/cover; opacity: 0.2; filter: grayscale(1); }
-        .load-info { position: absolute; bottom: 100px; right: 100px; width: 600px; text-align: right; }
-        .progress-track { width: 100%; height: 2px; background: #111; margin-top: 30px; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: var(--accent); box-shadow: var(--ps5-glow); }
-
-        #final-reveal { 
-            display: none; position: fixed; inset: 0; z-index: 9999; background: #000; 
-            flex-direction: column; align-items: center; justify-content: center; 
+        .settings-tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            border-bottom: 2px solid #111;
+            padding-bottom: 35px;
         }
-        .title-final { font-size: 15vw; font-weight: 900; letter-spacing: 50px; opacity: 0; transform: scale(0.7); }
-        .subtitle-final { font-size: 3rem; color: var(--accent); letter-spacing: 15px; margin-top: 40px; opacity: 0; }
+
+        .tab-trigger {
+            background: transparent;
+            border: 2px solid #222;
+            color: #444;
+            padding: 20px 50px;
+            font-weight: 900;
+            letter-spacing: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.4s;
+            min-width: 280px;
+        }
+
+        .tab-trigger.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(57, 255, 20, 0.02);
+            box-shadow: inset 0 0 20px var(--accent-dim);
+        }
+
+        .settings-pane { margin-top: 70px; }
+
+        .config-row {
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 15px;
+            padding: 30px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #0f0f0f;
+            transition: 0.3s;
+        }
+
+        .config-row:hover {
+            border-color: #222;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .config-label-box b {
+            display: block;
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            color: #777;
+            text-transform: uppercase;
+        }
+
+        /* SELECTORES DE FLECHAS (CALCADOS A DISPATCH) */
+        .arrow-selection-box {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+            width: 450px;
+            justify-content: space-between;
+        }
+
+        .arrow-ctrl {
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 2.2rem;
+            user-select: none;
+            transition: 0.2s;
+        }
+
+        .arrow-ctrl:hover {
+            transform: scale(1.3);
+            text-shadow: 0 0 20px var(--accent);
+        }
+
+        .val-display-box {
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-align: center;
+            width: 280px;
+            font-size: 1.1rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        input[type="range"] {
+            width: 400px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* --- 4. NARRATIVA: HISTORIA DE MATEO --- */
+        #story-narrative-ui {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 7500;
+            padding: 0;
+        }
+
+        .slide-container {
+            display: none;
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15%;
+        }
+
+        .slide-container.active {
+            display: flex;
+            animation: slideReveal 3s cubic-bezier(0.1, 0, 0, 1) forwards;
+        }
+
+        @keyframes slideReveal {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-media-frame {
+            width: 100%;
+            max-width: 1150px;
+            height: 480px;
+            background: #050505;
+            border: 1px solid #111;
+            margin-bottom: 70px;
+            position: relative;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+        }
+
+        .slide-media-frame::before {
+            content: "ARCHIVE_DECRYPTED_LINK_#7742";
+            position: absolute;
+            top: -35px;
+            left: 0;
+            font-size: 0.8rem;
+            color: #333;
+            letter-spacing: 3px;
+        }
+
+        .slide-text-content {
+            font-size: 1.9rem;
+            line-height: 1.8;
+            color: #ccc;
+            border-left: 12px solid var(--accent);
+            padding-left: 60px;
+            max-width: 1000px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-align: left;
+        }
+
+        .story-continue-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 120px;
+            background: transparent;
+            border: none;
+            color: #444;
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .story-continue-btn:hover { color: #fff; letter-spacing: 10px; }
+
+        /* --- 5. PANTALLA DE CARGA DINÁMICA --- */
+        #loading-screen-ui {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9500;
+        }
+
+        .loading-art-gallery {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 2.5s ease-in-out;
+            filter: grayscale(100%) contrast(1.2) brightness(0.4);
+            animation: zoomArt 25s infinite alternate;
+        }
+
+        @keyframes zoomArt { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+        .loading-footer-info {
+            position: absolute;
+            bottom: 120px;
+            right: 120px;
+            width: 750px;
+            text-align: right;
+            z-index: 10;
+        }
+
+        .loading-quote-box {
+            min-height: 120px;
+            margin-bottom: 30px;
+        }
+
+        .loading-quote-txt {
+            color: var(--accent);
+            font-size: 1.5rem;
+            font-style: italic;
+            line-height: 1.4;
+            text-shadow: 0 0 15px var(--accent);
+            display: block;
+        }
+
+        .loading-quote-author {
+            display: block;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            color: #666;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .loading-status-txt {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .loading-bar-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            margin-top: 35px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--accent);
+            box-shadow: 0 0 30px var(--accent);
+        }
+
+        /* --- 6. REVELACIÓN FINAL DEL TÍTULO (NARCOS) --- */
+        #final-title-reveal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reveal-title-large {
+            font-size: 16vw;
+            font-weight: 900;
+            letter-spacing: 65px;
+            opacity: 0;
+            transform: scale(0.85);
+            filter: blur(40px);
+            text-transform: uppercase;
+        }
+
+        .reveal-chapter-small {
+            font-size: 2.2rem;
+            color: var(--accent);
+            letter-spacing: 18px;
+            margin-top: 60px;
+            opacity: 0;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px var(--accent-dim);
+        }
     </style>
 </head>
-<body id="master-body">
+<body id="master-game-body" onload="startTimeCycle()">
 
-    <!-- FX CAPAS -->
-    <div class="crt-master"></div>
-    <div class="vignette"></div>
-    <div class="grain"></div>
+    <!-- CAPAS DE POST-PROCESADO -->
+    <div class="crt-scanlines"></div>
+    <div class="vignette-fx"></div>
 
-    <!-- 1. INTRO TIÑI GAMES -->
-    <div id="intro-layer">
-        <h1 class="brand-logo">TIÑI GAMES</h1>
+    <!-- 1. INTRO: TIÑI GAMES -->
+    <div id="intro-layer" onclick="bootMainSystem()">
+        <div class="tg-logo-container">
+            <span class="tg-initials">TG</span>
+            <span class="tg-star-icon">★</span>
+        </div>
+        <p style="color: #444; letter-spacing: 10px; margin-top: 60px; font-weight: 900; font-size: 0.9rem;">[ CLIC PARA INICIALIZAR SISTEMA ]</p>
     </div>
 
     <!-- 2. MENÚ PRINCIPAL -->
-    <div id="main-ui">
-        <div class="hud-time" id="clock">00:00:00</div>
+    <div id="main-menu-ui">
+        <div class="hud-clock-top" id="real-time-hud">00:00:00</div>
         
-        <div class="game-branding">
-            <h1 class="logo-txt" id="l-title">NARCOS</h1>
-            <span class="sub-txt" id="l-sub">BREAKING BAD + DISPATCH</span>
+        <div class="brand-header">
+            <h1 class="main-title" id="txt-game-title">NARCOS</h1>
+            <span class="main-subtitle" id="txt-game-sub">BREAKING BAD + DISPATCH</span>
         </div>
 
-        <div class="nav-list">
-            <button class="nav-item" onclick="startNewGame()" id="b-new">NUEVA PARTIDA</button>
-            <button class="nav-item" disabled id="b-cont">SEGUIR [BLOQUEADO]</button>
-            <button class="nav-item" onclick="toggleSettings(true)" id="b-set">AJUSTES DEL SISTEMA</button>
-            <button class="nav-item" onclick="exitProcess()" style="color: var(--danger);" id="b-exit">RENDIRSE</button>
+        <div class="nav-stack">
+            <button class="btn-dispatch" onclick="triggerStoryMode()" id="nav-new">NUEVA OPERACIÓN</button>
+            <button class="btn-dispatch" disabled id="nav-cont">CARGAR DATOS [SIN REGISTRO]</button>
+            <button class="btn-dispatch" onclick="toggleSettingsOverlay(true)" id="nav-set">AJUSTES TÁCTICOS</button>
+            <button class="btn-dispatch" onclick="abortProcess()" style="color: var(--danger);" id="nav-abort">RENDIRSE</button>
         </div>
 
-        <div class="radar-tactical"><div class="radar-beam"></div></div>
-        <div class="hud-coords">
-            SYSTEM_ID: TIÑI_v9.0<br>
-            LOC: 35.0844 N / 106.6504 W<br>
-            STATUS: <span style="color: var(--accent)">CONNECTION_STABLE</span>
+        <div class="hud-radar-bottom">
+            <div class="radar-scan-fx"></div>
+        </div>
+
+        <div class="hud-metadata">
+            LINK_ENCRYPTED: TIÑI_v17.0_FINAL<br>
+            COORDS: 35.0844 N / 106.6504 W<br>
+            NETWORK: <span style="color: var(--accent)">STABLE_CONNECTION_ACTIVE</span>
         </div>
     </div>
 
-    <!-- 3. AJUSTES PROFESIONALES -->
-    <div id="settings-ui">
-        <h1 style="font-size: 5rem; color: var(--accent);" id="s-head">CONFIGURACIÓN TÁCTICA</h1>
-        
-        <div class="settings-grid">
-            <div class="set-group">
-                <label class="set-label" id="s-lan">IDIOMA / LANGUAGE</label>
-                <select onchange="applyLanguage(this.value)">
-                    <option value="es">Español (Castellano)</option>
-                    <option value="en">English (US)</option>
-                    <option value="fr">Français (FR)</option>
-                    <option value="de">Deutsch (DE)</option>
-                </select>
+    <!-- 3. AJUSTES INTERACTIVOS (ESTILO DISPATCH) -->
+    <div id="settings-overlay-ui">
+        <div class="settings-tabs-container">
+            <button class="tab-trigger active" id="tab-gene" onclick="switchSettingsTab('GENERAL')">GENERAL</button>
+            <button class="tab-trigger" id="tab-disp" onclick="switchSettingsTab('DISPLAY')">PANTALLA</button>
+            <button class="tab-trigger" id="tab-audi" onclick="switchSettingsTab('AUDIO')">AUDIO</button>
+        </div>
+
+        <div class="settings-pane">
+            <!-- PESTAÑA GENERAL -->
+            <div id="pane-GENERAL">
+                <div class="config-row">
+                    <div class="config-label-box"><b id="lb-lang">LENGUAJE DEL OPERATIVO</b></div>
+                    <div class="arrow-selection-box">
+                        <span class="arrow-ctrl" onclick="cycleMenuOption('lang', -1)">◄</span>
+                        <span class="val-display-box" id="val-lang">ESPAÑOL</span>
+                        <span class="arrow-ctrl" onclick="cycleMenuOption('lang', 1)">►</span>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label-box"><b id="lb-qte">EVENTOS TÁCTICOS (QTE)</b></div>
+                    <div class="arrow-selection-box">
+                        <span class="arrow-ctrl" onclick="cycleMenuOption('qte', -1)">◄</span>
+                        <span class="val-display-box" id="val-qte">INTERACTIVO</span>
+                        <span class="arrow-ctrl" onclick="cycleMenuOption('qte', 1)">►</span>
+                    </div>
+                </div>
             </div>
-            <div class="set-group">
-                <label class="set-label" id="s-fs">MODO DE PANTALLA</label>
-                <button class="toggle-btn" id="fs-btn" onclick="handleFS()">VENTANA / COMPLETA</button>
+
+            <!-- PESTAÑA DISPLAY -->
+            <div id="pane-DISPLAY" style="display:none">
+                <div class="config-row">
+                    <div class="config-label-box"><b>MODO PANTALLA COMPLETA</b></div>
+                    <div class="arrow-selection-box">
+                        <span class="arrow-ctrl" onclick="toggleFullscreenLogic()">◄</span>
+                        <span class="val-display-box" id="val-fs">ACTIVADO</span>
+                        <span class="arrow-ctrl" onclick="toggleFullscreenLogic()">►</span>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label-box"><b>CENSURA (SANGRE / LENGUAJE)</b></div>
+                    <div class="arrow-selection-box">
+                        <span class="arrow-ctrl" onclick="cycleMenuOption('cen', -1)">◄</span>
+                        <span class="val-display-box" id="val-cen">DESACTIVADO</span>
+                        <span class="arrow-ctrl" onclick="cycleMenuOption('cen', 1)">►</span>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label-box"><b id="lb-br">BRILLO DE INTERFAZ</b></div>
+                    <input type="range" min="40" max="150" value="100" oninput="updateMasterBrightness(this.value)">
+                </div>
             </div>
-            <div class="set-group">
-                <label class="set-label" id="s-cen">CENSURA (SANGRE/LENGUAJE)</label>
-                <button class="toggle-btn" id="cen-btn" onclick="this.classList.toggle('on')">DESACTIVADA</button>
-            </div>
-            <div class="set-group">
-                <label class="set-label" id="s-br">BRILLO DE INTERFAZ</label>
-                <input type="range" min="40" max="140" value="100" oninput="applyBr(this.value)">
-            </div>
-            <div class="set-group">
-                <label class="set-label" id="s-vol">VOLUMEN MAESTRO</label>
-                <input type="range" value="80">
-            </div>
-            <div class="set-group">
-                <label class="set-label">GESTIÓN DE DATOS</label>
-                <button class="nav-item" style="width:100%; padding:10px; font-size:0.8rem;">FORMATEAR DISCO DURO</button>
+
+            <!-- PESTAÑA AUDIO -->
+            <div id="pane-AUDIO" style="display:none">
+                <div class="config-row">
+                    <div class="config-label-box"><b>VOLUMEN MAESTRO</b></div>
+                    <input type="range" min="0" max="100" value="80">
+                </div>
             </div>
         </div>
-        <button class="nav-item" onclick="toggleSettings(false)" style="margin-top: 60px;">VOLVER AL MENÚ</button>
+
+        <button class="btn-dispatch" onclick="toggleSettingsOverlay(false)" style="margin: 60px auto; display: block; text-align: center; width: 450px;">VOLVER AL MENÚ PRINCIPAL</button>
     </div>
 
-    <!-- 4. NARRATIVA -->
-    <div id="story-ui">
-        <div class="story-slide active" id="sl1">
-            <div class="story-img-box">IMAGE_01: ALBUQUERQUE_GARAGE</div>
-            <p class="story-content">"Mateo 'El Seco'. Un mecánico con deudas heredadas. En este desierto, o eres el depredador o eres la pieza de recambio."</p>
+    <!-- 4. HISTORIA CINEMÁTICA -->
+    <div id="story-narrative-ui">
+        <div class="slide-container active" id="st-1">
+            <div class="slide-media-frame"></div>
+            <p class="slide-text-content">"Mateo 'El Seco'. No elegí este desierto, este desierto me eligió a mí. Mi taller mecánico es ahora el centro de mando del imperio azul."</p>
         </div>
-        <div class="story-slide" id="sl2">
-            <div class="story-img-box">IMAGE_02: THE_DEAL</div>
-            <p class="story-content">"Walter White me dio una llave, no para un motor, sino para un imperio. 'Gestiona mis despachos', me dijo. 'No falles'."</p>
+        <div class="slide-container" id="st-2">
+            <div class="slide-media-frame"></div>
+            <p class="slide-text-content">"Walter White me entregó la frecuencia. 'Despacha las unidades de Pollos Hermanos', me dijo. 'No permitas que la radio se apague'."</p>
         </div>
-        <div class="story-slide" id="sl3">
-            <div class="story-img-box">IMAGE_03: DISPATCH_ROOM</div>
-            <p class="story-content">"Ahora mi voz es la que guía el cristal azul. Si la radio calla, alguien muere. Si yo hablo, el dinero fluye."</p>
+        <div class="slide-container" id="st-3">
+            <div class="slide-media-frame"></div>
+            <p class="slide-text-content">"Medellín ha llamado a la puerta. Quieren una parte del pastel de Albuquerque. Pero en mi ciudad, yo soy el que despacha el plomo."</p>
         </div>
-        <div class="story-slide" id="sl4">
-            <div class="story-img-box">IMAGE_04: CARTEL_CONTACT</div>
-            <p class="story-content">"Medellín ha llamado a la puerta. Quieren el control de la frecuencia. Pero en mi ciudad, yo soy el que despacha."</p>
-        </div>
-        <button class="nav-item" onclick="goNext()" style="position:fixed; bottom:80px; right:100px; width:250px;">CONTINUAR >>></button>
+        <button class="story-continue-btn" onclick="advanceStorySlide()">SIGUIENTE OPERATIVO >>></button>
     </div>
 
-    <!-- 5. CARGA Y REVELACIÓN -->
-    <div id="loading-ui">
-        <div class="load-bg"></div>
-        <div class="load-info">
-            <h2 id="l-txt" style="font-size: 3rem; margin:0;">SINCRONIZANDO IMPERIO...</h2>
-            <p style="color:var(--accent); letter-spacing:2px;">CONSEJO: Un sicario bien pagado nunca hace preguntas por radio.</p>
-            <div class="progress-track"><div class="progress-fill" id="bar"></div></div>
+    <!-- 5. PANTALLA DE CARGA DINÁMICA -->
+    <div id="loading-screen-ui">
+        <div class="loading-art-gallery" id="load-art-box"></div>
+        <div class="loading-footer-info">
+            <div class="loading-quote-box">
+                <span class="loading-quote-txt" id="quote-display">"NO ESTOY EN PELIGRO, YO SOY EL PELIGRO."</span>
+                <span class="loading-quote-author" id="author-display">WALTER WHITE</span>
+            </div>
+            <h2 class="loading-status-txt" id="status-display">SINCRONIZANDO CON EL CARTEL...</h2>
+            <div class="loading-bar-track">
+                <div class="loading-bar-fill" id="load-bar-fill"></div>
+            </div>
         </div>
     </div>
 
-    <div id="final-reveal">
-        <h1 class="title-final" id="f-t">NARCOS</h1>
-        <h2 class="subtitle-final" id="f-c">CAPÍTULO 1: EL DESPACHO DEL CRISTAL</h2>
+    <!-- 6. REVELACIÓN FINAL DEL TÍTULO -->
+    <div id="final-title-reveal">
+        <h1 class="reveal-title-large" id="final-title-anim">NARCOS</h1>
+        <h2 class="reveal-chapter-small" id="final-chapter-anim">CAPÍTULO 1: EL DESPACHO DEL CRISTAL</h2>
     </div>
 
     <script>
-        // TRADUCCIONES AAA
-        const i18n = {
-            es: { t: "NARCOS", s: "BREAKING BAD + DISPATCH", n: "NUEVA PARTIDA", set: "AJUSTES DEL SISTEMA", ex: "RENDIRSE", head: "CONFIGURACIÓN TÁCTICA", lan: "IDIOMA", fs: "PANTALLA", cen: "CENSURA", br: "BRILLO", vol: "VOLUMEN", load: "SINCRONIZANDO IMPERIO...", cap: "CAPÍTULO 1: EL DESPACHO DEL CRISTAL" },
-            en: { t: "NARCOS", s: "BREAKING BAD + DISPATCH", n: "NEW OPERATION", set: "SYSTEM SETTINGS", ex: "GIVE UP", head: "TACTICAL SETTINGS", lan: "LANGUAGE", fs: "DISPLAY", cen: "CENSORSHIP", br: "BRIGHTNESS", vol: "VOLUME", load: "SYNCING EMPIRE...", cap: "CHAPTER 1: THE CRYSTAL DISPATCH" },
-            fr: { t: "NARCOS", s: "BREAKING BAD + DISPATCH", n: "NOUVELLE PARTIE", set: "PARAMÈTRES", ex: "ABANDONNER", head: "RÉGLAGES TACTIQUES", lan: "LANGUE", fs: "ÉCRAN", cen: "CENSURE", br: "LUMINOSITÉ", vol: "VOLUME", load: "CHARGEMENT...", cap: "CHAPITRE 1: LE PRIX DU CRISTAL" },
-            de: { t: "NARCOS", s: "BREAKING BAD + DISPATCH", n: "NEUES SPIEL", set: "EINSTELLUNGEN", ex: "AUFGEBEN", head: "TAKTIK-EINSTELLUNGEN", lan: "SPRACHE", fs: "BILDSCHIRM", cen: "ZENSUR", br: "HELLIGKEIT", vol: "LAUTSTÄRKE", load: "DATEN LADEN...", cap: "KAPITEL 1: DER KRISTALL-VERSAND" }
+        // --- DICCIONARIO DE IDIOMAS Y ACTIVOS ---
+        const gameData = {
+            i18n: {
+                es: { t: "NARCOS", s: "BREAKING BAD + DISPATCH", n: "NUEVA OPERACIÓN", set: "AJUSTES TÁCTICOS", ab: "RENDIRSE", load: "SINCRONIZANDO IMPERIO...", cap: "CAPÍTULO 1: EL DESPACHO DEL CRISTAL", qte: "EVENTOS TÁCTICOS (QTE)", lan: "IDIOMA DEL SISTEMA", br: "BRILLO DE INTERFAZ" },
+                en: { t: "NARCOS", s: "BREAKING BAD + DISPATCH", n: "NEW OPERATION", set: "TACTICAL SETTINGS", ab: "SURRENDER", load: "SYNCING EMPIRE...", cap: "CHAPTER 1: THE CRYSTAL DISPATCH", qte: "TACTICAL EVENTS (QTE)", lan: "SYSTEM LANGUAGE", br: "INTERFACE BRIGHTNESS" },
+                fr: { t: "NARCOS", s: "BREAKING BAD + DISPATCH", n: "NOUVELLE MISSION", set: "PARAMÈTRES", ab: "ABANDONNER", load: "CHARGEMENT...", cap: "CHAPITRE 1: LE PRIX DU CRISTAL", qte: "ÉVÉNEMENTS (QTE)", lan: "LANGUE DU SYSTÈME", br: "LUMINOSITÉ" }
+            },
+            loading: {
+                imgs: [
+                    'https://alphacoders.com',
+                    'https://alphacoders.com',
+                    'https://alphacoders.com',
+                    'https://alphacoders.com'
+                ],
+                quotes: [
+                    {q: "SAY MY NAME.", a: "HEISENBERG"},
+                    {q: "PLATA O PLOMO.", a: "PABLO ESCOBAR"},
+                    {q: "NO ESTOY EN PELIGRO, YO SOY EL PELIGRO.", a: "WALTER WHITE"},
+                    {q: "UN HOMBRE PROVEE PARA SU FAMILIA.", a: "GUSTAVO FRING"},
+                    {q: "HAY QUE TENER CUIDADO CON EL QUE ES DEMASIADO BUENO.", a: "PABLO ESCOBAR"}
+                ],
+                statuses: ["DESENCRIPTANDO COMUNICACIONES...", "CARGANDO RUTAS DE DESIERTO...", "CALIBRANDO SENSORES DE DISPATCH...", "CONTACTANDO AGENTES DE LA DEA..."]
+            }
         };
 
-        function init() {
-            setTimeout(() => {
-                document.getElementById('intro-layer').style.display = 'none';
-                document.getElementById('main-ui').style.display = 'block';
-                handleFS(); // Forzar intento de Fullscreen al entrar
-            }, 6000);
-            startTime();
+        const configOptions = {
+            lang: ["ESPAÑOL", "ENGLISH", "FRANÇAIS"],
+            qte: ["INTERACTIVO", "MODO CINE", "DESACTIVADO"],
+            cen: ["DESACTIVADO", "ACTIVADO"]
+        };
+
+        let currentConfig = { lang: 0, qte: 0, cen: 0 };
+
+        // --- SISTEMA CORE ---
+        function bootMainSystem() {
+            document.getElementById('intro-layer').style.display = 'none';
+            document.getElementById('main-menu-ui').style.display = 'block';
+            toggleFullscreenLogic(true); // Intento de FS al entrar
         }
 
-        function startTime() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-            setTimeout(startTime, 1000);
+        function startTimeCycle() {
+            const clockEl = document.getElementById('real-time-hud');
+            setInterval(() => {
+                clockEl.innerText = new Date().toLocaleTimeString();
+            }, 1000);
         }
 
-        function toggleSettings(show) { document.getElementById('settings-ui').style.display = show ? 'block' : 'none'; }
-
-        function applyLanguage(l) {
-            const d = i18n[l];
-            document.getElementById('l-title').innerText = d.t;
-            document.getElementById('l-sub').innerText = d.s;
-            document.getElementById('b-new').innerText = d.n;
-            document.getElementById('b-set').innerText = d.set;
-            document.getElementById('b-exit').innerText = d.ex;
-            document.getElementById('s-head').innerText = d.head;
-            document.getElementById('s-lan').innerText = d.lan;
-            document.getElementById('s-fs').innerText = d.fs;
-            document.getElementById('s-cen').innerText = d.cen;
-            document.getElementById('s-br').innerText = d.br;
-            document.getElementById('s-vol').innerText = d.vol;
-            document.getElementById('l-txt').innerText = d.load;
-            document.getElementById('f-c').innerText = d.cap;
+        function toggleSettingsOverlay(show) {
+            document.getElementById('settings-overlay-ui').style.display = show ? 'block' : 'none';
         }
 
-        function handleFS() {
+        function switchSettingsTab(tab) {
+            document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab.toLowerCase().substring(0,4)).classList.add('active');
+            
+            document.getElementById('pane-GENERAL').style.display = 'none';
+            document.getElementById('pane-DISPLAY').style.display = 'none';
+            document.getElementById('pane-AUDIO').style.display = 'none';
+            document.getElementById('pane-' + tab).style.display = 'block';
+        }
+
+        function cycleMenuOption(type, dir) {
+            currentConfig[type] = (currentConfig[type] + dir + configOptions[type].length) % configOptions[type].length;
+            document.getElementById('val-' + type).innerText = configOptions[type][currentConfig[type]];
+            if(type === 'lang') applyLanguagePack(configOptions.lang[currentConfig.lang].toLowerCase().substring(0,2));
+        }
+
+        function applyLanguagePack(l) {
+            const d = gameData.i18n[l];
+            document.getElementById('txt-game-title').innerText = d.t;
+            document.getElementById('txt-game-sub').innerText = d.s;
+            document.getElementById('nav-new').innerText = d.n;
+            document.getElementById('nav-set').innerText = d.set;
+            document.getElementById('nav-abort').innerText = d.ab;
+            document.getElementById('status-display').innerText = d.load;
+            document.getElementById('final-chapter-anim').innerText = d.cap;
+            document.getElementById('lb-qte').innerText = d.qte;
+            document.getElementById('lb-lang').innerText = d.lan;
+            document.getElementById('lb-br').innerText = d.br;
+        }
+
+        function toggleFullscreenLogic(forceOn = false) {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(e => {});
-                document.getElementById('fs-btn').classList.add('on');
-            } else {
+                document.documentElement.requestFullscreen().catch(() => {});
+                document.getElementById('val-fs').innerText = "ACTIVADO";
+            } else if(!forceOn) {
                 document.exitFullscreen();
-                document.getElementById('fs-btn').classList.remove('on');
+                document.getElementById('val-fs').innerText = "DESACTIVADO";
             }
         }
 
-        function applyBr(v) { document.getElementById('master-body').style.filter = `brightness(${v}%)`; }
-
-        function exitProcess() { if(confirm("¿RENDIRSE? Perderás el control del desierto.")) window.close(); }
-
-        // FLUJO JUEGO
-        let sIdx = 1;
-        function startNewGame() {
-            document.getElementById('main-ui').style.display = 'none';
-            document.getElementById('story-ui').style.display = 'block';
+        function updateMasterBrightness(v) {
+            document.getElementById('master-game-body').style.filter = `brightness(${v}%)`;
         }
 
-        function goNext() {
-            document.getElementById('sl' + sIdx).classList.remove('active');
-            sIdx++;
-            if(sIdx <= 4) document.getElementById('sl' + sIdx).classList.add('active');
-            else runLoading();
+        function abortProcess() {
+            if(confirm("¿RENDIRSE? Perderás el control del imperio.")) window.close();
         }
 
-        function runLoading() {
-            document.getElementById('story-ui').style.display = 'none';
-            document.getElementById('loading-ui').style.display = 'block';
-            let p = 0;
-            const bar = document.getElementById('bar');
-            const itv = setInterval(() => {
-                p += Math.random() * 2;
-                bar.style.width = p + '%';
-                if(p >= 100) { clearInterval(itv); revealFinal(); }
-            }, 60);
+        // --- FLUJO DE JUEGO ---
+        let currentStorySlide = 1;
+        function triggerStoryMode() {
+            document.getElementById('main-menu-ui').style.display = 'none';
+            document.getElementById('story-narrative-ui').style.display = 'block';
         }
 
-        function revealFinal() {
-            document.getElementById('loading-ui').style.display = 'none';
-            document.getElementById('final-reveal').style.display = 'flex';
-            const t = document.getElementById('f-t');
-            const s = document.getElementById('f-c');
+        function advanceStorySlide() {
+            document.getElementById('st-' + currentStorySlide).classList.remove('active');
+            currentStorySlide++;
+            if(currentStorySlide <= 3) {
+                document.getElementById('st-' + currentStorySlide).classList.add('active');
+            } else {
+                startDynamicLoading();
+            }
+        }
+
+        function startDynamicLoading() {
+            document.getElementById('story-narrative-ui').style.display = 'none';
+            document.getElementById('loading-screen-ui').style.display = 'block';
+            
+            const artBox = document.getElementById('load-art-box');
+            const quoteTxt = document.getElementById('quote-display');
+            const quoteAuth = document.getElementById('author-display');
+            const statusTxt = document.getElementById('status-display');
+
+            // Intervalo de ciclo de activos
+            const cycleAssets = setInterval(() => {
+                artBox.style.backgroundImage = `url('${gameData.loading.imgs[Math.floor(Math.random() * gameData.loading.imgs.length)]}')`;
+                const q = gameData.loading.quotes[Math.floor(Math.random() * gameData.loading.quotes.length)];
+                quoteTxt.innerText = `"${q.q}"`;
+                quoteAuth.innerText = q.a;
+                statusTxt.innerText = gameData.loading.statuses[Math.floor(Math.random() * gameData.loading.statuses.length)];
+            }, 3500);
+
+            let progress = 0;
+            const bar = document.getElementById('load-bar-fill');
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 1.8;
+                bar.style.width = progress + '%';
+                if(progress >= 100) {
+                    clearInterval(progressInterval);
+                    clearInterval(cycleAssets);
+                    revealChapterTitle();
+                }
+            }, 80);
+        }
+
+        function revealChapterTitle() {
+            document.getElementById('loading-screen-ui').style.display = 'none';
+            document.getElementById('final-title-reveal').style.display = 'flex';
+            
+            const titleEl = document.getElementById('final-title-anim');
+            const chapEl = document.getElementById('final-chapter-anim');
+
             setTimeout(() => {
-                t.style.transition = "5s"; t.style.opacity = 1; t.style.transform = "scale(1)";
+                titleEl.style.transition = "8s cubic-bezier(0.1, 0, 0, 1)";
+                titleEl.style.opacity = 1;
+                titleEl.style.filter = "blur(0)";
+                titleEl.style.transform = "scale(1)";
             }, 500);
-            setTimeout(() => { s.style.opacity = 1; }, 3000);
-        }
 
-        init();
+            setTimeout(() => {
+                chapEl.style.transition = "4s";
+                chapEl.style.opacity = 1;
+            }, 4500);
+        }
     </script>
 </body>
 </html>
+
 
