@@ -2,311 +2,252 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | TIÑI GAMES FINAL v9.5</title>
+    <title>NARCOS: DISPATCH | TIÑI GAMES v13.0 FINAL</title>
     <style>
         :root { 
             --accent: #39ff14; 
-            --accent-dim: rgba(57, 255, 20, 0.1);
-            --bg: #020202;
-            --ui-card: rgba(255, 255, 255, 0.02);
-            --font-main: 'Courier New', Courier, monospace;
+            --accent-glow: rgba(57, 255, 20, 0.4);
+            --bg: #020405; 
+            --ui-panel: rgba(10, 20, 30, 0.4);
+            --font: 'Courier New', Courier, monospace;
         }
+        * { box-sizing: border-box; cursor: crosshair; outline: none; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: var(--font); overflow: hidden; height: 100vh; }
+        
+        /* CAPA DE CONTROL DE LUZ (BRILLO REAL) */
+        #brightness-gate { position: fixed; inset: 0; background: black; pointer-events: none; z-index: 100000; opacity: 0; }
 
-        * { box-sizing: border-box; outline: none; }
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--bg); font-family: var(--font-main); 
-            overflow: hidden; color: white; -webkit-font-smoothing: antialiased;
-        }
-
-        /* --- POST-PROCESADO (ESTILO DISPATCH) --- */
-        .crt-overlay {
+        /* --- POST-PROCESADO --- */
+        .crt-fx {
             position: fixed; inset: 0; pointer-events: none; z-index: 99999;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.01));
             background-size: 100% 3px, 3px 100%; opacity: 0.3;
         }
 
-        .vignette {
-            position: fixed; inset: 0; pointer-events: none; z-index: 99998;
-            background: radial-gradient(circle, transparent 40%, black 150%);
-        }
-
-        /* --- INTRO: TIÑI GAMES --- */
-        #intro-layer { 
-            position: fixed; inset: 0; z-index: 80000; background: #000;
+        /* --- INTRO ROCKSTAR --- */
+        #intro-terminal { 
+            position: fixed; inset: 0; z-index: 90000; background: black;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: 1.2s cubic-bezier(1, 0, 0, 1);
         }
-        #intro-layer h1 { font-size: 5rem; letter-spacing: 25px; transition: 0.8s; margin: 0; }
-        #intro-layer:hover h1 { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
+        #intro-terminal h1 { font-size: 6rem; letter-spacing: 30px; margin: 0; transition: 0.5s; }
+        #intro-terminal:hover h1 { color: var(--accent); text-shadow: 0 0 30px var(--accent); }
 
-        /* --- INTERFAZ PRINCIPAL --- */
-        #main-ui { 
-            display: none; opacity: 0; height: 100vh; width: 100vw; 
-            padding: 8% 10%; transition: 1.5s ease-in-out;
-        }
-        .brand h2 { font-size: 8rem; font-weight: 900; margin: 0; letter-spacing: -6px; line-height: 0.8; }
-        .brand span { color: var(--accent); font-size: 1.2rem; letter-spacing: 12px; font-weight: bold; }
+        /* --- INTERFAZ DISPATCH --- */
+        #main-os { display: none; opacity: 0; padding: 5% 10%; transition: 2s; height: 100vh; }
+        .os-brand h2 { font-size: 8rem; margin: 0; letter-spacing: -8px; font-weight: 900; }
+        .os-brand span { color: var(--accent); letter-spacing: 15px; font-weight: bold; }
 
-        /* BOTONES TÁCTICOS */
-        .nav-box { margin-top: 60px; display: flex; flex-direction: column; gap: 20px; }
-        .btn-tactical {
-            background: transparent; border: none; color: var(--accent);
-            text-align: left; font-family: inherit; font-size: 1.1rem;
-            text-transform: uppercase; cursor: pointer; padding: 10px 0;
-            letter-spacing: 4px; transition: 0.4s; position: relative; width: fit-content;
+        .os-nav { margin-top: 60px; display: flex; flex-direction: column; gap: 20px; }
+        .os-btn { 
+            background: none; border: none; color: var(--accent); font-family: inherit; font-size: 1.5rem;
+            text-align: left; letter-spacing: 6px; cursor: pointer; transition: 0.4s;
         }
-        .btn-tactical:hover:not(.locked) { color: white; transform: translateX(30px); }
-        .btn-tactical:hover:not(.locked)::before { content: '>'; position: absolute; left: -25px; }
-        .btn-tactical.locked { color: #222; cursor: not-allowed; opacity: 0.4; }
+        .os-btn:hover:not(.locked) { color: white; transform: translateX(30px); }
+        .os-btn.locked { color: #151515; cursor: not-allowed; text-shadow: none; }
 
-        /* --- AJUSTES: ESTILO REDISEÑADO --- */
-        #settings-ui { 
-            display: none; position: fixed; inset: 0; background: rgba(0,5,0,0.99); 
-            z-index: 70000; padding: 100px 10%; border-left: 10px solid var(--accent);
+        /* --- AJUSTES: CLON DISPATCH --- */
+        #settings-os { 
+            display: none; position: fixed; inset: 0; background: var(--bg); 
+            z-index: 85000; padding: 5% 10%; border-left: 10px solid var(--accent);
         }
-        .setting-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 30px 0; border-bottom: 1px solid rgba(57, 255, 20, 0.1);
+        .tabs-dispatch { display: flex; gap: 4px; border-bottom: 2px solid #111; margin-bottom: 30px; }
+        .tab-trigger { 
+            background: #080808; border: none; color: #444; padding: 20px 50px; 
+            cursor: pointer; font-family: inherit; font-weight: bold; letter-spacing: 4px;
         }
-        .setting-label { letter-spacing: 3px; font-weight: bold; font-size: 0.9rem; }
+        .tab-trigger.active { background: var(--ui-panel); color: var(--accent); border-bottom: 4px solid var(--accent); }
+
+        .pane { display: none; background: rgba(255,255,255,0.01); padding: 40px; }
+        .pane.active { display: block; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #111; }
         
-        select { 
-            background: #000; color: var(--accent); border: 1px solid var(--accent);
-            padding: 12px 25px; font-family: inherit; cursor: pointer; text-transform: uppercase;
-        }
+        .t-select { background: #000; color: white; border: 1px solid var(--accent); padding: 12px 30px; font-family: inherit; }
+        .t-range { -webkit-appearance: none; width: 300px; height: 3px; background: #222; }
+        .t-range::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 30px; background: var(--accent); cursor: pointer; box-shadow: 0 0 15px var(--accent); }
 
-        /* Sliders Tácticos */
-        .t-slider { -webkit-appearance: none; width: 350px; height: 2px; background: #222; }
-        .t-slider::-webkit-slider-thumb { 
-            -webkit-appearance: none; width: 10px; height: 30px; background: var(--accent); cursor: pointer; 
-            box-shadow: 0 0 15px var(--accent); border-radius: 0;
-        }
+        /* --- NARRATIVA VISUAL --- */
+        #story-os { display: none; position: fixed; inset: 0; z-index: 70000; background: black; flex-direction: column; align-items: center; justify-content: center; padding: 5%; }
+        .frame { display: none; width: 90%; max-width: 1200px; animation: entry 1.5s forwards; }
+        .frame.active { display: block; }
+        .frame-img { width: 100%; height: 500px; background-size: cover; background-position: center; border: 1px solid #222; margin-bottom: 40px; filter: grayscale(0.5); }
+        .frame-txt { font-size: 2.5rem; line-height: 1.3; border-left: 15px solid var(--accent); padding-left: 40px; color: #eee; text-shadow: 2px 2px 5px black; }
 
-        /* --- NARRATIVA --- */
-        #story-ui { 
-            display: none; position: fixed; inset: 0; background: #000; z-index: 50000;
-            flex-direction: column; align-items: center; justify-content: center; padding: 10%;
+        /* --- CAPÍTULO 1 FINAL (IMPACTO VERDE) --- */
+        #final-os { display: none; position: fixed; inset: 0; z-index: 95000; background: black; flex-direction: column; align-items: center; justify-content: center; }
+        .mega-title { 
+            font-size: 8rem; color: var(--accent); font-weight: 900; letter-spacing: 25px; 
+            text-shadow: 0 0 40px var(--accent-glow); text-align: center;
+            animation: pulse 1.5s infinite alternate;
         }
-        .slide { display: none; max-width: 900px; text-align: left; animation: slideIn 2s forwards; }
-        .slide.active { display: block; }
-        .slide-text { font-size: 2.2rem; line-height: 1.4; border-left: 8px solid var(--accent); padding-left: 40px; }
+        .mega-sub { font-size: 2rem; color: white; letter-spacing: 15px; margin-top: 30px; opacity: 0.8; font-weight: bold; }
 
-        /* --- CARGA --- */
-        #load-ui { 
-            display: none; position: fixed; inset: 0; background: black; z-index: 90000; 
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        #load-quote { color: var(--accent); font-size: 1.3rem; text-align: center; max-width: 600px; font-style: italic; }
-        .progress-track { width: 500px; height: 2px; background: #111; margin-top: 50px; }
-        #progress-fill { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 20px var(--accent); }
-
-        /* --- FINAL: TRANSICIÓN LEGENDARIA --- */
-        #final-reveal { 
-            display: none; position: fixed; inset: 0; background: black; z-index: 100000; 
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        #final-logo { font-size: 12vw; letter-spacing: 40px; font-weight: 900; opacity: 0; transform: scale(1.5); filter: blur(30px); transition: 5s cubic-bezier(0.1, 0, 0, 1); }
-        #final-cap { color: var(--accent); font-size: 1.5rem; letter-spacing: 15px; margin-top: 40px; opacity: 0; transition: 3s; font-weight: bold; }
-
-        @keyframes slideIn { from { opacity: 0; filter: blur(20px); transform: translateY(20px); } to { opacity: 1; filter: blur(0); transform: translateY(0); } }
+        @keyframes entry { from { opacity: 0; filter: blur(20px); transform: scale(1.1); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
+        @keyframes pulse { from { transform: scale(1); opacity: 1; } to { transform: scale(1.02); opacity: 0.8; } }
     </style>
 </head>
-<body onload="initSystem()">
+<body onload="checkSave()">
 
-    <div class="crt-overlay"></div>
-    <div class="vignette"></div>
+    <div id="brightness-gate"></div>
+    <div class="crt-fx"></div>
 
     <!-- INTRO -->
-    <div id="intro-layer" onclick="bootUI()">
-        <h1 data-t="brand">TIÑI GAMES</h1>
-        <p style="letter-spacing: 10px; color: #333; margin-top: 30px;">[ INITIALIZING_DEA_LINK ]</p>
+    <div id="intro-terminal" onclick="bootOS()">
+        <h1 data-t="company">TIÑI GAMES</h1>
+        <p style="color: #333; letter-spacing: 12px; margin-top: 40px;">[ INITIALIZING_DEEP_LINK ]</p>
     </div>
 
-    <!-- MENÚ PRINCIPAL -->
-    <div id="main-ui">
-        <div class="brand">
+    <!-- MENU PRINCIPAL -->
+    <div id="main-os">
+        <div class="os-brand">
             <h2>NARCOS</h2>
-            <span data-t="sub">DISPATCH v9.5_FINAL</span>
+            <span data-t="os_ver">DISPATCH_TACTICAL_v13.0</span>
         </div>
-        <div class="nav-box">
-            <button class="btn-tactical" onclick="startStory()" data-t="new">NUEVA PARTIDA</button>
-            <button id="cont-btn" class="btn-tactical locked" onclick="continueGame()" data-t="cont">SEGUIR CON LA PARTIDA</button>
-            <button class="btn-tactical" onclick="toggleSettings(true)" data-t="sett">AJUSTES TÁCTICOS</button>
+        <div class="os-nav">
+            <button class="os-btn" onclick="startStory()" data-t="btn_new">NUEVA OPERACIÓN</button>
+            <button id="cont-btn" class="os-btn locked" onclick="continueStory()" data-t="btn_cont">SEGUIR CON LA PARTIDA</button>
+            <button class="os-btn" style="color:white" onclick="toggleSettings(true)" data-t="btn_sett">AJUSTES_SISTEMA</button>
         </div>
     </div>
 
-    <!-- AJUSTES REDISEÑADOS -->
-    <div id="settings-ui">
-        <h2 data-t="sett_head" style="letter-spacing: 15px; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 20px;">CONFIGURACIÓN_RED</h2>
-        
-        <div class="setting-row">
-            <span class="setting-label" data-t="lang_lab">PROTOCOLO DE IDIOMA</span>
-            <select id="lang-sel" onchange="applyTranslation()">
-                <option value="es">ESPAÑOL (LOCAL)</option>
-                <option value="en">ENGLISH (DEA_LINK)</option>
-                <option value="fr">FRANÇAIS (INTERPOL)</option>
-            </select>
+    <!-- PANEL AJUSTES DISPATCH -->
+    <div id="settings-os">
+        <div class="tabs-dispatch">
+            <button class="tab-trigger active" onclick="tab('gen')" data-t="t_gen">GENERAL</button>
+            <button class="tab-trigger" onclick="tab('vid')" data-t="t_vid">VIDEO</button>
+            <button class="tab-trigger" onclick="tab('snd')" data-t="t_snd">SONIDO</button>
         </div>
 
-        <div class="setting-row">
-            <span class="setting-label" data-t="brill_lab">INTENSIDAD LUMÍNICA</span>
-            <input type="range" class="t-slider" value="80">
+        <div id="gen" class="pane active">
+            <div class="row"><span data-t="l_lang">IDIOMA DE ENLACE</span>
+                <select class="t-select" id="lang-picker" onchange="translateAll()">
+                    <option value="es">ESPAÑOL (LOCAL)</option>
+                    <option value="en">ENGLISH (DEA_HQ)</option>
+                    <option value="fr">FRANÇAIS (INTERPOL)</option>
+                </select>
+            </div>
+            <div class="row"><span data-t="l_prof">FILTRO DE LENGUAJE</span><select class="t-select"><option>OFF</option><option>ON</option></select></div>
         </div>
 
-        <div class="setting-row">
-            <span class="setting-label" data-t="sound_lab">FRECUENCIA MAESTRA</span>
-            <input type="range" class="t-slider" value="50">
+        <div id="vid" class="pane">
+            <div class="row"><span data-t="l_brill">BRILLO (LUMENS)</span>
+                <input type="range" class="t-range" min="0" max="90" value="0" oninput="document.getElementById('brightness-gate').style.opacity = this.value/100">
+            </div>
+            <div class="row"><span data-t="l_fs">PANTALLA COMPLETA</span><select class="t-select" onchange="if(this.value=='ON')document.documentElement.requestFullscreen()"><option>OFF</option><option>ON</option></select></div>
+            <div class="row"><span data-t="l_blood">CENSURAR SANGRE</span><select class="t-select"><option>OFF</option><option>ON</option></select></div>
         </div>
 
-        <button class="btn-tactical" style="margin-top: 60px; border: 1px solid var(--accent); padding: 15px 40px;" onclick="toggleSettings(false)" data-t="save">GUARDAR Y SALIR</button>
+        <button class="os-btn" style="margin-top: 50px; border: 1px solid var(--accent); padding: 15px 40px;" onclick="toggleSettings(false)" data-t="btn_save">GUARDAR Y REGRESAR</button>
     </div>
 
-    <!-- NARRATIVA -->
-    <div id="story-ui">
-        <div class="slide active" id="s1"><div class="slide-text" data-t="s1">La honestidad tenía un precio que mi salario no podía pagar.</div></div>
-        <div class="slide" id="s2"><div class="slide-text" data-t="s2">Un matraz y un garaje oscuro. Ese fue mi verdadero punto de quiebre.</div></div>
-        <div class="slide" id="s3"><div class="slide-text" data-t="s3">Conocí a los hombres que el mundo prefiere ignorar.</div></div>
-        <div class="slide" id="s4"><div class="slide-text" data-t="s4">El profesor murió. El hombre que regresó ya no necesitaba aprobación.</div></div>
-        <div class="slide" id="s5"><div class="slide-text" data-t="s5">Cinco capítulos para el final. El imperio comienza ahora.</div></div>
-        <button class="btn-tactical" style="margin-top: 50px; color: white;" onclick="nextSlide()" data-t="next">SIGUIENTE >></button>
+    <!-- NARRATIVA VISUAL -->
+    <div id="story-os">
+        <div class="frame active" id="f1">
+            <div class="frame-img" style="background-image: url('https://unsplash.com')"></div>
+            <p class="frame-txt" data-t="s1">La honestidad tenía un precio que mi salario no podía pagar.</p>
+        </div>
+        <div class="frame" id="f2">
+            <div class="frame-img" style="background-image: url('https://unsplash.com')"></div>
+            <p class="frame-txt" data-t="s2">Un matraz y un garaje oscuro. Mi familia merecía más que deudas.</p>
+        </div>
+        <div class="frame" id="f3">
+            <div class="frame-img" style="background-image: url('https://unsplash.com')"></div>
+            <p class="frame-txt" data-t="s3">Conocí a los hombres que el mundo prefiere ignorar.</p>
+        </div>
+        <div class="frame" id="f4">
+            <div class="frame-img" style="background-image: url('https://unsplash.com')"></div>
+            <p class="frame-txt" data-t="s4">El profesor murió. El hombre que regresó ya no pedía permiso.</p>
+        </div>
+        <div class="frame" id="f5">
+            <div class="frame-img" style="background-image: url('https://unsplash.com')"></div>
+            <p class="frame-txt" data-t="s5">Cinco capítulos para el final. El imperio comienza ahora.</p>
+        </div>
+        <button class="os-btn" style="margin-top: 50px; color: white;" onclick="nextFrame()" data-t="btn_next">SIGUIENTE >></button>
     </div>
 
-    <!-- PANTALLA DE CARGA -->
-    <div id="load-ui">
-        <div id="load-quote"></div>
-        <div class="progress-track"><div id="progress-fill"></div></div>
-        <p style="margin-top: 20px; font-size: 0.7rem; letter-spacing: 5px; opacity: 0.4;">GUARDANDO_DATOS_EN_DISCO...</p>
-    </div>
-
-    <!-- TRANSICIÓN FINAL -->
-    <div id="final-reveal">
-        <h1 id="final-logo">NARCOS</h1>
-        <div id="final-cap" data-t="cap1">CAPÍTULO 1: EL MATRAZ Y LA SELVA</div>
+    <!-- PANTALLA FINAL VERDE GIGANTE -->
+    <div id="final-os">
+        <h1 class="mega-title" data-t="final_cap">CAPÍTULO 1</h1>
+        <p class="mega-sub" data-t="final_sub">EL MATRAZ Y LA SELVA</p>
+        <p style="margin-top: 80px; color: #222; letter-spacing: 5px;">[ ENTRANDO EN LA RED ]</p>
     </div>
 
     <script>
-        const dict = {
-            es: {
-                brand: "TIÑI GAMES", sub: "DISPATCH v9.5_FINAL", new: "NUEVA PARTIDA", cont: "SEGUIR CON LA PARTIDA",
-                sett: "AJUSTES TÁCTICOS", sett_head: "CONFIGURACIÓN_RED", lang_lab: "PROTOCOLO DE IDIOMA",
-                brill_lab: "INTENSIDAD LUMÍNICA", sound_lab: "FRECUENCIA MAESTRA", save: "GUARDAR Y SALIR",
-                next: "SIGUIENTE", cap1: "CAPÍTULO 1: EL MATRAZ Y LA SELVA",
+        const lang = {
+            es: { 
+                company: "TIÑI GAMES", os_ver: "DISPATCH_TACTICAL_v13.0", btn_new: "NUEVA OPERACIÓN", btn_cont: "SEGUIR CON LA PARTIDA",
+                btn_sett: "AJUSTES_SISTEMA", btn_save: "GUARDAR Y REGRESAR", t_gen: "GENERAL", t_vid: "VIDEO", t_snd: "SONIDO",
+                l_lang: "IDIOMA DE ENLACE", l_prof: "FILTRO DE LENGUAJE", l_brill: "BRILLO (LUMENS)", l_fs: "PANTALLA COMPLETA",
+                l_blood: "CENSURAR SANGRE", btn_next: "SIGUIENTE >>", final_cap: "CAPÍTULO 1", final_sub: "EL MATRAZ Y LA SELVA",
                 s1: "La honestidad tenía un precio que mi salario no podía pagar.",
-                s2: "Un matraz y un garaje oscuro. Ese fue mi verdadero punto de quiebre.",
+                s2: "Un matraz y un garaje oscuro. Mi familia merecía más que deudas.",
                 s3: "Conocí a los hombres que el mundo prefiere ignorar.",
-                s4: "El profesor murió. El hombre que regresó ya no necesitaba aprobación.",
+                s4: "El profesor murió. El hombre que regresó ya no pedía permiso.",
                 s5: "Cinco capítulos para el final. El imperio comienza ahora."
             },
-            en: {
-                brand: "TIÑI GAMES", sub: "DISPATCH v9.5_FINAL", new: "NEW OPERATION", cont: "CONTINUE OPERATION",
-                sett: "TACTICAL SETTINGS", sett_head: "NETWORK_CONFIG", lang_lab: "DATA LINK PROTOCOL",
-                brill_lab: "LUMINOUS INTENSITY", sound_lab: "MASTER FREQUENCY", save: "SAVE AND EXIT",
-                next: "NEXT", cap1: "CHAPTER 1: THE FLASK AND THE JUNGLE",
+            en: { 
+                company: "TIÑI GAMES", os_ver: "DISPATCH_TACTICAL_v13.0", btn_new: "NEW OPERATION", btn_cont: "CONTINUE MISSION",
+                btn_sett: "SYSTEM_SETTINGS", btn_save: "SAVE AND RETURN", t_gen: "GENERAL", t_vid: "DISPLAY", t_snd: "AUDIO",
+                l_lang: "DATA LINK LANGUAGE", l_prof: "PROFANITY FILTER", l_brill: "BRIGHTNESS (LUMENS)", l_fs: "FULLSCREEN MODE",
+                l_blood: "CENSOR BLOOD", btn_next: "NEXT >>", final_cap: "CHAPTER 1", final_sub: "THE FLASK AND THE JUNGLE",
                 s1: "Honesty had a price my salary couldn't afford.",
-                s2: "A flask and a dark garage. That was my true breaking point.",
+                s2: "A flask and a dark garage. My family deserved more than debt.",
                 s3: "I met the men the world prefers to ignore.",
-                s4: "The teacher died. The man who returned needed no approval.",
+                s4: "The teacher died. The man who returned asked no permission.",
                 s5: "Five chapters to the end. The empire begins now."
-            },
-            fr: {
-                brand: "TIÑI GAMES", sub: "DISPATCH v9.5_FINAL", new: "NOUVELLE MISSION", cont: "CONTINUER MISSION",
-                sett: "PARAMÈTRES TACTIQUES", sett_head: "CONFIG_RÉSEAU", lang_lab: "PROTOCOLE DE LANGUE",
-                brill_lab: "INTENSITÉ LUMINEUSE", sound_lab: "FRÉQUENCE MAÎTRESSE", save: "SAUVEGARDER ET QUITTER",
-                next: "SUIVANT", cap1: "CHAPITRE 1: LE FLACON ET LA JUNGLE",
-                s1: "L'honnêteté avait un prix que mon salaire ne pouvait pas payer.",
-                s2: "Un flacon et un garage sombre. C'était mon vrai point de rupture.",
-                s3: "J'ai rencontré les hommes que le monde préfère ignorer.",
-                s4: "Le professeur est mort. L'homme qui est revenu n'avait besoin d'aucune approbation.",
-                s5: "Cinq chapitres jusqu'à la fin. L'empire commence maintenant."
             }
         };
 
-        const quotes = [
-            '"I am the danger." - W.W', '"Plata o Plomo." - P.E', '"Say my name." - Heisenberg', '"Stay out of my territory." - W.W'
-        ];
+        let frameIdx = 1;
 
-        let slideIdx = 1;
-
-        function initSystem() {
-            // Verificar si hay partida guardada al iniciar
-            if(localStorage.getItem('narcos_save_v9')) {
+        function checkSave() {
+            if(localStorage.getItem('narcos_dispatch_save')) {
                 const btn = document.getElementById('cont-btn');
                 btn.classList.remove('locked');
-                btn.innerHTML = dict[document.getElementById('lang-sel').value].cont;
+                btn.style.textShadow = '0 0 15px var(--accent)';
             }
         }
 
-        function bootUI() {
-            document.documentElement.requestFullscreen().catch(() => {});
-            document.getElementById('intro-layer').style.transform = 'translateY(-100%)';
+        function bootOS() {
+            document.documentElement.requestFullscreen().catch(()=>{});
+            document.getElementById('intro-terminal').style.transform = 'translateY(-100%)';
             setTimeout(() => {
-                document.getElementById('main-ui').style.display = 'block';
-                setTimeout(() => document.getElementById('main-ui').style.opacity = '1', 100);
+                document.getElementById('main-os').style.display = 'block';
+                setTimeout(() => document.getElementById('main-os').style.opacity = '1', 100);
             }, 800);
         }
 
-        function applyTranslation() {
-            const lang = document.getElementById('lang-sel').value;
+        function tab(id) {
+            document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function translateAll() {
+            const l = document.getElementById('lang-picker').value;
             document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                el.innerText = dict[lang][key];
+                el.innerText = lang[l][el.getAttribute('data-t')];
             });
         }
 
-        function toggleSettings(show) {
-            document.getElementById('settings-ui').style.display = show ? 'block' : 'none';
-        }
+        function toggleSettings(s) { document.getElementById('settings-os').style.display = s ? 'block' : 'none'; }
 
         function startStory() {
-            document.getElementById('main-ui').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('main-ui').style.display = 'none';
-                document.getElementById('story-ui').style.display = 'flex';
-            }, 1000);
+            document.getElementById('main-os').style.display = 'none';
+            document.getElementById('story-os').style.display = 'flex';
         }
 
-        function nextSlide() {
-            document.getElementById(`s${slideIdx}`).classList.remove('active');
-            slideIdx++;
-            if(slideIdx <= 5) {
-                document.getElementById(`s${slideIdx}`).classList.add('active');
-            } else {
-                launchLoading();
+        function nextFrame() {
+            document.getElementById(`f${frameIdx}`).classList.remove('active');
+            frameIdx++;
+            if(frameIdx <= 5) document.getElementById(`f${frameIdx}`).classList.add('active');
+            else {
+                localStorage.setItem('narcos_dispatch_save', '1'); // GUARDADO REAL
+                document.getElementById('story-os').style.display = 'none';
+                document.getElementById('final-os').style.display = 'flex';
             }
-        }
-
-        function launchLoading() {
-            document.getElementById('story-ui').style.display = 'none';
-            document.getElementById('load-ui').style.display = 'flex';
-            document.getElementById('load-quote').innerText = quotes[Math.floor(Math.random()*quotes.length)];
-            
-            let p = 0;
-            const iv = setInterval(() => {
-                p += Math.random() * 4;
-                document.getElementById('progress-fill').style.width = p + '%';
-                if(p >= 100) {
-                    clearInterval(iv);
-                    localStorage.setItem('narcos_save_v9', '1'); // Guardado efectivo
-                    finalReveal();
-                }
-            }, 60);
-        }
-
-        function finalReveal() {
-            document.getElementById('load-ui').style.display = 'none';
-            document.getElementById('final-reveal').style.display = 'flex';
-            setTimeout(() => {
-                const logo = document.getElementById('final-logo');
-                logo.style.opacity = '1';
-                logo.style.transform = 'scale(1)';
-                logo.style.filter = 'blur(0)';
-                setTimeout(() => {
-                    document.getElementById('final-cap').style.opacity = '1';
-                }, 2000);
-            }, 500);
         }
     </script>
 </body>
