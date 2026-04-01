@@ -5,16 +5,22 @@
     <title>NARCOS: DISPATCH | Tiñi Games</title>
     <style>
         :root { --accent: #39ff14; --brightness: 100%; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); transition: filter 0.5s; }
 
-        /* --- INTRO ORIGINAL (PROTEGIDA) --- */
+        /* --- SIRENAS Y INTRO ORIGINAL --- */
         #intro { position: fixed; width: 100%; height: 100%; z-index: 5000; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
-        .flash { position: absolute; width: 100%; height: 100%; animation: sirenas 0.1s infinite; opacity: 0; pointer-events: none; }
-        @keyframes sirenas { 0% { background: #f00; opacity: 0.1; } 50% { background: #00f; opacity: 0.1; } }
+        .flash { position: absolute; width: 100%; height: 100%; animation: sirenas 0.15s infinite; opacity: 0; pointer-events: none; }
+        @keyframes sirenas { 0% { background: #f00; opacity: 0.2; } 50% { background: #00f; opacity: 0.2; } }
 
-        /* --- FONDO Y VIGNETTE --- */
+        /* --- FONDO --- */
         #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://alphacoders.com') center/cover; z-index: 0; opacity: 0; transition: opacity 2s; }
         .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 300px #000; z-index: 1; pointer-events: none; }
+
+        /* --- UI RADAR Y COORDENADAS --- */
+        .ui-top { position: fixed; top: 40px; right: 80px; text-align: right; color: var(--accent); font-size: 0.8rem; line-height: 1.8; z-index: 101; }
+        .radar { position: absolute; bottom: 50px; right: 80px; width: 120px; height: 120px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.5; z-index: 101; }
+        .radar-line { position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: spin 4s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* --- MENÚ PRINCIPAL --- */
         #menu { position: relative; z-index: 100; height: 100%; display: none; flex-direction: column; justify-content: center; padding-left: 80px; opacity: 0; transition: 1s; }
@@ -22,139 +28,123 @@
         .btn-main { background: rgba(0,0,0,0.8); color: var(--accent); border: 1px solid var(--accent); padding: 15px 45px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-weight: bold; text-transform: uppercase; }
         .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
 
-        /* --- AJUSTES ESTILO DISPATCH (MIRA LA IMAGEN) --- */
-        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,5,0,0.95); z-index: 9999; padding: 40px 10%; border: 1px solid var(--accent); box-sizing: border-box; }
-        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 1px solid #222; }
-        .tab { padding: 10px 25px; border: 1px solid transparent; cursor: pointer; color: #666; text-transform: uppercase; font-size: 0.9rem; }
-        .tab.active { color: var(--accent); border: 1px solid var(--accent); border-bottom: 2px solid black; background: rgba(57,255,20,0.05); }
-        
-        .row { background: rgba(255,255,255,0.03); border: 1px solid rgba(57,255,20,0.1); padding: 15px 25px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .setting-val { background: #000; border: 1px solid var(--accent); color: var(--accent); padding: 5px 15px; cursor: pointer; min-width: 100px; text-align: center; }
-        .tab-content { display: none; }
+        /* --- AJUSTES DISPATCH STYLE --- */
+        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,0,0.98); z-index: 9999; padding: 50px 10%; border: 2px solid var(--accent); box-sizing: border-box; overflow-y: auto; }
+        .tab-content { display: none; margin-top: 30px; }
         .tab-content.active { display: block; }
+        .row { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.2); padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* --- CARGA Y STORY --- */
+        /* --- POKÉBOX Y CARGA --- */
         #loading-screen { display:none; position:fixed; z-index:9000; width:100%; height:100%; background:black; flex-direction:column; align-items:center; justify-content:center; }
+        #load-bar-cont { width:300px; height:6px; background:#111; border:1px solid var(--accent); margin-bottom: 20px; }
+        #load-bar { width:0%; height:100%; background:var(--accent); transition: 4s linear; }
+        
         #story-box { display:none; position:fixed; z-index:8000; width:100%; height:100%; background:black; }
-        .pkmn-msg { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:90%; height:150px; background:white; border:5px solid #444; border-radius:15px; padding:25px; color:black; font-size:1.6rem; font-weight:bold; cursor:pointer; }
+        .pkmn-msg { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:90%; height:160px; background:white; border:5px solid #444; border-radius:15px; padding:25px; color:black; font-size:1.6rem; font-weight:bold; cursor:pointer; }
         
         /* --- TÍTULO ÉPICO --- */
         #epic-title-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 12000; flex-direction: column; align-items: center; justify-content: center; }
-        .t-step { opacity: 0; transition: opacity 1.5s; }
+        .t-step { opacity: 0; transition: 2s; text-align: center; }
     </style>
 </head>
-<body id="game-body">
+<body>
 
-    <!-- Intro de Tiñi Games -->
-    <div id="intro" onclick="start()">
-        <div class="flash" id="f"></div>
-        <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
-    </div>
-
+    <audio id="siren" loop src="https://soundjay.com"></audio>
     <div id="bg-container"></div>
     <div class="vignette"></div>
 
-    <!-- Ajustes -->
-    <div id="settings-panel">
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab(event, 'general')" id="t-gen">GENERAL</div>
-            <div class="tab" onclick="switchTab(event, 'video')" id="t-vid">VIDEO</div>
-            <div class="tab" onclick="switchTab(event, 'audio')" id="t-aud">SONIDO</div>
-        </div>
-
-        <div id="general" class="tab-content active">
-            <div class="row"><span>PANTALLA COMPLETA</span><div class="setting-val" onclick="toggleFS()" id="fs-val">OFF</div></div>
-            <div class="row"><span>IDIOMA</span>
-                <select onchange="translateAll(this.value)" id="lang-sel" style="background:black; color:var(--accent); border:1px solid var(--accent);">
-                    <option value="es">ESPAÑOL</option>
-                    <option value="en">ENGLISH</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="video" class="tab-content">
-            <div class="row"><span>BRILLO</span><input type="range" min="50" max="150" value="100" oninput="changeBrightness(this.value)"></div>
-            <div class="row"><span>CENSURAR SANGRE</span><div class="setting-val" onclick="toggleSetting(this)">OFF</div></div>
-            <div class="row"><span>CENSURAR INSULTOS</span><div class="setting-val" onclick="toggleSetting(this)">OFF</div></div>
-        </div>
-
-        <div id="audio" class="tab-content">
-            <div class="row"><span>VOLUMEN MAESTRO</span><input type="range"></div>
-            <div class="row"><span>EFECTOS (SFX)</span><input type="range"></div>
-            <div class="row"><span>MÚSICA</span><input type="range"></div>
-        </div>
-        <button class="btn-main" onclick="toggleSettings(false)" style="width:100%; text-align:center;">VOLVER</button>
+    <!-- Intro con Sirenas -->
+    <div id="intro" onclick="start()">
+        <div class="flash"></div>
+        <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
     </div>
 
-    <!-- Pantalla de Carga y Título -->
+    <!-- UI RECUPERADA -->
+    <div class="ui-top">
+        LOC: 35.0844 N / 106.6504 W<br>
+        DEPT: DEA_SURVEILLANCE<br>
+        TIME: <span id="clock">00:00:00</span>
+    </div>
+    <div class="radar"><div class="radar-line"></div></div>
+
+    <!-- Menú -->
+    <div id="menu">
+        <div id="txt-cap" style="color:var(--accent); letter-spacing:4px; font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
+        <div class="logo">NARCOS</div>
+        <button class="btn-main" id="btn-new" onclick="nuevaPartida()">Nueva Partida</button>
+        <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">AJUSTES</button>
+    </div>
+
+    <!-- Ajustes Dispatch -->
+    <div id="settings-panel">
+        <h1 id="sett-tit" style="color:var(--accent); letter-spacing:10px;">AJUSTES</h1>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-main" style="width:auto;" onclick="showTab('gen')">GENERAL</button>
+            <button class="btn-main" style="width:auto;" onclick="showTab('vid')">VIDEO</button>
+            <button class="btn-main" style="width:auto;" onclick="showTab('aud')">SONIDO</button>
+        </div>
+        <div id="gen" class="tab-content active">
+            <div class="row"><span>IDIOMA</span>
+                <select onchange="translateAll(this.value)" id="lang-sel" style="background:#000; color:var(--accent); border:1px solid var(--accent); padding:5px;">
+                    <option value="es">ESPAÑOL</option>
+                    <option value="en">ENGLISH</option>
+                    <option value="fr">FRANÇAIS</option>
+                </select>
+            </div>
+            <div class="row"><span>PANTALLA COMPLETA</span><button onclick="toggleFS()" id="fs-btn">OFF</button></div>
+        </div>
+        <div id="vid" class="tab-content">
+            <div class="row"><span>BRILLO</span><input type="range" min="50" max="150" value="100" oninput="changeBrightness(this.value)"></div>
+            <div class="row"><span>CENSURAR SANGRE</span><button onclick="this.innerText=(this.innerText=='OFF'?'ON':'OFF')">OFF</button></div>
+        </div>
+        <div id="aud" class="tab-content">
+            <div class="row"><span>VOLUMEN MAESTRO</span><input type="range"></div>
+            <div class="row"><span>MÚSICA</span><input type="range"></div>
+        </div>
+        <button class="btn-main" style="margin-top:30px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER</button>
+    </div>
+
+    <!-- Historia y Carga -->
     <div id="loading-screen">
-        <div style="width:300px; height:4px; background:#111; border:1px solid var(--accent);"><div id="load-bar" style="width:0%; height:100%; background:var(--accent); transition:4s linear;"></div></div>
-        <p id="load-quote" style="margin-top:20px;"></p>
+        <div id="load-bar-cont"><div id="load-bar"></div></div>
+        <p id="load-quote" style="margin-top:20px; color:white; font-style:italic;"></p>
+    </div>
+
+    <div id="story-box">
+        <div id="story-bg" style="width:100%; height:100%; background-size:cover; transition: 1.5s;"></div>
+        <div class="pkmn-msg" onclick="handleStoryClick()"><span id="story-txt"></span></div>
     </div>
 
     <div id="epic-title-screen">
         <h1 class="t-step" id="step1" style="font-size:8rem;">NARCOS</h1>
-        <p class="t-step" id="step2" style="color:var(--accent);">UN VIDEOJUEGO DE BREAKING BAD</p>
-        <p class="t-step" id="step3" style="color:#444;">CAPÍTULO 1 // LA CARAVANA</p>
-    </div>
-
-    <div id="story-box">
-        <div id="story-bg" style="width:100%; height:100%; background-size:cover;"></div>
-        <div class="pkmn-msg" onclick="handleStoryClick()"><span id="story-txt"></span></div>
-    </div>
-
-    <div id="menu">
-        <div id="txt-cap" style="color:var(--accent); font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
-        <div class="logo">NARCOS</div>
-        <button class="btn-main" onclick="nuevaPartida()">Nueva Partida</button>
-        <button class="btn-main" onclick="toggleSettings(true)">AJUSTES</button>
+        <p class="t-step" id="step2" style="color:var(--accent); font-size:1.5rem; letter-spacing: 5px;"></p>
+        <p class="t-step" id="step3" style="color:#444; margin-top:30px;"></p>
     </div>
 
     <script>
         const translations = {
-            es: { cap: "CAPÍTULO 1 // LA CARAVANA", game: "Un videojuego de Breaking Bad" },
-            en: { cap: "CHAPTER 1 // THE RV", game: "A Breaking Bad Video Game" }
+            es: { cap: "CAPÍTULO 1 // LA CARAVANA", game: "UN VIDEOJUEGO DE BREAKING BAD", new: "Nueva Partida", sett: "AJUSTES" },
+            en: { cap: "CHAPTER 1 // THE RV", game: "A BREAKING BAD VIDEO GAME", new: "New Game", sett: "SETTINGS" },
+            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", game: "UN JEU VIDÉO DE BREAKING BAD", new: "Nouvelle Partie", sett: "PARAMÈTRES" }
         };
 
-        // --- FUNCIONES DE AJUSTES REALES ---
-        function toggleFS() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-                document.getElementById('fs-val').innerText = "ON";
-            } else {
-                document.exitFullscreen();
-                document.getElementById('fs-val').innerText = "OFF";
-            }
-        }
+        const frases = ["Cocinando cristales...", "Guardando progreso en disco duro...", "No le tengo miedo a la muerte...", "La muerte me tiene miedo a mí."];
+        
+        const historia = [
+            { t: "Walter White es un genio de la química atrapado en una vida mediocre...", i: "url('https://alphacoders.com')" },
+            { t: "Pero tras su diagnóstico de cáncer terminal, el sistema ya no le sirve. Es hora de asegurar el futuro de su familia.", i: "url('https://alphacoders.com')" },
+            { t: "Junto a Jesse Pinkman, están a punto de cocinar el producto más puro que Alburquerque haya visto jamás.", i: "url('https://alphacoders.com')" },
+            { t: "La caravana está lista en el desierto. El destino está sellado. Heisenberg ha nacido.", i: "url('https://alphacoders.com')" },
+            { t: "'I AM THE ONE WHO KNOCKS.'", i: "url('https://alphacoders.com')" }
+        ];
 
-        function changeBrightness(val) {
-            document.body.style.filter = `brightness(${val}%)`;
-        }
+        let step = 0; let isTyping = false;
 
-        function translateAll(lang) {
-            const t = translations[lang];
-            document.getElementById('txt-cap').innerText = t.cap;
-            document.getElementById('step3').innerText = t.cap;
-            document.getElementById('step2').innerText = t.game;
-        }
+        // Reloj Real
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
 
-        function toggleSetting(el) {
-            el.innerText = el.innerText === "OFF" ? "ON" : "OFF";
-        }
-
-        function switchTab(evt, name) {
-            let contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) contents[i].style.display = "none";
-            let tabs = document.getElementsByClassName("tab");
-            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
-            document.getElementById(name).style.display = "block";
-            evt.currentTarget.classList.add("active");
-        }
-
-        // --- LÓGICA DE INTRO Y CARGA ---
         function start() {
-            // Activa pantalla completa al entrar
-            document.documentElement.requestFullscreen().catch(() => {});
+            document.querySelector('.flash').style.opacity = "1";
             document.getElementById('lt').style.opacity = "1";
             setTimeout(() => {
                 document.getElementById('intro').style.opacity = "0";
@@ -167,44 +157,72 @@
             }, 2500);
         }
 
-        const frases = ["Cocinando...", "Guardando en disco duro...", "No le tengo miedo a la muerte..."];
+        function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? "block" : "none"; }
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function changeBrightness(v) { document.body.style.filter = `brightness(${v}%)`; }
+        function toggleFS() { 
+            if(!document.fullscreenElement) {
+                document.documentElement.requestFullscreen(); document.getElementById('fs-btn').innerText = "ON";
+            } else {
+                document.exitFullscreen(); document.getElementById('fs-btn').innerText = "OFF";
+            }
+        }
+
+        function translateAll(lang) {
+            const t = translations[lang];
+            document.getElementById('txt-cap').innerText = t.cap;
+            document.getElementById('btn-new').innerText = t.new;
+            document.getElementById('btn-sett').innerText = t.sett;
+            document.getElementById('step2').innerText = t.game;
+            document.getElementById('step3').innerText = t.cap;
+        }
+
         function nuevaPartida() {
             document.getElementById('menu').style.display = "none";
             document.getElementById('loading-screen').style.display = "flex";
             document.getElementById('load-quote').innerText = frases[Math.floor(Math.random()*frases.length)];
-            document.getElementById('load-bar').style.width = "100%";
+            setTimeout(() => { document.getElementById('load-bar').style.width = "100%"; }, 100);
             setTimeout(() => {
                 document.getElementById('loading-screen').style.display = "none";
                 document.getElementById('story-box').style.display = "block";
-                typeWriter("Walter White es un genio de la química...", "story-txt");
+                showNextStory();
             }, 4500);
         }
 
-        let isTyping = false;
+        function showNextStory() {
+            if (step < historia.length) {
+                const bg = document.getElementById('story-bg');
+                bg.style.opacity = "0";
+                setTimeout(() => {
+                    bg.style.backgroundImage = historia[step].i;
+                    bg.style.opacity = "1";
+                    typeWriter(historia[step].t, "story-txt");
+                    step++;
+                }, 1000);
+            } else { showEpicTitle(); }
+        }
+
         function typeWriter(text, id) {
-            isTyping = true;
-            let i = 0; let el = document.getElementById(id); el.innerHTML = "";
+            isTyping = true; let i = 0; let el = document.getElementById(id); el.innerHTML = "";
             let timer = setInterval(() => {
                 el.innerHTML += text.charAt(i); i++;
                 if(i >= text.length) { clearInterval(timer); isTyping = false; }
             }, 40);
         }
 
-        function handleStoryClick() {
-            if(isTyping) return;
-            // Aquí iría el siguiente paso o el título épico
-            document.getElementById('story-box').style.display = "none";
-            showEpicTitle();
-        }
+        function handleStoryClick() { if(!isTyping) showNextStory(); }
 
         function showEpicTitle() {
+            document.getElementById('story-box').style.display = "none";
             document.getElementById('epic-title-screen').style.display = "flex";
             setTimeout(() => { document.getElementById('step1').style.opacity = "1"; }, 500);
-            setTimeout(() => { document.getElementById('step2').style.opacity = "1"; }, 2000);
-            setTimeout(() => { document.getElementById('step3').style.opacity = "1"; }, 3500);
+            setTimeout(() => { document.getElementById('step2').style.opacity = "1"; }, 2500);
+            setTimeout(() => { document.getElementById('step3').style.opacity = "1"; }, 4500);
         }
-
-        function toggleSettings(show) { document.getElementById('settings-panel').style.display = show ? "block" : "none"; }
     </script>
 </body>
 </html>
