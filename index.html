@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | TIÑI GAMES v20.0 LEGACY</title>
-    <!-- TIPOGRAFÍA FORMAL TÁCTICA -->
+    <title>NARCOS: DISPATCH | TIÑI GAMES v24.0 FINAL PRESTIGE</title>
+    <!-- TIPOGRAFÍAS DE ALTO PRESUPUESTO -->
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
             --accent: #39ff14; 
             --accent-glow: rgba(57, 255, 20, 0.5);
             --bg: #000508; 
-            --ui-tab: rgba(255, 255, 255, 0.05);
             --font-main: 'Inter', sans-serif;
+            --font-formal: 'Oswald', sans-serif;
         }
 
         * { box-sizing: border-box; outline: none; cursor: crosshair; }
@@ -36,7 +36,7 @@
         #intro-layer h1 { font-size: 5rem; letter-spacing: 35px; font-weight: 900; transition: 0.5s; text-transform: uppercase; }
         #intro-layer:hover h1 { color: var(--accent); text-shadow: 0 0 40px var(--accent); }
 
-        /* --- MENÚ PRINCIPAL (ESPACIADO Y FORMAL) --- */
+        /* --- MENÚ PRINCIPAL --- */
         #main-os { display: none; opacity: 0; padding: 6% 10%; transition: 2s; height: 100vh; }
         .brand-box h2 { font-size: 6rem; margin: 0; letter-spacing: -4px; font-weight: 900; line-height: 0.8; }
         .brand-box span { color: var(--accent); letter-spacing: 15px; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
@@ -77,17 +77,44 @@
         #bar-track { width: 500px; height: 1px; background: #111; }
         #bar-fill { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 30px var(--accent); }
 
-        /* --- TRANSICIÓN FINAL: IMPACTO VERDE --- */
-        #final-os { display: none; position: fixed; inset: 0; z-index: 100000; background: black; flex-direction: column; align-items: center; justify-content: center; }
-        .mega-title { 
-            font-size: 12vw; color: var(--accent); font-weight: 900; letter-spacing: 40px; 
-            text-shadow: 0 0 60px var(--accent); text-align: center;
-            animation: impactGlitch 0.1s infinite alternate;
+        /* --- TÍTULO FINAL "PRESTIGE" (REDISEÑADO) --- */
+        #final-os { display: none; position: fixed; inset: 0; z-index: 100000; background: black; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;}
+        
+        .cinematic-title {
+            font-family: var(--font-formal);
+            font-size: 9rem;
+            color: #ffffff;
+            font-weight: 200;
+            text-transform: uppercase;
+            letter-spacing: 50px;
+            margin: 0;
+            opacity: 0;
+            transform: scale(1.1);
+            filter: blur(15px);
+            transition: 5s cubic-bezier(0.1, 0, 0, 1);
         }
-        .mega-sub { font-size: 2.5rem; letter-spacing: 20px; color: white; margin-top: 40px; font-weight: 900; opacity: 0.8; text-transform: uppercase; }
+
+        .cinematic-subtitle {
+            font-family: var(--font-formal);
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 25px;
+            margin-top: 50px;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: 4s 1.5s ease-out;
+        }
+
+        /* Activación de la transición prestige */
+        #final-os.active .cinematic-title {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+            letter-spacing: 35px;
+        }
+        #final-os.active .cinematic-subtitle { opacity: 1; }
 
         @keyframes cinemaFade { from { opacity: 0; filter: blur(30px); transform: scale(1.05); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
-        @keyframes impactGlitch { from { opacity: 0.8; transform: skew(1deg); filter: brightness(1.2); } to { opacity: 1; transform: skew(-1deg); filter: brightness(1); } }
     </style>
 </head>
 <body onload="checkGlobalProgress()">
@@ -106,7 +133,7 @@
     <div id="main-os">
         <div class="brand-box">
             <h2>NARCOS</h2>
-            <span data-t="ver">DISPATCH_TACTICAL_v20.0_LEGACY</span>
+            <span data-t="ver">DISPATCH_TACTICAL_v24.0_FINAL</span>
         </div>
         <div class="nav-menu">
             <button class="nav-btn" onclick="startStory()" data-t="new">NUEVA PARTIDA</button>
@@ -176,16 +203,16 @@
         <div id="bar-track"><div id="bar-fill"></div></div>
     </div>
 
-    <!-- FINAL TRANSICIÓN -->
+    <!-- EL NUEVO FINAL CINEMÁTICO PRESTIGE -->
     <div id="final-os">
-        <h1 class="mega-title" data-t="fc">CAPÍTULO 1</h1>
-        <p class="mega-sub" data-t="fs">EL MATRAZ Y LA SELVA</p>
+        <h1 class="cinematic-title" data-t="fc">CAPÍTULO 1</h1>
+        <p class="cinematic-subtitle" data-t="fs">EL MATRAZ Y LA SELVA</p>
     </div>
 
     <script>
         const lang = {
             es: { 
-                comp: "TIÑI GAMES", ver: "DISPATCH_TACTICAL_v20.0_LEGACY", new: "NUEVA PARTIDA", cont: "SEGUIR CON LA PARTIDA",
+                comp: "TIÑI GAMES", ver: "DISPATCH_TACTICAL_v24.0_FINAL", new: "NUEVA PARTIDA", cont: "SEGUIR CON LA PARTIDA",
                 sett: "AJUSTES_SISTEMA", save: "GUARDAR_Y_REGRESAR", tg: "GENERAL", tv: "VIDEO", ts: "SONIDO",
                 l_lang: "IDIOMA DE ENLACE", l_prof: "FILTRO DE LENGUAJE", l_br: "BRILLO (LUMENS)", l_fs: "PANTALLA COMPLETA",
                 l_blood: "CENSURAR SANGRE", next: "SIGUIENTE OPERACIÓN >>", fc: "CAPÍTULO 1", fs: "EL MATRAZ Y LA SELVA",
@@ -196,7 +223,7 @@
                 s5: "Cinco capítulos. Un imperio. El despacho comienza ahora."
             },
             en: { 
-                comp: "TIÑI GAMES", ver: "DISPATCH_TACTICAL_v20.0_LEGACY", new: "NEW OPERATION", cont: "CONTINUE MISSION",
+                comp: "TIÑI GAMES", ver: "DISPATCH_TACTICAL_v24.0_FINAL", new: "NEW OPERATION", cont: "CONTINUE MISSION",
                 sett: "SYSTEM_SETTINGS", save: "SAVE AND RETURN", tg: "GENERAL", tv: "DISPLAY", ts: "AUDIO",
                 l_lang: "DATA LINK LANGUAGE", l_prof: "PROFANITY FILTER", l_br: "BRIGHTNESS (LUMENS)", l_fs: "FULLSCREEN MODE",
                 l_blood: "CENSOR BLOOD", next: "NEXT OPERATION >>", fc: "CHAPTER 1", fs: "THE FLASK AND THE JUNGLE",
@@ -207,13 +234,13 @@
                 s5: "Five chapters to the end. The empire begins now."
             },
             fr: {
-                comp: "TIÑI GAMES", ver: "DISPATCH_TACTICAL_v20.0_LEGACY", new: "NOUVELLE MISSION", cont: "CONTINUER MISSION",
+                comp: "TIÑI GAMES", ver: "DISPATCH_TACTICAL_v24.0_FINAL", new: "NOUVELLE MISSION", cont: "CONTINUER MISSION",
                 sett: "PARAMÈTRES_SYSTÈME", save: "SAUVEGARDER_ET_RETOURNER", tg: "GÉNÉRAL", tv: "VIDÉO", ts: "AUDIO",
                 l_lang: "LANGUE DE LIAISON", l_prof: "FILTRE DE LANGAGE", l_br: "LUMINOSITÉ (LUMENS)", l_fs: "PLEIN ÉCRAN",
                 l_blood: "CENSURER LE SANG", next: "OPÉRATION SUIVANTE >>", fc: "CHAPITRE 1", fs: "LE FLACON ET LA JUNGLE",
                 s1: "L'honnêteté avait un prix que mon salaire ne pouvait pas payer.",
                 s2: "Un flacon et un garage sombre. C'était mon point de rupture.",
-                s3: "J'ai rencontré les hommes que le monde préfère ignorer.",
+                s3: "J'ai rencontré les hombres que le monde préfère ignorer.",
                 s4: "Le professeur est mort. L'homme qui est revenu ne demandait aucune permission.",
                 s5: "Cinq chapitres. Un empire. La mission commence maintenant."
             }
@@ -223,7 +250,7 @@
         let currentFrame = 1;
 
         function checkGlobalProgress() {
-            if(localStorage.getItem('narcos_v20_save')) {
+            if(localStorage.getItem('narcos_v24_save')) {
                 const btn = document.getElementById('cont-btn');
                 btn.classList.remove('locked');
                 btn.style.textShadow = '0 0 20px var(--accent)';
@@ -280,9 +307,11 @@
                 document.getElementById('bar-fill').style.width = p + '%';
                 if(p >= 100) {
                     clearInterval(iv);
-                    localStorage.setItem('narcos_v20_save', 'true');
+                    localStorage.setItem('narcos_v24_save', 'true');
                     document.getElementById('load-os').style.display = 'none';
-                    document.getElementById('final-os').style.display = 'flex';
+                    const final = document.getElementById('final-os');
+                    final.style.display = 'flex';
+                    setTimeout(() => final.classList.add('active'), 100);
                 }
             }, 50);
         }
