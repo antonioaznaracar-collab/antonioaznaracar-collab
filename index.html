@@ -7,7 +7,7 @@
         :root { --accent: #39ff14; --brightness: 100%; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; font-family: 'Courier New', Courier, monospace; overflow: hidden; color: white; filter: brightness(var(--brightness)); }
 
-        /* --- FONDO LIMPIO --- */
+        /* --- FONDO --- */
         #bg-container { position: fixed; width: 100%; height: 100%; background: url('https://images6.alphacoders.com/321/321927.jpg') center/cover; z-index: 0; opacity: 0; transition: opacity 2s; }
         .vignette { position: fixed; width: 100%; height: 100%; box-shadow: inset 0 0 300px #000; z-index: 1; pointer-events: none; }
 
@@ -21,57 +21,67 @@
         .logo { font-size: 7rem; font-weight: 900; letter-spacing: -6px; margin-bottom: 20px; }
         .btn-main { background: rgba(0,0,0,0.8); color: var(--accent); border: 1px solid var(--accent); padding: 15px 45px; width: 320px; text-align: left; cursor: pointer; margin: 10px 0; font-weight: bold; text-transform: uppercase; }
         .btn-main:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
-        .btn-main:disabled { opacity: 0.3; cursor: not-allowed; border-color: #444; color: #444; }
 
-        /* --- AJUSTES --- */
-        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,0,0.98); z-index: 9999; padding: 50px 10%; border: 2px solid var(--accent); box-sizing: border-box; overflow-y: auto; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--accent); }
-        .tab { padding: 15px 30px; border: 1px solid var(--accent); border-bottom: none; cursor: pointer; color: var(--accent); background: rgba(0,255,0,0.05); }
-        .tab.active { background: var(--accent); color: #000; }
-        .row { background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.2); padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        /* --- TRANSICIÓN NEGRA --- */
+        #fade-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 15000; pointer-events: none; opacity: 0; transition: opacity 1s; }
 
-        /* --- UI RADAR --- */
+        /* --- PANTALLA DE TÍTULO ÉPICA --- */
+        #epic-title-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 12000; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: 2s; }
+        .big-narcos { font-size: 8rem; font-weight: 900; letter-spacing: 15px; margin: 0; }
+        .sub-breaking { color: var(--accent); letter-spacing: 5px; font-size: 1.2rem; margin-top: -10px; }
+        .cap-info { margin-top: 50px; color: #555; font-size: 1rem; letter-spacing: 3px; border-top: 1px solid #222; padding-top: 20px; }
+
+        /* --- AJUSTES Y UI --- */
+        #settings-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,0,0.98); z-index: 9999; padding: 50px 10%; border: 2px solid var(--accent); box-sizing: border-box; }
         .radar { position: absolute; bottom: 50px; right: 80px; width: 120px; height: 120px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.5; }
         .radar-line { position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: spin 4s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .ui-top { position: fixed; top: 40px; right: 80px; text-align: right; color: var(--accent); font-size: 0.8rem; line-height: 1.8; z-index: 101; }
+        .ui-top { position: fixed; top: 40px; right: 80px; text-align: right; color: var(--accent); font-size: 0.8rem; z-index: 101; }
 
-        /* --- NUEVO: PANTALLA DE CARGA Y POKÉBOX --- */
+        /* --- PANTALLA DE CARGA Y POKÉBOX --- */
         #loading-screen { display:none; position:fixed; z-index:9000; width:100%; height:100%; background:black; flex-direction:column; align-items:center; justify-content:center; }
         #story-box { display:none; position:fixed; z-index:8000; width:100%; height:100%; background:black; }
-        .pkmn-msg { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:90%; height:150px; background:white; border:5px solid #444; border-radius:15px; padding:25px; color:black; font-size:1.6rem; font-weight:bold; cursor:pointer; }
+        #story-bg { transition: opacity 1s ease-in-out; }
+        .pkmn-msg { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:90%; height:150px; background:white; border:5px solid #444; border-radius:15px; padding:25px; color:black; font-size:1.4rem; font-weight:bold; cursor:pointer; overflow: hidden; }
     </style>
 </head>
 <body>
 
-    <audio id="siren" loop src="https://soundjay.com"></audio>
-    <div id="bg-container"></div>
-    <div class="vignette"></div>
+    <div id="fade-layer"></div>
 
-    <!-- Intro -->
+    <!-- Intro de Tiñi Games -->
     <div id="intro" onclick="start()">
         <div class="flash" id="f"></div>
         <h1 id="lt" style="font-size: 4rem; letter-spacing: 20px; opacity:0; transition: 2.5s;">TIÑI GAMES</h1>
     </div>
 
+    <div id="bg-container"></div>
+    <div class="vignette"></div>
+
+    <!-- Pantalla de Título Épica (Después de la historia) -->
+    <div id="epic-title-screen">
+        <h1 class="big-narcos">NARCOS</h1>
+        <p class="sub-breaking">UN VIDEOJUEGO DE BREAKING BAD</p>
+        <p class="cap-info">CAPÍTULO 1 // LA CARAVANA</p>
+    </div>
+
     <!-- Pantalla de Carga -->
     <div id="loading-screen">
         <div style="width:300px; height:4px; background:#111; border:1px solid var(--accent);">
-            <div id="load-bar" style="width:0%; height:100%; background:var(--accent); transition:10s linear;"></div>
+            <div id="load-bar" style="width:0%; height:100%; background:var(--accent);"></div>
         </div>
-        <p id="load-quote" style="margin-top:20px; color:white; font-style:italic;"></p>
+        <p style="margin-top:20px; color:white; font-style:italic;">Preparando cristales...</p>
     </div>
 
-    <!-- Escena Historia -->
+    <!-- Escena Historia con Imágenes -->
     <div id="story-box">
-        <div id="story-bg" style="width:100%; height:100%; background-size:cover; background-position:center;"></div>
+        <div id="story-bg" style="width:100%; height:100%; background-size:cover; background-position:center; opacity:1;"></div>
         <div class="pkmn-msg" onclick="nextStep()">
             <span id="story-txt"></span>
         </div>
     </div>
 
+    <!-- UI General -->
     <div class="ui-top">
         LOC: 35.0844 N / 106.6504 W<br>
         DEPT: DEA_SURVEILLANCE<br>
@@ -79,126 +89,115 @@
     </div>
     <div class="radar"><div class="radar-line"></div></div>
 
+    <!-- Menú -->
     <div id="menu">
         <div id="txt-cap" style="color:var(--accent); letter-spacing:4px; font-size:0.9rem; margin-bottom:10px;">CAPÍTULO 1 // LA CARAVANA</div>
         <div class="logo">NARCOS</div>
-        <button class="btn-main" id="btn-new" onclick="nuevaPartida()">Nueva Partida</button>
-        <button class="btn-main" id="btn-cont" onclick="continuar()" disabled>Seguir con partida</button>
-        <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">Ajustes</button>
-    </div>
-
-    <div id="settings-panel">
-        <h1 id="sett-tit" style="color:var(--accent); letter-spacing:10px;">AJUSTES</h1>
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab(event, 'general')" id="t-gen">GENERAL</div>
-            <div class="tab" onclick="switchTab(event, 'video')" id="t-vid">VIDEO</div>
-            <div class="tab" onclick="switchTab(event, 'audio')" id="t-aud">SONIDO</div>
-        </div>
-
-        <div id="general" class="tab-content active">
-            <div class="row"><span id="lb-fs">PANTALLA COMPLETA</span><button onclick="toggleFS()" id="fs-txt" style="background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:bold; cursor:pointer;">ON</button></div>
-            <div class="row"><span id="lb-sens">SENSIBILIDAD</span><input type="range" min="1" max="100" value="50"></div>
-            <div class="row"><span id="lb-lang">IDIOMA</span>
-                <select onchange="translateAll(this.value)" style="background:#000; color:var(--accent); border:1px solid var(--accent); padding:5px;">
-                    <option value="es">ESPAÑOL</option>
-                    <option value="en">ENGLISH</option>
-                    <option value="fr">FRANÇAIS</option>
-                    <option value="de">DEUTSCH</option>
-                </select>
-            </div>
-        </div>
-        <button class="btn-main" id="btn-back" style="margin-top:40px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER</button>
+        <button class="btn-main" onclick="nuevaPartida()">Nueva Partida</button>
+        <button class="btn-main" disabled>Seguir con partida</button>
+        <button class="btn-main" onclick="toggleSettings(true)">Ajustes</button>
     </div>
 
     <script>
-        const translations = {
-            es: { cap: "CAPÍTULO 1 // LA CARAVANA", new: "NUEVA PARTIDA", cont: "Seguir con partida", sett: "AJUSTES", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "SONIDO", lb_fs: "PANTALLA COMPLETA", lb_sens: "SENSIBILIDAD", lb_lang: "IDIOMA", back: "VOLVER", sett_tit: "AJUSTES" },
-            en: { cap: "CHAPTER 1 // THE RV", new: "NEW GAME", cont: "Continue Game", sett: "SETTINGS", t_gen: "GENERAL", t_vid: "VIDEO", t_aud: "AUDIO", lb_fs: "FULLSCREEN", lb_sens: "SENSITIVITY", lb_lang: "LANGUAGE", back: "BACK", sett_tit: "SETTINGS" },
-            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", new: "NOUVELLE PARTIE", cont: "Continuer", sett: "PARAMÈTRES", t_gen: "GÉNÉRAL", t_vid: "VIDÉO", t_aud: "SON", lb_fs: "PLEIN ÉCRAN", lb_sens: "SENSIBILITÉ", lb_lang: "LANGUE", back: "RETOUR", sett_tit: "PARAMÈTRES" },
-            de: { cap: "KAPITEL 1 // DAS WOHNMOBIL", new: "NEUES SPIEL", cont: "Weiter", sett: "EINSTELLUNGEN", t_gen: "ALLGEMEIN", t_vid: "VIDEO", t_aud: "SOUND", lb_fs: "VOLLBILD", lb_sens: "EMPFINDLICHKEIT", lb_lang: "SPRACHE", back: "ZURÜCK", sett_tit: "EINSTELLUNGEN" }
-        };
-
-        const storyData = [
-            { img: "https://imgur.com", txt: "Walter White es un genio de la química atrapado en una vida mediocre..." },
-            { img: "https://wallpapercave.com", txt: "Tras un diagnóstico inesperado, decide que el sistema ya no le sirve." },
-            { img: "https://imgur.com", txt: "Walt: 'Jesse, es hora de cocinar. Pero lo haremos a mi manera.'" }
+        let step = 0;
+        const historia = [
+            { 
+                t: "Walter White es un genio de la química atrapado en una vida mediocre, trabajando en una secundaria y un lavadero de autos donde nadie lo respeta...", 
+                i: "url('https://alphacoders.com')" 
+            },
+            { 
+                t: "Pero tras un diagnóstico de cáncer terminal, Walter ha decidido que el sistema ya no le sirve. Es hora de asegurar el futuro de su familia a cualquier precio.", 
+                i: "url('https://alphacoders.com')" 
+            },
+            { 
+                t: "Junto a un antiguo alumno llamado Jesse Pinkman, están a punto de cocinar el producto más puro que Alburquerque haya visto jamás en una vieja caravana.", 
+                i: "url('https://images6.alphacoders.com/321/321927.jpg')" 
+            }
         ];
 
-        let currentStep = 0;
-
         function start() {
-            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(()=>{}); }
-            document.getElementById('siren').play();
-            document.getElementById('lt').style.opacity = '1';
-            setTimeout(() => { 
-                document.getElementById('intro').style.display = 'none'; 
-                document.getElementById('bg-container').style.opacity = '1';
-                document.getElementById('menu').style.display = 'flex'; 
-                setTimeout(() => { document.getElementById('menu').style.opacity = '1'; }, 100);
-            }, 3000);
+            document.getElementById('lt').style.opacity = "1";
+            setTimeout(() => {
+                document.getElementById('intro').style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById('intro').style.display = "none";
+                    document.getElementById('menu').style.display = "flex";
+                    document.getElementById('menu').style.opacity = "1";
+                    document.getElementById('bg-container').style.opacity = "0.4";
+                }, 1000);
+            }, 2500);
         }
 
         function nuevaPartida() {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('loading-screen').style.display = 'flex';
-            document.getElementById('load-quote').innerText = "«No estoy en peligro, yo soy el peligro»";
-            localStorage.setItem('narco_save', 'true');
-            setTimeout(() => { document.getElementById('load-bar').style.width = "100%"; }, 100);
+            // Transición a negro
+            const fade = document.getElementById('fade-layer');
+            fade.style.opacity = "1";
+
             setTimeout(() => {
-                document.getElementById('loading-screen').style.display = 'none';
-                continuar();
-            }, 10000);
+                document.getElementById('menu').style.display = "none";
+                document.getElementById('loading-screen').style.display = "flex";
+                fade.style.opacity = "0";
+                
+                // Simular barra de carga
+                document.getElementById('load-bar').style.width = "100%";
+                document.getElementById('load-bar').style.transition = "3s linear";
+
+                setTimeout(() => {
+                    fade.style.opacity = "1";
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = "none";
+                        document.getElementById('story-box').style.display = "block";
+                        fade.style.opacity = "0";
+                        nextStep();
+                    }, 1000);
+                }, 3500);
+            }, 1000);
         }
 
-        function continuar() {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('story-box').style.display = 'block';
-            updateStory();
-        }
-
-        function updateStory() {
-            if(currentStep < storyData.length) {
-                let d = storyData[currentStep];
-                document.getElementById('story-bg').style.backgroundImage = `url('${d.img}')`;
-                document.getElementById('story-txt').innerText = d.txt;
+        function nextStep() {
+            if (step < historia.length) {
+                const bg = document.getElementById('story-bg');
+                bg.style.opacity = "0"; // Efecto de transición entre imágenes
+                
+                setTimeout(() => {
+                    bg.style.backgroundImage = historia[step].i;
+                    document.getElementById('story-txt').innerText = historia[step].t;
+                    bg.style.opacity = "1";
+                    step++;
+                }, 500);
             } else {
-                alert("FIN DE LA INTRODUCCIÓN");
-                location.reload();
+                showEpicTitle();
             }
         }
 
-        function nextStep() { currentStep++; updateStory(); }
+        function showEpicTitle() {
+            const fade = document.getElementById('fade-layer');
+            fade.style.opacity = "1";
 
-        window.onload = () => { if(localStorage.getItem('narco_save')) document.getElementById('btn-cont').disabled = false; };
+            setTimeout(() => {
+                document.getElementById('story-box').style.display = "none";
+                const titleScreen = document.getElementById('epic-title-screen');
+                titleScreen.style.display = "flex";
+                
+                setTimeout(() => {
+                    fade.style.opacity = "0";
+                    titleScreen.style.opacity = "1";
+                }, 100);
+            }, 1000);
+        }
 
-        function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? 'block' : 'none'; }
-        function switchTab(evt, name) {
-            let contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-            let tabs = document.getElementsByClassName("tab");
-            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
-            document.getElementById(name).classList.add("active");
-            evt.currentTarget.classList.add("active");
+        // Reloj de la UI
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.getHours().toString().padStart(2, '0') + ":" + 
+                now.getMinutes().toString().padStart(2, '0') + ":" + 
+                now.getSeconds().toString().padStart(2, '0');
+        }, 1000);
+
+        function toggleSettings(show) {
+            // Lógica simple para mostrar/ocultar ajustes sin romper nada
+            document.getElementById('settings-panel').style.display = show ? "block" : "none";
         }
-        function translateAll(lang) {
-            const d = translations[lang] || translations.es;
-            document.getElementById('txt-cap').innerText = d.cap;
-            document.getElementById('btn-new').innerText = d.new;
-            document.getElementById('btn-cont').innerText = d.cont;
-            document.getElementById('btn-sett').innerText = d.sett;
-            document.getElementById('btn-back').innerText = d.back;
-            document.getElementById('sett-tit').innerText = d.sett_tit;
-            document.getElementById('t-gen').innerText = d.t_gen;
-            document.getElementById('lb-fs').innerText = d.lb_fs;
-            document.getElementById('lb-sens').innerText = d.lb_sens;
-            document.getElementById('lb-lang').innerText = d.lb_lang;
-        }
-        function toggleFS() {
-            let txt = document.getElementById('fs-txt');
-            if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(()=>{}); txt.innerText = "ON"; }
-            else { document.exitFullscreen(); txt.innerText = "OFF"; }
-        }
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
