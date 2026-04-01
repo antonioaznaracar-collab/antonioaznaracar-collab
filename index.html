@@ -2,378 +2,361 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NARCOS: DISPATCH | Tiñi Games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NARCOS: DISPATCH | Tiñi Games Ultra-Edition</title>
     <style>
+        /* --- VARIABLES GLOBALES Y TEMAS --- */
         :root { 
             --accent: #39ff14; 
-            --brightness: 100%; 
-            --ui-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+            --accent-glow: rgba(57, 255, 20, 0.4);
+            --bg-dark: #050505;
+            --ui-border: 1px solid rgba(57, 255, 20, 0.3);
+            --transition-speed: 0.6s;
         }
 
+        /* --- RESET Y ESTILOS BASE --- */
+        * { box-sizing: border-box; outline: none; }
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: #000; font-family: 'Courier New', Courier, monospace; 
-            overflow: hidden; color: white; filter: brightness(var(--brightness)); 
-            transition: filter 0.5s ease-in-out; 
+            background: var(--bg-dark); font-family: 'Courier New', Courier, monospace; 
+            overflow: hidden; color: white; user-select: none;
         }
 
-        /* --- ANIMACIONES DE TRANSICIÓN --- */
-        @keyframes glitch-intro {
-            0% { transform: translate(0); text-shadow: 2px 2px red, -2px -2px blue; }
-            20% { transform: translate(-8px, 4px); }
-            40% { transform: translate(8px, -4px); text-shadow: -2px -2px red, 2px 2px blue; }
-            60% { transform: translate(-4px, 4px); }
-            100% { transform: translate(0); }
+        /* --- CAPAS CINEMÁTICAS (SCANLINES Y VIÑETA) --- */
+        .overlay-fx {
+            position: fixed; inset: 0; pointer-events: none; z-index: 10000;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        radial-gradient(circle, transparent 20%, black 150%);
+            background-size: 100% 3px, 100% 100%;
         }
-        .glitch-active { animation: glitch-intro 0.15s linear infinite; }
 
         /* --- INTRO: TIÑI GAMES --- */
-        #intro { 
-            position: fixed; width: 100%; height: 100%; z-index: 9999; 
-            display: flex; align-items: center; justify-content: center; 
-            background: #000; cursor: pointer; transition: 1.8s cubic-bezier(0.7, 0, 0.3, 1); 
+        #intro-sequence { 
+            position: fixed; inset: 0; z-index: 20000; background: black; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            cursor: crosshair; transition: transform 1.5s cubic-bezier(1, 0, 0, 1);
         }
-        .flash { 
-            position: absolute; width: 100%; height: 100%; 
-            animation: sirenas 0.1s infinite; opacity: 0; pointer-events: none; 
-        }
-        @keyframes sirenas { 
-            0% { background: #f00; opacity: 0.18; } 
-            50% { background: #00f; opacity: 0.18; } 
-        }
-        #lt { font-size: 5rem; letter-spacing: 25px; opacity: 1; transition: 2.5s; z-index: 10000; text-transform: uppercase; }
+        #intro-sequence h1 { font-size: 4.5rem; letter-spacing: 20px; margin: 0; transition: 0.8s; }
+        #intro-sequence:hover h1 { color: var(--accent); text-shadow: 0 0 30px var(--accent); }
 
-        /* --- CONTENEDOR MAESTRO DE LA INTERFAZ --- */
-        #game-interface { 
-            opacity: 0; visibility: hidden; 
-            transition: opacity 2.5s ease-in-out; 
+        /* --- CONTENEDOR MAESTRO DE INTERFAZ --- */
+        #main-interface { 
+            opacity: 0; visibility: hidden; transition: opacity 2s ease;
+            height: 100vh; width: 100vw; display: flex; align-items: center;
         }
-
-        #bg-container { 
-            position: fixed; width: 100%; height: 100%; 
-            background: url('https://alphacoders.com') center/cover; 
-            z-index: 0; opacity: 0; transition: 4s ease-in-out; 
-        }
-        .vignette { 
-            position: fixed; width: 100%; height: 100%; 
-            box-shadow: inset 0 0 350px #000, inset 0 0 150px #000; 
-            z-index: 1; pointer-events: none; 
+        #video-bg { 
+            position: fixed; inset: 0; z-index: -1; 
+            background: linear-gradient(90deg, black 20%, transparent 80%),
+                        url('https://alphacoders.com') center/cover;
+            filter: brightness(0.4) contrast(1.2); transition: 4s;
         }
 
-        /* HUD: RADAR, RELOJ, COORDENADAS */
-        .ui-top { 
-            position: fixed; top: 40px; right: 80px; text-align: right; 
-            color: var(--accent); font-size: 0.8rem; line-height: 2; 
-            z-index: 105; text-shadow: var(--ui-shadow); 
-        }
-        .radar { 
-            position: absolute; bottom: 60px; right: 80px; 
-            width: 130px; height: 130px; border: 1px solid var(--accent); 
-            border-radius: 50%; opacity: 0.5; z-index: 105; 
-            box-shadow: 0 0 20px var(--accent); 
-        }
-        .radar-line { 
-            position: absolute; width: 50%; height: 2px; 
-            background: var(--accent); top: 50%; left: 50%; 
-            transform-origin: left; animation: spin-radar 3.5s linear infinite; 
-        }
-        @keyframes spin-radar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* --- MENÚ PRINCIPAL RESPONSIVO --- */
+        #menu-container { padding-left: 8%; z-index: 100; max-width: 600px; }
+        .logo-main { font-size: 6.5rem; font-weight: 900; margin: 0; letter-spacing: -6px; line-height: 0.9; }
+        .chapter-label { color: var(--accent); font-size: 0.85rem; letter-spacing: 4px; margin-bottom: 10px; display: block; font-weight: bold; }
 
-        /* MENÚ DE SELECCIÓN */
-        #menu { 
-            position: relative; z-index: 110; height: 100%; 
-            display: flex; flex-direction: column; justify-content: center; 
-            padding-left: 100px; 
-        }
-        .logo { font-size: 7.5rem; font-weight: 900; letter-spacing: -7px; margin-bottom: 25px; }
-        .btn-main { 
+        .btn-narcos { 
             background: rgba(0,0,0,0.85); color: var(--accent); 
-            border: 1px solid var(--accent); padding: 18px 50px; 
-            width: 400px; text-align: left; cursor: pointer; 
-            margin: 12px 0; font-weight: bold; text-transform: uppercase; 
-            transition: all 0.4s; font-size: 0.95rem; 
+            border: var(--ui-border); padding: 18px 35px; width: 380px;
+            text-align: left; cursor: pointer; margin: 12px 0;
+            font-family: inherit; font-weight: bold; text-transform: uppercase; 
+            transition: all 0.3s; font-size: 0.95rem; position: relative;
         }
-        .btn-main:hover { 
-            background: var(--accent); color: #000; 
-            box-shadow: 0 0 35px var(--accent); transform: translateX(20px); 
+        .btn-narcos:hover:not(:disabled) { 
+            background: var(--accent); color: black; transform: translateX(20px);
+            box-shadow: 0 0 25px var(--accent);
         }
-        .btn-main:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; }
-
-        /* PANEL DE AJUSTES */
-        #settings-panel { 
-            display: none; position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; background: rgba(0,8,0,0.99); 
-            z-index: 9000; padding: 70px 12%; border: 2px solid var(--accent); 
-            box-sizing: border-box; overflow-y: auto; 
-        }
-        .tabs { display: flex; gap: 20px; margin-bottom: 50px; border-bottom: 1px solid #222; }
-        .tab { 
-            padding: 20px 40px; cursor: pointer; color: #555; 
-            font-weight: bold; border: 1px solid transparent; transition: 0.3s; 
-        }
-        .tab.active { 
-            color: var(--accent); border: 1px solid var(--accent); 
-            border-bottom: 2px solid black; background: rgba(57,255,20,0.06); 
-        }
-        .row { 
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(57, 255, 20, 0.15); 
-            padding: 25px; margin-bottom: 15px; display: flex; 
-            justify-content: space-between; align-items: center; 
+        
+        /* BOTÓN "SEGUIR" DESHABILITADO */
+        .btn-narcos:disabled { 
+            border-color: #222; color: #444; cursor: not-allowed; 
+            background: rgba(10,10,10,0.9); transform: none; box-shadow: none;
         }
 
-        /* PANTALLA DE CARGA */
-        #loading-screen { 
-            display:none; position:fixed; z-index:11000; width:100%; height:100%; 
-            background:black; flex-direction:column; align-items:center; justify-content:center; 
+        /* --- PANEL DE AJUSTES INTERACTIVO --- */
+        #settings-menu { 
+            display: none; position: fixed; inset: 0; background: rgba(0,8,0,0.98); 
+            z-index: 15000; padding: 5% 10%; border: 10px solid rgba(57,255,20,0.05);
         }
-        #load-bar-cont { 
-            width:450px; height:10px; background:#111; 
-            border: 1px solid var(--accent); box-shadow: 0 0 20px rgba(57,255,20,0.3); 
+        .settings-header { border-bottom: 1px solid var(--accent); padding-bottom: 20px; margin-bottom: 40px; display: flex; justify-content: space-between; }
+        .tab-group { display: flex; gap: 30px; margin-bottom: 40px; }
+        .tab-trigger { background: none; border: none; color: #555; font-weight: bold; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+        .tab-trigger.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        
+        .control-row { 
+            background: rgba(255,255,255,0.02); padding: 25px; margin-bottom: 15px; 
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(57,255,20,0.1);
         }
-        #load-bar { width:0%; height:100%; background:var(--accent); transition: 5s linear; }
+        input[type=range] { -webkit-appearance: none; background: #222; height: 5px; width: 250px; accent-color: var(--accent); }
 
-        /* HISTORIA CINEMÁTICA */
-        #story-box { display:none; position:fixed; z-index:10500; width:100%; height:100%; background:black; }
-        .pkmn-msg { 
-            position:absolute; bottom:40px; left:50%; transform:translateX(-50%); 
-            width:92%; height:180px; background:white; border:8px solid #222; 
-            border-radius:20px; padding:35px; color:black; font-size: 1.7rem; 
-            font-weight:bold; cursor:pointer; box-shadow: 0 20px 50px rgba(0,0,0,0.9); 
-        }
+        /* --- HUD Y LOGS DEA --- */
+        .hud-top-right { position: fixed; top: 40px; right: 60px; text-align: right; color: var(--accent); font-size: 0.75rem; line-height: 1.8; z-index: 105; }
+        #surveillance-logs { position: fixed; bottom: 40px; left: 40px; color: var(--accent); font-size: 0.65rem; opacity: 0.5; pointer-events: none; }
+        .radar-box { position: fixed; bottom: 50px; right: 60px; width: 110px; height: 110px; border: 1px solid var(--accent); border-radius: 50%; }
+        .radar-line { position: absolute; width: 50%; height: 2px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: radar-spin 4s linear infinite; }
+        @keyframes radar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* TÍTULO FINAL */
-        #epic-title-screen { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: black; z-index: 15000; flex-direction: column; 
-            align-items: center; justify-content: center; 
+        /* --- CINEMÁTICA Y TÍTULO FINAL --- */
+        #cinematic-engine { display: none; position: fixed; inset: 0; background: black; z-index: 18000; padding: 10% 15%; box-sizing: border-box; }
+        #typewriter-text { font-size: 1.7rem; line-height: 1.6; border-left: 4px solid var(--accent); padding-left: 40px; }
+        #skip-cinematic-btn { 
+            position: fixed; bottom: 50px; right: 80px; z-index: 19000; display: none;
+            background: none; border: 1px solid var(--accent); color: var(--accent); padding: 12px 30px; cursor: pointer; transition: 0.3s;
         }
-        .t-step { opacity: 0; filter: blur(30px); transform: scale(0.7); transition: all 2.8s cubic-bezier(0.2, 0, 0.2, 1); text-align: center; }
-        .reveal { opacity: 1; filter: blur(0px); transform: scale(1.1); }
-        #step1 { font-size: 10rem; letter-spacing: 30px; text-shadow: 0 0 50px rgba(255,255,255,0.3); }
+        #skip-cinematic-btn:hover { background: var(--accent); color: black; }
 
-        #global-fade { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: black; z-index: 25000; pointer-events: none; 
-            opacity: 0; transition: 1.8s; 
+        #epic-reveal { 
+            display: none; position: fixed; inset: 0; background: black; 
+            z-index: 25000; align-items: center; justify-content: center;
         }
+        .reveal-logo { font-size: 9rem; letter-spacing: 30px; opacity: 0; transform: scale(0.8); filter: blur(20px); }
+        .reveal-active { opacity: 1; transform: scale(1); filter: blur(0); transition: 4s cubic-bezier(0.1, 0, 0.1, 1); }
+
+        #global-fade { position: fixed; inset: 0; background: black; z-index: 30000; pointer-events: none; opacity: 0; transition: 1.8s; }
     </style>
 </head>
-<body>
+<body onload="initNarcosOS()">
 
     <div id="global-fade"></div>
-    <audio id="siren" loop src="https://soundjay.com"></audio>
+    <div class="overlay-fx"></div>
+    <audio id="ambient-audio" loop src="https://soundhelix.com"></audio>
 
     <!-- INTRO -->
-    <div id="intro" onclick="legendaryStart()">
-        <div class="flash"></div>
-        <h1 id="lt">TIÑI GAMES</h1>
+    <div id="intro-sequence" onclick="executeBoot()">
+        <h1 id="intro-logo">TIÑI GAMES</h1>
+        <p style="letter-spacing: 5px; margin-top: 20px; font-size: 0.8rem; color: #444;">INICIALIZANDO PROTOCOLO...</p>
     </div>
 
-    <!-- INTERFAZ SINCRONIZADA -->
-    <div id="game-interface">
-        <div id="bg-container"></div>
-        <div class="vignette"></div>
-
-        <div class="ui-top">
-            LOC: 35.0844 N / 106.6504 W<br>
-            UNIT: DEA_SURVEILLANCE_TECH<br>
-            TIME: <span id="clock">00:00:00</span>
+    <!-- INTERFAZ PRINCIPAL -->
+    <div id="main-interface">
+        <div id="video-bg"></div>
+        
+        <div class="hud-top-right">
+            SISTEMA: DEA_NET_V4.0<br>
+            COORD: 35.0844 N / 106.6504 W<br>
+            FECHA: 01-ABR-2026<br>
+            RELOJ: <span id="realtime-clock">00:00:00</span>
         </div>
-        <div class="radar"><div class="radar-line"></div></div>
 
-        <div id="menu">
-            <div id="txt-cap" style="color:var(--accent); letter-spacing:6px; font-size:1.1rem; margin-bottom:15px; font-weight: bold;">[ CAPÍTULO 1 // LA CARAVANA ]</div>
-            <div class="logo">NARCOS</div>
-            <button class="btn-main" id="btn-new" onclick="nuevaPartida()">Nueva Partida</button>
-            <button class="btn-main" id="btn-cont" onclick="continuar()" disabled>Seguir con partida</button>
-            <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">AJUSTES</button>
+        <div id="surveillance-logs"></div>
+
+        <div class="radar-box"><div class="radar-line"></div></div>
+
+        <div id="menu-container">
+            <span class="chapter-label" id="lang-chapter">[ CAPÍTULO 1 // LA CARAVANA ]</span>
+            <h1 class="logo-main">NARCOS</h1>
+            <div style="height: 40px;"></div>
+            <button class="btn-narcos" id="lang-new" onclick="startWalterHistory()">Nueva Partida</button>
+            <button class="btn-narcos" id="btn-continue" disabled>Seguir con Partida</button>
+            <button class="btn-narcos" id="lang-settings" onclick="toggleSettings(true)">Ajustes de Sistema</button>
         </div>
     </div>
 
-    <!-- AJUSTES -->
-    <div id="settings-panel">
-        <h1 id="sett-tit" style="color:var(--accent); letter-spacing:15px; margin-bottom:50px;">CONFIGURACIÓN DEL SISTEMA</h1>
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab(event, 'general')" id="t-gen">GENERAL</div>
-            <div class="tab" onclick="switchTab(event, 'video')" id="t-vid">VIDEO</div>
-            <div class="tab" onclick="switchTab(event, 'audio')" id="t-aud">SONIDO</div>
+    <!-- PANEL AJUSTES -->
+    <div id="settings-menu">
+        <div class="settings-header">
+            <h2 id="lang-set-title">CONFIGURACIÓN DE TERMINAL</h2>
+            <button class="btn-narcos" style="width:auto; margin:0;" onclick="toggleSettings(false)">CERRAR [X]</button>
         </div>
-        <div id="general" class="tab-content" style="display:block;">
-            <div class="row"><span id="lb-fs">PANTALLA COMPLETA</span><button class="btn-main" style="width:140px; text-align:center;" onclick="toggleFS()" id="fs-txt">OFF</button></div>
-            <div class="row"><span id="lb-lang">LOCALIZACIÓN GLOBAL</span>
-                <select onchange="applyGlobalLanguage(this.value)" id="lang-sel" style="background:#000; color:var(--accent); border:1px solid var(--accent); padding:12px; font-weight: bold;">
-                    <option value="es">ESPAÑOL</option>
-                    <option value="en">ENGLISH</option>
-                    <option value="fr">FRANÇAIS</option>
+
+        <div class="tab-group">
+            <button class="tab-trigger active" onclick="switchTab('video', this)">01. VIDEO</button>
+            <button class="tab-trigger" onclick="switchTab('audio', this)">02. SONIDO</button>
+            <button class="tab-trigger" onclick="switchTab('lang', this)">03. IDIOMA</button>
+        </div>
+
+        <div id="tab-video" class="settings-content">
+            <div class="control-row">
+                <span id="lang-fs">PANTALLA COMPLETA</span>
+                <button class="btn-narcos" style="width:150px; text-align:center;" onclick="toggleFullscreen()">CONMUTAR</button>
+            </div>
+            <div class="control-row">
+                <span>FILTRO CRT / BRILLO</span>
+                <input type="range" min="50" max="150" value="100" oninput="document.body.style.filter = `brightness(${this.value}%)`">
+            </div>
+        </div>
+
+        <div id="tab-audio" class="settings-content" style="display:none">
+            <div class="control-row">
+                <span id="lang-vol">VOLUMEN MAESTRO</span>
+                <input type="range" min="0" max="100" value="50" oninput="adjustAudio(this.value)">
+            </div>
+        </div>
+
+        <div id="tab-lang" class="settings-content" style="display:none">
+            <div class="control-row">
+                <span>SELECCIONAR LENGUAJE</span>
+                <select onchange="updateLanguage(this.value)" style="background:black; color:var(--accent); border:1px solid var(--accent); padding:10px;">
+                    <option value="es">Español (Castellano)</option>
+                    <option value="en">English (US)</option>
                 </select>
             </div>
         </div>
-        <div id="video" class="tab-content" style="display:none;">
-            <div class="row"><span>BRILLO DEL MONITOR</span><input type="range" min="40" max="160" value="100" oninput="changeBrightness(this.value)"></div>
-        </div>
-        <button class="btn-main" id="btn-back" style="margin-top:60px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER AL TERMINAL</button>
     </div>
 
-    <!-- CARGA -->
-    <div id="loading-screen">
-        <div id="load-bar-cont"><div id="load-bar"></div></div>
-        <p id="load-quote" style="margin-top:25px; color:white; font-style:italic; font-size:1.3rem; letter-spacing:3px;"></p>
+    <!-- ESCENA WALTER WHITE -->
+    <div id="cinematic-engine">
+        <div id="typewriter-text"></div>
+    </div>
+    <button id="skip-cinematic-btn" onclick="triggerEpicTitle()">SALTAR ESCENA >></button>
+
+    <!-- REVELACIÓN FINAL -->
+    <div id="epic-reveal">
+        <h1 class="reveal-logo" id="final-logo">NARCOS</h1>
     </div>
 
-    <!-- HISTORIA -->
-    <div id="story-box">
-        <div id="story-bg" style="width:100%; height:100%; background-size:cover; transition: 2.5s ease-in-out;"></div>
-        <div class="pkmn-msg" onclick="handleStoryClick()"><span id="story-txt"></span></div>
-    </div>
+<script>
+    /* --- MOTOR LÓGICO NARCOS: DISPATCH (v1.0.9) --- */
 
-    <!-- TÍTULO FINAL -->
-    <div id="epic-title-screen">
-        <h1 class="t-step" id="step1">NARCOS</h1>
-        <p class="t-step" id="step2" style="color:var(--accent); font-size: 2.2rem; letter-spacing: 12px; margin-top: -15px; font-weight: bold;"></p>
-        <p class="t-step" id="step3" style="color:#555; margin-top: 60px; font-size: 1.3rem; letter-spacing: 6px;"></p>
-    </div>
+    const NarcosState = {
+        saveExists: false,
+        lang: 'es',
+        isTyping: false
+    };
 
-    <script>
-        let currentLang = 'es';
-        let step = 0; let isTyping = false;
-
-        const localization = {
-            es: {
-                cap: "[ CAPÍTULO 1 // LA CARAVANA ]", new: "Nueva Partida", cont: "Seguir con partida", sett: "AJUSTES", back: "VOLVER AL TERMINAL", game: "UN VIDEOJUEGO DE BREAKING BAD", sett_tit: "CONFIGURACIÓN DEL SISTEMA", lb_fs: "PANTALLA COMPLETA", lb_lang: "LOCALIZACIÓN GLOBAL",
-                quotes: ["Cocinando cristales...", "Guardando en disco duro...", "No le tengo miedo a la muerte, la muerte me tiene miedo a mí.", "Heisenberg está naciendo...", "Sincronizando señal con la DEA..."],
-                historia: [
-                    { t: "Walter White es un genio de la química atrapado en una vida mediocre, trabajando en un lavadero donde nadie lo respeta.", i: "url('https://alphacoders.com')" },
-                    { t: "Pero hoy, tras su diagnóstico de cáncer terminal, Walter ha decidido que el sistema ya no le sirve. Es hora de actuar.", i: "url('https://alphacoders.com')" },
-                    { t: "Un hombre que ya no tiene nada que perder es el hombre más peligroso de la tierra. Walter está a punto de cambiar.", i: "url('https://alphacoders.com')" },
-                    { t: "Junto a Jesse Pinkman, se adentra en el desierto de Alburquerque para cocinar el producto más puro jamás visto.", i: "url('https://alphacoders.com')" },
-                    { t: "La caravana está lista. Heisenberg ha nacido. El destino está sellado.", i: "url('https://alphacoders.com')" },
-                    { t: "'I AM THE ONE WHO KNOCKS.'", i: "url('https://alphacoders.com')" }
-                ]
-            },
-            en: {
-                cap: "[ CHAPTER 1 // THE RV ]", new: "New Game", cont: "Continue Mission", sett: "SETTINGS", back: "BACK TO TERMINAL", game: "A BREAKING BAD VIDEO GAME", sett_tit: "SYSTEM CONFIGURATION", lb_fs: "FULLSCREEN", lb_lang: "GLOBAL LOCALIZATION",
-                quotes: ["Cooking crystals...", "Saving to local drive...", "I am not in danger, I am the danger.", "Heisenberg is rising...", "Syncing DEA frequencies..."],
-                historia: [
-                    { t: "Walter White is a chemistry genius trapped in a mediocre life, working at a car wash where no one respects him.", i: "url('https://alphacoders.com')" },
-                    { t: "But today, after his terminal cancer diagnosis, Walter has decided the system no longer works. It's time to act.", i: "url('https://alphacoders.com')" },
-                    { t: "A man with nothing to lose is the most dangerous man on earth. Walter is about to transform.", i: "url('https://alphacoders.com')" },
-                    { t: "Together with Jesse Pinkman, he heads into the Albuquerque desert to cook the purest product ever seen.", i: "url('https://alphacoders.com')" },
-                    { t: "The RV is ready. Heisenberg is born. Destiny is sealed.", i: "url('https://alphacoders.com')" },
-                    { t: "'I AM THE ONE WHO KNOCKS.'", i: "url('https://alphacoders.com')" }
-                ]
-            },
-            fr: {
-                cap: "[ CHAPITRE 1 // LE CAMPING-CAR ]", new: "Nouvelle Partie", cont: "Continuer", sett: "PARAMÈTRES", back: "RETOUR", game: "UN JEU VIDÉO DE BREAKING BAD", sett_tit: "CONFIGURATION DU SYSTÈME", lb_fs: "PLEIN ÉCRAN", lb_lang: "LOCALISATION",
-                quotes: ["Cuisine en cours...", "Sauvegarde sur le disque...", "Je suis celui qui frappe à la porte.", "Heisenberg arrive...", "Synchronisation avec la DEA..."],
-                historia: [
-                    { t: "Walter White est un génie de la chimie piégé dans une vie médiocre, travaillant dans un lave-auto où personne ne le respecte.", i: "url('https://alphacoders.com')" },
-                    { t: "Mais aujourd'hui, après son diagnostic de cancer, Walter a décidé que le système ne lui servait plus. Il est temps d'agir.", i: "url('https://alphacoders.com')" },
-                    { t: "Un homme qui n'a plus rien à perdre est l'homme le plus dangereux de la terre.", i: "url('https://alphacoders.com')" },
-                    { t: "Avec Jesse Pinkman, il s'enfonce dans le désert pour cuisiner le produit le plus pur jamais vu.", i: "url('https://alphacoders.com')" },
-                    { t: "Le camping-car est prêt. Heisenberg est né. Le destin est scellé.", i: "url('https://alphacoders.com')" },
-                    { t: "'I AM THE ONE WHO KNOCKS.'", i: "url('https://alphacoders.com')" }
-                ]
-            }
-        };
-
-        function applyGlobalLanguage(lang) {
-            currentLang = lang;
-            const t = localization[lang];
-            document.getElementById('txt-cap').innerText = t.cap;
-            document.getElementById('btn-new').innerText = t.new;
-            document.getElementById('btn-cont').innerText = t.cont;
-            document.getElementById('btn-sett').innerText = t.sett;
-            document.getElementById('btn-back').innerText = t.back;
-            document.getElementById('sett-tit').innerText = t.sett_tit;
-            document.getElementById('lb-fs').innerText = t.lb_fs;
-            document.getElementById('lb-lang').innerText = t.lb_lang;
-            document.getElementById('step2').innerText = t.game;
-            document.getElementById('step3').innerText = t.cap;
+    const i18n = {
+        es: {
+            chapter: "[ CAPÍTULO 1 // LA CARAVANA ]",
+            new: "Nueva Partida",
+            settings: "Ajustes de Sistema",
+            setTitle: "CONFIGURACIÓN DE TERMINAL",
+            fs: "PANTALLA COMPLETA",
+            vol: "VOLUMEN MAESTRO",
+            skip: "SALTAR ESCENA >>",
+            history: "Walter Hartwell White... un profesor de química. Una caravana en el desierto. El inicio de un imperio que lo cambiará todo. No hay vuelta atrás."
+        },
+        en: {
+            chapter: "[ CHAPTER 1 // THE CONVOY ]",
+            new: "New Game",
+            settings: "System Settings",
+            setTitle: "TERMINAL CONFIGURATION",
+            fs: "FULLSCREEN MODE",
+            vol: "MASTER VOLUME",
+            skip: "SKIP SCENE >>",
+            history: "Walter Hartwell White... a chemistry teacher. An RV in the desert. The start of an empire that will change everything. There is no turning back."
         }
+    };
 
-        function legendaryStart() {
-            document.documentElement.requestFullscreen().catch(() => {});
-            document.getElementById('lt').classList.add('glitch-active');
+    function initNarcosOS() {
+        console.log("Sistema Inicializado. Comprobando registros...");
+        startTime();
+        generateLogs();
+        // Verificar si existe guardado
+        if(localStorage.getItem('narcos_save_v1')) {
+            const btn = document.getElementById('btn-continue');
+            btn.disabled = false;
+            btn.style.color = 'var(--accent)';
+        }
+    }
+
+    function executeBoot() {
+        const intro = document.getElementById('intro-sequence');
+        const main = document.getElementById('main-interface');
+        intro.style.transform = 'translateY(-100%)';
+        setTimeout(() => {
+            main.style.opacity = '1';
+            main.style.visibility = 'visible';
+            document.getElementById('video-bg').style.opacity = '0.5';
+        }, 1200);
+    }
+
+    // --- SISTEMA DE AJUSTES ---
+    function toggleSettings(show) {
+        document.getElementById('settings-menu').style.display = show ? 'block' : 'none';
+    }
+
+    function switchTab(tab, el) {
+        document.querySelectorAll('.settings-content').forEach(c => c.style.display = 'none');
+        document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + tab).style.display = 'block';
+        el.classList.add('active');
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(e => console.error(e));
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    function adjustAudio(v) {
+        document.getElementById('ambient-audio').volume = v / 100;
+        document.getElementById('ambient-audio').play();
+    }
+
+    function updateLanguage(l) {
+        NarcosState.lang = l;
+        document.getElementById('lang-chapter').innerText = i18n[l].chapter;
+        document.getElementById('lang-new').innerText = i18n[l].new;
+        document.getElementById('lang-settings').innerText = i18n[l].settings;
+        document.getElementById('lang-set-title').innerText = i18n[l].setTitle;
+        document.getElementById('lang-fs').innerText = i18n[l].fs;
+        document.getElementById('lang-vol').innerText = i18n[l].vol;
+        document.getElementById('skip-cinematic-btn').innerText = i18n[l].skip;
+    }
+
+    // --- HISTORIA Y CINEMÁTICA ---
+    function startWalterHistory() {
+        const engine = document.getElementById('cinematic-engine');
+        const skip = document.getElementById('skip-cinematic-btn');
+        engine.style.display = 'block';
+        
+        let text = i18n[NarcosState.lang].history;
+        let i = 0;
+        const target = document.getElementById('typewriter-text');
+        target.innerHTML = "";
+        
+        const typeLoop = setInterval(() => {
+            target.innerHTML += text.charAt(i);
+            i++;
+            if(i > 15) skip.style.display = 'block';
+            if(i >= text.length) clearInterval(typeLoop);
+        }, 50);
+    }
+
+    function triggerEpicTitle() {
+        const fade = document.getElementById('global-fade');
+        const reveal = document.getElementById('epic-reveal');
+        const logo = document.getElementById('final-logo');
+        
+        fade.style.opacity = '1';
+        
+        setTimeout(() => {
+            document.getElementById('cinematic-engine').style.display = 'none';
+            document.getElementById('skip-cinematic-btn').style.display = 'none';
+            reveal.style.display = 'flex';
+            fade.style.opacity = '0';
+            
             setTimeout(() => {
-                document.getElementById('intro').style.transform = "scale(2.5)";
-                document.getElementById('intro').style.opacity = "0";
-                setTimeout(() => {
-                    document.getElementById('intro').style.display = "none";
-                    // SINCRONIZACIÓN LEGENDARIA
-                    const wrapper = document.getElementById('game-interface');
-                    wrapper.style.visibility = "visible";
-                    wrapper.style.opacity = "1";
-                    document.getElementById('menu').style.opacity = "1";
-                    document.getElementById('bg-container').style.opacity = "0.45";
-                }, 1200);
-            }, 1600);
-        }
+                logo.classList.add('reveal-active');
+            }, 500);
+        }, 1800);
+    }
 
-        function nuevaPartida() {
-            document.getElementById('game-interface').style.display = "none";
-            document.getElementById('loading-screen').style.display = "flex";
-            const q = localization[currentLang].quotes;
-            document.getElementById('load-quote').innerText = q[Math.floor(Math.random()*q.length)];
-            setTimeout(() => { document.getElementById('load-bar').style.width = "100%"; }, 100);
-            setTimeout(() => {
-                document.getElementById('loading-screen').style.display = "none";
-                document.getElementById('story-box').style.display = "block";
-                showNextStory();
-            }, 5500);
-        }
+    // --- HUD LOGIC ---
+    function startTime() {
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('realtime-clock').innerText = d.toLocaleTimeString('es-ES', {hour12:false});
+        }, 1000);
+    }
 
-        function showNextStory() {
-            const h = localization[currentLang].historia;
-            if (step < h.length) {
-                const bg = document.getElementById('story-bg');
-                bg.style.opacity = "0";
-                setTimeout(() => {
-                    bg.style.backgroundImage = h[step].i;
-                    bg.style.opacity = "1";
-                    typeWriter(h[step].t, "story-txt");
-                    step++;
-                }, 1000);
-            } else {
-                localStorage.setItem('narcos_save', 'true');
-                showEpicTitle();
-            }
-        }
-
-        function typeWriter(text, id) {
-            isTyping = true; let i = 0; let el = document.getElementById(id); el.innerHTML = "";
-            let timer = setInterval(() => {
-                el.innerHTML += text.charAt(i); i++;
-                if(i >= text.length) { clearInterval(timer); isTyping = false; }
-            }, 35);
-        }
-
-        function handleStoryClick() { if(!isTyping) showNextStory(); }
-
-        function showEpicTitle() {
-            document.getElementById('story-box').style.display = "none";
-            document.getElementById('epic-title-screen').style.display = "flex";
-            setTimeout(() => { document.getElementById('step1').classList.add('reveal'); }, 500);
-            setTimeout(() => { document.getElementById('step2').classList.add('reveal'); }, 2800);
-            setTimeout(() => { document.getElementById('step3').classList.add('reveal'); }, 5000);
-        }
-
-        // SISTEMA
-        function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? "block" : "none"; }
-        function switchTab(e, id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = "none");
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).style.display = "block";
-            e.currentTarget.classList.add('active');
-        }
-        function changeBrightness(v) { document.body.style.filter = `brightness(${v}%)`; }
-        function toggleFS() { 
-            if(!document.fullscreenElement) { document.documentElement.requestFullscreen(); document.getElementById('fs-txt').innerText = "ON"; }
-            else { document.exitFullscreen(); document.getElementById('fs-txt').innerText = "OFF"; }
-        }
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        window.onload = () => { applyGlobalLanguage('es'); if(localStorage.getItem('narcos_save')) document.getElementById('btn-cont').disabled = false; };
-    </script>
+    function generateLogs() {
+        const logs = [
+            "SCANNING_SATELLITE_LINK...", "ENCRYPTING_DEA_CHANNEL...", 
+            "UPDATING_DRONE_POS...", "INTERCEPTING_RADIO_B61...", 
+            "MONITORING_TRUCK_CONVOY...", "SIGNAL_STRENGTH_98%..."
+        ];
+        const container = document.getElementById('surveillance-logs');
+        setInterval(() => {
+            const line = document.createElement('div');
+            line.innerText = `> ${logs[Math.floor(Math.random()*logs.length)]}`;
+            container.appendChild(line);
+            if(container.children.length > 8) container.removeChild(container.firstChild);
+        }, 3000);
+    }
+</script>
 </body>
 </html>
-
-
