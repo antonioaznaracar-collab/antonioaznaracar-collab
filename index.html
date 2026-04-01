@@ -3,370 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | THE BREAKING BAD EXPERIENCE</title>
+    <title>NARCOS: DISPATCH | THE BREAKING BAD EXPERIENCE [v4.0 GOD_MODE]</title>
     <style>
-        /* --- ARQUITECTURA TÁCTICA Y VARIABLES --- */
+        /* --- NÚCLEO DE ESTILOS Y VARIABLES TÁCTICAS --- */
         :root { 
             --accent: #39ff14; 
-            --accent-dim: rgba(57, 255, 20, 0.1);
+            --accent-dim: rgba(57, 255, 20, 0.12);
             --danger: #ff4d4d;
             --bg-deep: #000;
             --ui-border: 1px solid rgba(57, 255, 20, 0.4);
             --font-main: 'Courier New', Courier, monospace;
+            --glow: 0 0 15px var(--accent);
         }
 
-        /* --- POST-PROCESADO CRT --- */
+        /* --- POST-PROCESADO VISUAL (CRT/VHS) --- */
         * { box-sizing: border-box; outline: none; }
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: var(--bg-deep); font-family: var(--font-main); 
-            overflow: hidden; color: white;
+            overflow: hidden; color: white; -webkit-font-smoothing: antialiased;
         }
-        .crt-overlay {
+
+        /* Capa de interferencia satelital */
+        .crt-master-fx {
             position: fixed; inset: 0; pointer-events: none; z-index: 99999;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        radial-gradient(circle, transparent 20%, black 150%);
-            background-size: 100% 3px, 100% 100%; opacity: 0.4;
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%; opacity: 0.6;
+        }
+
+        /* Viñeta de vigilancia */
+        .vignette {
+            position: fixed; inset: 0; pointer-events: none; z-index: 99998;
+            background: radial-gradient(circle, transparent 30%, black 160%);
+        }
+
+        /* --- CAPA DE FADE GLOBAL --- */
+        #master-fade-curtain { 
+            position: fixed; inset: 0; background: black; z-index: 100000; 
+            pointer-events: none; opacity: 0; transition: 2.5s cubic-bezier(0.4, 0, 0.2, 1); 
         }
 
         /* --- INTRO: TIÑI GAMES --- */
-        #intro-layer { 
+        #intro-sequence { 
             position: fixed; inset: 0; z-index: 80000; background: #000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: 1.5s cubic-bezier(1, 0, 0, 1);
         }
-        #intro-layer h1 { font-size: 5rem; letter-spacing: 25px; transition: 0.8s; margin: 0; }
-        #intro-layer:hover h1 { color: var(--accent); text-shadow: 0 0 30px var(--accent); }
-
-        /* --- INTERFAZ DE MENÚ PRINCIPAL --- */
-        #game-interface { 
-            opacity: 0; visibility: hidden; transition: 2.5s ease-in-out;
+        #intro-sequence h1 { 
+            font-size: 6.5rem; letter-spacing: 35px; transition: 0.8s; margin: 0; 
+            animation: pulse-glow 3s infinite alternate;
+        }
+        @keyframes pulse-glow { from { text-shadow: 0 0 10px #fff; } to { text-shadow: 0 0 40px var(--accent); color: var(--accent); } }
+        
+        /* --- INTERFAZ PRINCIPAL --- */
+        #game-interface-os { 
+            opacity: 0; visibility: hidden; transition: 3s ease-in-out;
             height: 100vh; width: 100vw; position: relative;
         }
-        #bg-video { 
-            position: fixed; inset: 0; z-index: -1; 
-            background: linear-gradient(90deg, black 30%, transparent 100%),
+        #bg-canvas-particles { position: fixed; inset: 0; z-index: -1; opacity: 0.4; }
+        #bg-cinematic-img { 
+            position: fixed; inset: 0; z-index: -2; 
+            background: linear-gradient(90deg, black 35%, transparent 100%),
                         url('https://alphacoders.com') center/cover;
-            filter: grayscale(100%) brightness(0.4);
+            filter: grayscale(100%) brightness(0.3) contrast(1.2);
         }
 
-        /* --- BRANDING BOX --- */
-        #brand-box { padding-left: 10%; padding-top: 18vh; z-index: 100; }
-        .main-title { font-size: 8.5rem; font-weight: 900; margin: 0; letter-spacing: -8px; line-height: 0.8; }
-        #sub-brand { display: block; color: var(--accent); font-size: 1rem; letter-spacing: 8px; margin-top: 25px; opacity: 0; transition: 1.5s; }
-        #cap-tag { display: block; color: #fff; font-size: 0.85rem; letter-spacing: 5px; margin-top: 15px; font-weight: bold; opacity: 0; transition: 1s; }
+        /* --- BRANDING & LOGO --- */
+        #brand-layout { padding-left: 10%; padding-top: 18vh; z-index: 100; }
+        .logo-main-title { font-size: 10rem; font-weight: 900; margin: 0; letter-spacing: -14px; line-height: 0.75; }
+        #sub-brand-text { display: block; color: var(--accent); font-size: 1.2rem; letter-spacing: 12px; margin-top: 30px; opacity: 0; transition: 1.5s; font-weight: bold; }
+        #chapter-reveal-text { display: block; color: #fff; font-size: 0.95rem; letter-spacing: 7px; margin-top: 15px; font-weight: bold; opacity: 0; transition: 1.2s; }
 
-        /* --- BOTONES DE JUEGO --- */
-        .btn-narcos {
-            background: rgba(0,0,0,0.9); border: var(--ui-border);
-            color: var(--accent); padding: 20px 50px; width: 450px;
+        /* --- SISTEMA DE BOTONES (ESTILO PS5) --- */
+        .btn-narcos-ui {
+            background: rgba(255,255,255,0.01); border: var(--ui-border);
+            color: var(--accent); padding: 24px 60px; width: 500px;
             text-align: left; font-family: inherit; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; margin-top: 18px;
-            transition: 0.4s; position: relative;
+            text-transform: uppercase; cursor: pointer; margin-top: 22px;
+            transition: 0.4s; position: relative; letter-spacing: 3px;
+            box-shadow: inset 0 0 0 0 var(--accent);
         }
-        .btn-narcos:hover:not(:disabled) {
-            background: var(--accent); color: black; transform: translateX(25px);
-            box-shadow: 0 0 40px var(--accent);
+        .btn-narcos-ui:hover:not(:disabled) {
+            background: var(--accent); color: black; transform: translateX(35px);
+            box-shadow: 0 0 60px var(--accent), inset 10px 0 0 0 white;
         }
-        .btn-narcos:disabled { border-color: #222; color: #444; cursor: not-allowed; opacity: 0.5; }
+        .btn-narcos-ui:disabled { border-color: #222; color: #333; cursor: not-allowed; opacity: 0.4; }
 
-        /* --- DISEÑO DE AJUSTES TÁCTICOS --- */
-        #settings-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,5,0,0.99);
-            z-index: 50000; padding: 100px 15%; border: 20px solid rgba(57,255,20,0.02);
+        /* --- PANEL DE AJUSTES (DISEÑO TÉCNICO AVANZADO) --- */
+        #settings-menu-os {
+            display: none; position: fixed; inset: 0; background: rgba(0,4,0,0.99);
+            z-index: 50000; padding: 100px 15%; border: 40px solid rgba(57,255,20,0.01);
+            overflow-y: auto; backdrop-filter: blur(10px);
         }
-        .setting-card { 
-            background: rgba(255,255,255,0.03); padding: 30px 45px; margin-bottom: 15px; 
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(57,255,20,0.15);
-            transition: 0.3s;
+        .settings-header-box { border-bottom: 2px solid var(--accent); padding-bottom: 30px; margin-bottom: 60px; display: flex; justify-content: space-between; align-items: center; }
+        .setting-item-card { 
+            background: rgba(255,255,255,0.02); padding: 40px 60px; margin-bottom: 18px; 
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(57,255,20,0.1);
+            transition: 0.4s;
         }
-        .setting-card:hover { border-color: var(--accent); background: rgba(57,255,20,0.05); }
-        .toggle-tactical { 
-            width: 140px; padding: 15px; cursor: pointer; border: 1px solid var(--accent);
+        .setting-item-card:hover { border-color: var(--accent); background: rgba(57,255,20,0.06); transform: scale(1.01); }
+
+        .tactical-toggle { 
+            width: 160px; padding: 18px; cursor: pointer; border: 2px solid var(--accent);
             background: transparent; color: var(--accent); font-weight: bold; transition: 0.4s;
-            text-align: center; font-size: 0.8rem;
+            text-align: center; font-size: 0.8rem; letter-spacing: 2px;
         }
-        .toggle-tactical.on { background: var(--accent); color: black; box-shadow: 0 0 25px var(--accent); }
-        .toggle-tactical.off { border-color: #555; color: #555; }
+        .tactical-toggle.on { background: var(--accent); color: black; box-shadow: 0 0 30px var(--accent); }
+        .tactical-toggle.off { border-color: #555; color: #555; }
 
-        /* --- MOTOR DE NARRATIVA --- */
-        #story-mode { 
+        select.custom-lang-selector { 
+            background: black; color: var(--accent); border: 2px solid var(--accent); 
+            padding: 15px; font-family: inherit; font-weight: bold; cursor: pointer; width: 160px; 
+        }
+
+        /* --- MOTOR NARRATIVO: 5 ACTOS --- */
+        #story-narrative-engine { 
             display: none; position: fixed; inset: 0; background: #000; 
-            z-index: 20000; flex-direction: column; align-items: center; justify-content: center; padding: 80px;
+            z-index: 20000; flex-direction: column; align-items: center; justify-content: center; padding: 120px;
         }
-        .story-slide { display: none; width: 100%; max-width: 1000px; animation: slideIn 1.5s forwards; }
-        .story-slide.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; filter: blur(20px); transform: scale(1.1); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
-        .slide-frame { width: 100%; height: 450px; background: #0a0a0a; border: var(--ui-border); margin-bottom: 50px; }
-        .slide-text { font-size: 1.8rem; line-height: 1.6; border-left: 6px solid var(--accent); padding-left: 45px; }
+        .narrative-slide { display: none; width: 100%; max-width: 1200px; animation: slideRevealCinematic 2s forwards; }
+        .narrative-slide.active { display: block; }
+        @keyframes slideRevealCinematic { 
+            from { opacity: 0; filter: blur(50px); transform: scale(1.2) rotate(1deg); } 
+            to { opacity: 1; filter: blur(0); transform: scale(1) rotate(0deg); } 
+        }
+        .narrative-frame { width: 100%; height: 550px; background: #050505; border: var(--ui-border); margin-bottom: 60px; position: relative; }
+        .narrative-desc { font-size: 2.2rem; line-height: 1.7; border-left: 10px solid var(--accent); padding-left: 60px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* --- PANTALLA DE CARGA --- */
-        #loading-overlay { 
+        /* --- PANTALLA DE CARGA GLOBAL --- */
+        #loading-overlay-system { 
             display: none; position: fixed; inset: 0; background: black; 
             z-index: 40000; flex-direction: column; align-items: center; justify-content: center;
         }
-        #load-word { color: var(--accent); font-size: 3rem; letter-spacing: 20px; margin-bottom: 40px; text-shadow: 0 0 20px var(--accent); }
-        .progress-track { width: 600px; height: 3px; background: #111; position: relative; }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 30px var(--accent); }
+        #loading-dynamic-label { color: var(--accent); font-size: 4rem; letter-spacing: 30px; margin-bottom: 60px; text-shadow: 0 0 30px var(--accent); font-weight: 900; }
+        .loading-track-ui { width: 700px; height: 4px; background: #111; position: relative; border-radius: 10px; overflow: hidden; }
+        #loading-bar-fill { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 40px var(--accent); transition: 0.15s linear; }
 
-        /* --- MEGA TRANSICIÓN TÍTULO FINAL --- */
-        #mega-reveal { 
+        /* --- MEGA-REVELACIÓN TÍTULO FINAL --- */
+        #mega-cinematic-reveal { 
             display: none; position: fixed; inset: 0; background: black; 
             z-index: 90000; flex-direction: column; align-items: center; justify-content: center;
         }
-        #final-narcos { 
-            font-size: 11rem; letter-spacing: 40px; font-weight: 900; 
-            opacity: 0; transform: scale(0.7); filter: blur(30px);
-            transition: 4.5s cubic-bezier(0.1, 0, 0, 1);
+        #final-reveal-logo { 
+            font-size: 13rem; letter-spacing: 60px; font-weight: 900; 
+            opacity: 0; transform: scale(0.5); filter: blur(50px);
+            transition: 6s cubic-bezier(0.1, 0, 0, 1);
         }
-        #final-sub { color: var(--accent); font-size: 1.5rem; letter-spacing: 12px; margin-top: 30px; opacity: 0; transition: 2s; }
-        #final-cap { color: white; font-size: 1rem; letter-spacing: 6px; margin-top: 15px; opacity: 0; transition: 2s; }
+        #final-reveal-sub { color: var(--accent); font-size: 1.8rem; letter-spacing: 20px; margin-top: 40px; opacity: 0; transition: 3s; font-weight: bold; }
+        #final-reveal-cap { color: white; font-size: 1.2rem; letter-spacing: 10px; margin-top: 25px; opacity: 0; transition: 3s; }
 
-        /* --- HUD Y TERMINAL --- */
-        .hud-top { position: fixed; top: 40px; right: 60px; text-align: right; color: var(--accent); font-size: 0.8rem; line-height: 2; opacity: 0.6; }
-        #dea-log { position: fixed; bottom: 40px; left: 40px; color: var(--accent); font-size: 0.65rem; opacity: 0.4; line-height: 1.6; }
-        .radar { position: fixed; bottom: 50px; right: 60px; width: 120px; height: 120px; border: 1px solid var(--accent-dim); border-radius: 50%; }
-        .radar-sweep { position: absolute; width: 100%; height: 100%; background: conic-gradient(from 0deg, transparent, var(--accent-dim)); border-radius: 50%; animation: sweep 4s linear infinite; }
-        @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* --- HUD & DEA LOGS --- */
+        .hud-intelligence-box { position: fixed; top: 50px; right: 80px; text-align: right; color: var(--accent); font-size: 0.9rem; line-height: 2.5; opacity: 0.7; }
+        #dea-terminal-stream { position: fixed; bottom: 60px; left: 60px; color: var(--accent); font-size: 0.7rem; opacity: 0.4; line-height: 2; pointer-events: none; }
+        .radar-tactical { position: fixed; bottom: 70px; right: 90px; width: 150px; height: 150px; border: 2px solid var(--accent-dim); border-radius: 50%; box-shadow: inset 0 0 20px var(--accent-dim); }
+        .radar-sweep-line { position: absolute; width: 50%; height: 3px; background: var(--accent); top: 50%; left: 50%; transform-origin: left; animation: radarRotate 4.5s linear infinite; }
+        @keyframes radarRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
-<body onload="initSystem()">
+<body onload="bootNarcosEngine()">
 
-    <div class="crt-overlay"></div>
-    <div id="master-fade" style="position:fixed; inset:0; background:black; z-index:99999; pointer-events:none; opacity:0; transition:2s;"></div>
+    <div class="crt-master-fx"></div>
+    <div class="vignette"></div>
+    <div id="master-fade-curtain"></div>
 
-    <!-- INTRO -->
-    <div id="intro-layer" onclick="bootSequence()">
-        <h1>TIÑI GAMES</h1>
-        <p style="letter-spacing: 6px; color: #444; margin-top: 35px;">[ ESTABLECER ENLACE SATELITAL ]</p>
+    <!-- INTRO SEQUENCE -->
+    <div id="intro-sequence" onclick="startBootSequence()">
+        <h1 id="intro-h1">TIÑI GAMES</h1>
+        <p style="letter-spacing: 10px; color: #555; margin-top: 50px; font-weight: bold; text-transform: uppercase;">[ INICIALIZAR ENLACE DE VIGILANCIA GLOBAL ]</p>
     </div>
 
-    <!-- MENÚ PRINCIPAL -->
-    <div id="game-interface">
-        <div id="bg-video"></div>
-        <div class="hud-top">
-            SIGNAL: DEA_ALBUQUERQUE_ENCRYPTED<br>
-            TARGET: WHITE_W_FILES<br>
-            ZONE: NEW_MEXICO_SEC_4<br>
-            TIME: <span id="sync-clock">00:00:00</span>
+    <!-- INTERFAZ DE USUARIO OS -->
+    <div id="game-interface-os">
+        <canvas id="bg-canvas-particles"></canvas>
+        <div id="bg-cinematic-img"></div>
+        
+        <div class="hud-intelligence-box">
+            NETWORK: <span id="hud-signal-node">DEA_ALBUQUERQUE_ENCRYPTED</span><br>
+            TARGET: W_WHITE_HEISENBERG<br>
+            SYSTEM: DEA_OS_V4.0.0<br>
+            TIME: <span id="hud-realtime-clock">00:00:00</span>
         </div>
-        <div id="dea-log"></div>
-        <div class="radar"><div class="radar-sweep"></div></div>
 
-        <div id="brand-box">
-            <h1 class="main-title">NARCOS</h1>
-            <span id="sub-brand">UN VIDEOJUEGO DE BREAKING BAD</span>
-            <span id="cap-tag">[ CAPÍTULO 1: LA CARAVANA ]</span>
+        <div id="dea-terminal-stream"></div>
+
+        <div class="radar-tactical"><div class="radar-sweep-line"></div></div>
+
+        <div id="brand-layout">
+            <h1 class="logo-main-title">NARCOS</h1>
+            <span id="sub-brand-text">UN VIDEOJUEGO DE BREAKING BAD</span>
+            <span id="chapter-reveal-text">[ CAPÍTULO 1: LA CARAVANA ]</span>
             
-            <div style="margin-top: 60px; display: flex; flex-direction: column;">
-                <button class="btn-narcos" onclick="triggerStory()">Nueva Partida</button>
-                <button class="btn-narcos" id="btn-resume" disabled>Continuar Operación</button>
-                <button class="btn-narcos" onclick="toggleSettings(true)">Ajustes de Sistema</button>
-                <button class="btn-narcos" onclick="terminateSession()">Desconectar</button>
+            <div style="margin-top: 80px; display: flex; flex-direction: column;">
+                <button class="btn-narcos-ui" id="ui-btn-new-game" onclick="initNarrativeEngine()">Nueva Partida</button>
+                <button class="btn-narcos-ui" id="ui-btn-resume-game" disabled>Continuar Operación</button>
+                <button class="btn-narcos-ui" id="ui-btn-settings-os" onclick="toggleSettingsMenu(true)">Ajustes de Terminal</button>
+                <button class="btn-narcos-ui" id="ui-btn-terminate" onclick="terminateUserConnection()">Desconectar</button>
             </div>
         </div>
     </div>
 
-    <!-- NARRATIVA (5 DIAPOSITIVAS) -->
-    <div id="story-mode">
-        <div class="story-slide active" id="s1">
-            <div class="slide-frame"></div>
-            <div class="slide-text">Walter White. Un genio de la química. Una vida de arrepentimiento. Albuquerque no sabe lo que le espera.</div>
+    <!-- MOTOR NARRATIVO DE 5 ACTOS -->
+    <div id="story-narrative-engine">
+        <div class="narrative-slide active" id="slide1">
+            <div class="narrative-frame"></div>
+            <div class="narrative-desc" id="nt-1">Walter White. Un genio de la química. Una vida de arrepentimiento. Albuquerque no sabe lo que le espera.</div>
         </div>
-        <div class="story-slide" id="s2">
-            <div class="slide-frame"></div>
-            <div class="slide-text">El diagnóstico de cáncer terminal. No hay nada que perder. Solo un legado que construir.</div>
+        <div class="narrative-slide" id="slide2">
+            <div class="narrative-frame"></div>
+            <div class="narrative-desc" id="nt-2">El diagnóstico de cáncer terminal. No hay nada que perder. Solo un legado que construir.</div>
         </div>
-        <div class="story-slide" id="s3">
-            <div class="slide-frame"></div>
-            <div class="slide-text">Jesse Pinkman. El socio improbable. La calle y el laboratorio se unen en un pacto de sangre.</div>
+        <div class="narrative-slide" id="slide3">
+            <div class="narrative-frame"></div>
+            <div class="narrative-desc" id="nt-3">Jesse Pinkman. El socio improbable. La calle y el laboratorio se unen en un pacto de sangre.</div>
         </div>
-        <div class="story-slide" id="s4">
-            <div class="slide-frame"></div>
-            <div class="slide-text">La caravana en el desierto. El primer cocinado. El inicio del imperio del cristal azul.</div>
+        <div class="narrative-slide" id="slide4">
+            <div class="narrative-frame"></div>
+            <div class="narrative-desc" id="nt-4">La caravana en el desierto. El primer cocinado. El inicio del imperio del cristal azul.</div>
         </div>
-        <div class="story-slide" id="s5">
-            <div class="slide-frame"></div>
-            <div class="slide-text">Heisenberg ha nacido. "Di mi nombre". No hay vuelta atrás. Esto es la guerra.</div>
+        <div class="narrative-slide" id="slide5">
+            <div class="narrative-frame"></div>
+            <div class="narrative-desc" id="nt-5">Heisenberg ha nacido. "Di mi nombre". No hay vuelta atrás. Esto es la guerra.</div>
         </div>
         
-        <div style="margin-top: 60px;">
-            <button class="btn-narcos" style="width:280px; text-align:center;" onclick="nextSlide()" id="story-btn">PROCESAR ARCHIVO >></button>
+        <div style="margin-top: 80px;">
+            <button class="btn-narcos-ui" style="width:350px; text-align:center;" onclick="navigateNarrativeSlides()" id="story-nav-action-btn">PROCESAR ARCHIVO >></button>
         </div>
     </div>
 
-    <!-- CARGA -->
-    <div id="loading-overlay">
-        <div id="load-word">CARGANDO</div>
-        <div class="progress-track"><div id="progress-bar"></div></div>
-        <p style="margin-top: 30px; font-size: 0.75rem; color: #444; letter-spacing: 4px;">SINCRONIZANDO MEMORIA_DEA...</p>
+    <!-- PANTALLA DE CARGA DINÁMICA -->
+    <div id="loading-overlay-system">
+        <div id="loading-dynamic-label">CARGANDO</div>
+        <div class="loading-track-ui"><div id="loading-bar-fill"></div></div>
+        <p style="margin-top: 50px; font-size: 0.9rem; color: #444; letter-spacing: 6px;" id="ui-loading-sync-info">SINCRONIZANDO MEMORIA_DEA_FLASH...</p>
     </div>
 
-    <!-- MEGA REVELACIÓN FINAL -->
-    <div id="mega-reveal">
-        <h1 id="final-narcos">NARCOS</h1>
-        <span id="final-sub">UN VIDEOJUEGO DE BREAKING BAD</span>
-        <span id="final-cap">CAPÍTULO 1: LA CARAVANA</span>
+    <!-- MEGA-REVELACIÓN TÍTULO FINAL -->
+    <div id="mega-cinematic-reveal">
+        <h1 id="final-reveal-logo">NARCOS</h1>
+        <span id="final-reveal-sub">UN VIDEOJUEGO DE BREAKING BAD</span>
+        <span id="final-reveal-cap">CAPÍTULO 1: LA CARAVANA</span>
     </div>
 
-    <!-- AJUSTES TÁCTICOS -->
-    <div id="settings-overlay">
-        <h2 style="letter-spacing: 15px; color: var(--accent); margin-bottom: 60px;">TERMINAL_SETTINGS_V4</h2>
-        <div style="max-width: 800px;">
-            <div class="setting-card">
-                <span>PANTALLA COMPLETA</span>
-                <button class="toggle-tactical off" onclick="tacticalToggle(this, 'fs')">STATUS: OFF</button>
+    <!-- PANEL DE AJUSTES GLOBALES -->
+    <div id="settings-menu-os">
+        <div class="settings-header-box">
+            <h2 id="ui-settings-os-title" style="letter-spacing: 20px; color: var(--accent); margin: 0;">TERMINAL_SETTINGS_V4</h2>
+            <button class="btn-narcos-ui" style="width:auto; padding:15px 35px; margin:0; border-color:var(--danger); color:var(--danger);" onclick="toggleSettingsMenu(false)">[ X ]</button>
+        </div>
+
+        <div style="max-width: 1000px; margin-top: 60px;">
+            <div class="setting-item-card">
+                <span id="ui-label-language">LENGUAJE DEL SISTEMA</span>
+                <select class="custom-lang-selector" onchange="applyLocalization(this.value)">
+                    <option value="es">ESPAÑOL</option>
+                    <option value="en">ENGLISH</option>
+                    <option value="fr">FRANÇAIS</option>
+                    <option value="de">DEUTSCH</option>
+                </select>
             </div>
-            <div class="setting-card">
-                <span>CENSURA DE SANGRE</span>
-                <button class="toggle-tactical off" onclick="tacticalToggle(this, 'blood')">STATUS: OFF</button>
+            <div class="setting-item-card">
+                <span id="ui-label-fullscreen">PANTALLA COMPLETA</span>
+                <button class="tactical-toggle on" id="ui-btn-fs-status" onclick="manualFullscreenToggle()">STATUS: ON</button>
             </div>
-            <div class="setting-card">
-                <span>CENSURA DE LENGUAJE</span>
-                <button class="toggle-tactical off" onclick="tacticalToggle(this, 'lang')">STATUS: OFF</button>
+            <div class="setting-item-card">
+                <span id="ui-label-blood">CENSURA DE SANGRE</span>
+                <button class="tactical-toggle off" onclick="uiTacticalToggle(this)">STATUS: OFF</button>
             </div>
-            <div class="setting-card">
-                <span>BRILLO DEL MONITOR</span>
-                <input type="range" min="50" max="150" value="100" oninput="document.body.style.filter = `brightness(${this.value}%)`" style="accent-color:var(--accent); width:250px;">
+            <div class="setting-item-card">
+                <span id="ui-label-profanity">CENSURA DE LENGUAJE</span>
+                <button class="tactical-toggle off" onclick="uiTacticalToggle(this)">STATUS: OFF</button>
             </div>
-            <button class="btn-narcos" style="margin-top:50px; width:250px; text-align:center;" onclick="toggleSettings(false)">CONFIRMAR CAMBIOS</button>
+            <div class="setting-item-card">
+                <span id="ui-label-volume">VOLUMEN MAESTRO</span>
+                <input type="range" min="0" max="100" value="80" style="accent-color:var(--accent); width:300px;">
+            </div>
+            <button class="btn-narcos-ui" id="ui-btn-save-confirm" style="margin-top:70px; width:350px; text-align:center;" onclick="toggleSettingsMenu(false)">CONFIRMAR CAMBIOS</button>
         </div>
     </div>
 
 <script>
-    /* --- MOTOR LÓGICO NARCOS: DISPATCH | v2.2.5 --- */
+    /* --- MOTOR LÓGICO NARCOS: DISPATCH | v4.0.0 GLOBAL --- */
     
-    let activeSlide = 1;
-    const loadWords = ["HEISENBERG", "BLUE SKY", "GUS FRING", "METANFETAMINA", "LOS POLLOS HERMANOS", "ALBUQUERQUE", "SAUL GOODMAN"];
+    let activeStorySlide = 1;
+    let activeLang = 'es';
+    const bbLoreWords = ["HEISENBERG", "BLUE SKY", "GUS FRING", "METANFETAMINA", "LOS POLLOS HERMANOS", "ALBUQUERQUE", "SAUL GOODMAN", "SAY MY NAME", "TIGHT TIGHT TIGHT", "WALTER WHITE", "JESSE PINKMAN", "HANK SCHRADER"];
 
-    function initSystem() {
-        if(localStorage.getItem('narcos_save_master')) {
-            const btn = document.getElementById('btn-resume');
-            btn.disabled = false;
-            btn.innerHTML = "Continuar Operación (CAP 1)";
+    // 1. DICCIONARIO DE LOCALIZACIÓN (EL MÁS GRANDE)
+    const i18nEngine = {
+        es: {
+            sub: "UN VIDEOJUEGO DE BREAKING BAD", cap: "[ CAPÍTULO 1: LA CARAVANA ]", new: "Nueva Partida", cont: "Continuar Operación", sett: "Ajustes de Sistema", quit: "Desconectar",
+            s1: "Walter White. Un genio de la química. Una vida de arrepentimiento. Albuquerque no sabe lo que le espera.", 
+            s2: "El diagnóstico de cáncer terminal. No hay nada que perder. Solo un legado que construir.", 
+            s3: "Jesse Pinkman. El socio improbable. La calle y el laboratorio se unen en un pacto de sangre.", 
+            s4: "La caravana en el desierto. El primer cocinado. El inicio del imperio del cristal azul.", 
+            s5: "Heisenberg ha nacido. 'Di mi nombre'. No hay vuelta atrás. Esto es la guerra.",
+            nav: "PROCESAR ARCHIVO >>", setT: "TERMINAL_SETTINGS_V4", langL: "LENGUAJE DEL SISTEMA", fsL: "PANTALLA COMPLETA", bloodL: "CENSURA DE SANGRE", wordL: "CENSURA DE LENGUAJE", volL: "VOLUMEN MAESTRO", confB: "CONFIRMAR CAMBIOS", loadL: "CARGANDO", syncL: "SINCRONIZANDO MEMORIA_DEA...", sigL: "DEA_ALBUQUERQUE_SEGURO"
+        },
+        en: {
+            sub: "A BREAKING BAD VIDEO GAME", cap: "[ CHAPTER 1: THE CONVOY ]", new: "New Game", cont: "Continue Operation", sett: "System Settings", quit: "Disconnect",
+            s1: "Walter White. A chemistry genius. A life of regret. Albuquerque doesn't know what's coming.", 
+            s2: "The terminal cancer diagnosis. Nothing to lose. Only a legacy to build.", 
+            s3: "Jesse Pinkman. The unlikely partner. The street and the lab unite in a blood pact.", 
+            s4: "The RV in the desert. The first cook. The start of the blue crystal empire.", 
+            s5: "Heisenberg is born. 'Say my name'. No turning back. This is war.",
+            nav: "PROCESS FILE >>", setT: "TERMINAL_SETTINGS_V4", langL: "SYSTEM LANGUAGE", fsL: "FULLSCREEN MODE", bloodL: "BLOOD CENSORSHIP", wordL: "LANGUAGE CENSORSHIP", volL: "MASTER VOLUME", confB: "CONFIRM CHANGES", loadL: "LOADING", syncL: "SYNCING DEA_MEMORY...", sigL: "DEA_ALBUQUERQUE_SECURE"
+        },
+        fr: {
+            sub: "UN JEU VIDÉO BREAKING BAD", cap: "[ CHAPITRE 1: LE CONVOI ]", new: "Nouvelle Partie", cont: "Continuer l'Opération", sett: "Paramètres Système", quit: "Déconnecter",
+            s1: "Walter White. Un génie de la chimie. Une vie de regret. Albuquerque ne sait pas ce qui l'attend.", 
+            s2: "Le diagnostic de cancer terminal. Rien à perdre. Seulement un héritage à construire.", 
+            s3: "Jesse Pinkman. Le partenaire improbable. La rue et le labo s'unissent dans un pacte de sang.", 
+            s4: "Le camping-car dans le désert. La première cuisson. Le début de l'empire du cristal bleu.", 
+            s5: "Heisenberg est né. 'Dis mon nom'. Pas de retour en arrière. C'est la guerre.",
+            nav: "TRAITER LE FICHIER >>", setT: "PARAMÈTRES_TERMINAL_V4", langL: "LANGUE DU SYSTÈME", fsL: "PLEIN ÉCRAN", bloodL: "CENSURE DU SANG", wordL: "CENSURE DU LANGAGE", volL: "VOLUME MAÎTRE", confB: "CONFIRMER LES CHANGEMENTS", loadL: "CHARGEMENT", syncL: "SYNCHRONISATION MÉMOIRE_DEA...", sigL: "DEA_ALBUQUERQUE_SÉCURISÉ"
+        },
+        de: {
+            sub: "EIN BREAKING BAD VIDEOSPIEL", cap: "[ KAPITEL 1: DER KONVOI ]", new: "Neues Spiel", cont: "Operation Fortsetzen", sett: "Systemeinstellungen", quit: "Trennen",
+            s1: "Walter White. Ein Chemie-Genie. Ein Leben voller Reue. Albuquerque weiß nicht, was auf sie zukommt.", 
+            s2: "Die Diagnose Lungenkrebs. Nichts zu verlieren. Nur ein Erbe, das es aufzubauen gilt.", 
+            s3: "Jesse Pinkman. Der unwahrscheinliche Partner. Straße und Labor vereinen sich in einem Blutpakt.", 
+            s4: "Das Wohnmobil in der Wüste. Das erste Kochen. Der Beginn des blauen Kristall-Imperiums.", 
+            s5: "Heisenberg ist geboren. 'Sag meinen Namen'. Kein Zurück mehr. Das ist Krieg.",
+            nav: "DATEI VERARBEITEN >>", setT: "TERMINAL_EINSTELLUNGEN_V4", langL: "SYSTEMSPRACHE", fsL: "VOLLBILDMODUS", bloodL: "BLUT-ZENSUR", wordL: "SPRACH-ZENSUR", volL: "HAUPTLAUTSTÄRKE", confB: "ÄNDERUNGEN BESTÄTIGEN", loadL: "LADEN", syncL: "DEA_SPEICHER_SYNCHRONISIEREN...", sigL: "DEA_ALBUQUERQUE_VERSCHLÜSSELT"
         }
-        runClock();
-        runLogs();
+    };
+
+    // 2. INICIALIZACIÓN DEL SISTEMA
+    function bootNarcosEngine() {
+        if(localStorage.getItem('narcos_save_data_v4')) {
+            const btn = document.getElementById('ui-btn-resume-game');
+            btn.disabled = false;
+            btn.innerHTML = i18nEngine[activeLang].cont + " (CAP 1)";
+        }
+        updateRealtimeClock();
+        initTerminalLogsStream();
+        startParticleBackground();
     }
 
-    function bootSequence() {
-        const intro = document.getElementById('intro-layer');
-        const ui = document.getElementById('game-interface');
-        const sub = document.getElementById('sub-brand');
-        const cap = document.getElementById('cap-tag');
-
-        intro.style.transform = 'translateY(-100%)';
+    // 3. SECUENCIA DE ARRANQUE (PANTALLA COMPLETA FORZADA)
+    function startBootSequence() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {
+                console.warn("Pantalla completa bloqueada por el navegador.");
+            });
+        }
+        
+        document.getElementById('intro-sequence').style.transform = 'translateY(-100%)';
         setTimeout(() => {
-            ui.style.opacity = '1';
-            ui.style.visibility = 'visible';
-            setTimeout(() => { sub.style.opacity = '1'; }, 1000);
-            setTimeout(() => { cap.style.opacity = '1'; }, 1800);
+            document.getElementById('game-interface-os').style.opacity = '1';
+            document.getElementById('game-interface-os').style.visibility = 'visible';
+            setTimeout(() => { document.getElementById('sub-brand-text').style.opacity = '1'; }, 1200);
+            setTimeout(() => { document.getElementById('chapter-reveal-text').style.opacity = '1'; }, 2200);
         }, 800);
     }
 
-    function triggerStory() {
-        document.getElementById('game-interface').style.opacity = '0';
+    // 4. MOTOR DE LOCALIZACIÓN DINÁMICO
+    function applyLocalization(lang) {
+        activeLang = lang;
+        const d = i18nEngine[lang];
+        
+        document.getElementById('sub-brand-text').innerText = d.sub;
+        document.getElementById('chapter-reveal-text').innerText = d.cap;
+        document.getElementById('ui-btn-new-game').innerText = d.new;
+        document.getElementById('ui-btn-resume-game').innerText = localStorage.getItem('narcos_save_data_v4') ? d.cont : d.cont + " (LOCK)";
+        document.getElementById('ui-btn-settings-os').innerText = d.sett;
+        document.getElementById('ui-btn-terminate').innerText = d.quit;
+        
+        for(let i=1; i<=5; i++) document.getElementById(`nt-${i}`).innerText = d[`s${i}`];
+        document.getElementById('story-nav-action-btn').innerText = d.nav;
+
+        document.getElementById('ui-settings-os-title').innerText = d.setT;
+        document.getElementById('ui-label-language').innerText = d.langL;
+        document.getElementById('ui-label-fullscreen').innerText = d.fsL;
+        document.getElementById('ui-label-blood').innerText = d.bloodL;
+        document.getElementById('ui-label-profanity').innerText = d.wordL;
+        document.getElementById('ui-label-volume').innerText = d.volL;
+        document.getElementById('ui-btn-save-confirm').innerText = d.confB;
+
+        document.getElementById('loading-dynamic-label').innerText = d.loadL;
+        document.getElementById('ui-loading-sync-info').innerText = d.syncL;
+        document.getElementById('hud-signal-node').innerText = d.sigL;
+        document.getElementById('final-reveal-sub').innerText = d.sub;
+        document.getElementById('final-reveal-cap').innerText = d.cap.replace('[ ', '').replace(' ]', '');
+    }
+
+    // 5. MOTOR NARRATIVO
+    function initNarrativeEngine() {
+        document.getElementById('game-interface-os').style.opacity = '0';
         setTimeout(() => {
-            document.getElementById('game-interface').style.display = 'none';
-            document.getElementById('story-mode').style.display = 'flex';
+            document.getElementById('game-interface-os').style.display = 'none';
+            document.getElementById('story-narrative-engine').style.display = 'flex';
+        }, 800);
+    }
+
+    function navigateNarrativeSlides() {
+        document.getElementById(`slide${activeStorySlide}`).classList.remove('active');
+        activeStorySlide++;
+        if(activeStorySlide <= 5) {
+            document.getElementById(`slide${activeStorySlide}`).classList.add('active');
+            if(activeStorySlide === 5) document.getElementById('story-nav-action-btn').innerText = "VINCULAR_DATA_MEM";
+        } else {
+            runLoadingSequence();
+        }
+    }
+
+    // 6. PANTALLA DE CARGA Y PERSISTENCIA
+    function runLoadingSequence() {
+        document.getElementById('story-narrative-engine').style.display = 'none';
+        document.getElementById('loading-overlay-system').style.display = 'flex';
+        let progress = 0;
+        const bar = document.getElementById('loading-bar-fill');
+        const label = document.getElementById('loading-dynamic-label');
+        const interval = setInterval(() => {
+            progress += Math.random() * 3;
+            bar.style.width = progress + '%';
+            if(Math.random() > 0.88) label.innerText = bbLoreWords[Math.floor(Math.random()*bbLoreWords.length)];
+            if(progress >= 100) {
+                clearInterval(interval);
+                localStorage.setItem('narcos_save_data_v4', 'active_checkpoint_rv');
+                triggerMegaTransition();
+            }
+        }, 120);
+    }
+
+    // 7. MEGA-TRANSICIÓN FINAL
+    function triggerMegaTransition() {
+        document.getElementById('loading-overlay-system').style.display = 'none';
+        const reveal = document.getElementById('mega-cinematic-reveal');
+        const logo = document.getElementById('final-reveal-logo');
+        reveal.style.display = 'flex';
+        setTimeout(() => {
+            logo.style.opacity = '1'; logo.style.transform = 'scale(1)'; logo.style.filter = 'blur(0)';
+            setTimeout(() => { document.getElementById('final-reveal-sub').style.opacity = '1'; }, 2500);
+            setTimeout(() => { document.getElementById('final-reveal-cap').style.opacity = '1'; }, 3800);
+            setTimeout(() => { location.reload(); }, 9500);
         }, 600);
     }
 
-    function nextSlide() {
-        document.getElementById(`s${activeSlide}`).classList.remove('active');
-        activeSlide++;
-        if(activeSlide <= 5) {
-            document.getElementById(`s${activeSlide}`).classList.add('active');
-            if(activeSlide === 5) document.getElementById('story-btn').innerText = "VINCULAR_MEMORIA";
-        } else {
-            executeLoading();
-        }
+    // 8. AJUSTES Y UI TACTICAL
+    function toggleSettingsMenu(on) { document.getElementById('settings-menu-os').style.display = on ? 'block' : 'none'; }
+    function uiTacticalToggle(btn) {
+        const on = btn.classList.contains('on');
+        btn.classList.toggle('on'); btn.classList.toggle('off');
+        btn.innerText = on ? "STATUS: OFF" : "STATUS: ON";
+    }
+    function manualFullscreenToggle() {
+        if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+        document.getElementById('ui-btn-fs-status').innerText = document.fullscreenElement ? "STATUS: ON" : "STATUS: OFF";
     }
 
-    function executeLoading() {
-        document.getElementById('story-mode').style.display = 'none';
-        document.getElementById('loading-overlay').style.display = 'flex';
-        
-        let progress = 0;
-        const bar = document.getElementById('progress-bar');
-        const word = document.getElementById('load-word');
-
-        const interval = setInterval(() => {
-            progress += Math.random() * 4;
-            bar.style.width = progress + '%';
-            if(Math.random() > 0.85) word.innerText = loadWords[Math.floor(Math.random() * loadWords.length)];
-            
-            if(progress >= 100) {
-                clearInterval(interval);
-                localStorage.setItem('narcos_save_master', 'true');
-                megaReveal();
-            }
-        }, 110);
+    // 9. TERMINACIÓN DE SESIÓN
+    function terminateUserConnection() {
+        document.getElementById('master-fade-curtain').style.opacity = '1';
+        setTimeout(() => { window.close(); window.location.href = "about:blank"; }, 2000);
     }
 
-    function megaReveal() {
-        document.getElementById('loading-overlay').style.display = 'none';
-        const reveal = document.getElementById('mega-reveal');
-        const title = document.getElementById('final-narcos');
-        const sub = document.getElementById('final-sub');
-        const cap = document.getElementById('final-cap');
-        
-        reveal.style.display = 'flex';
-        
-        setTimeout(() => {
-            title.style.opacity = '1';
-            title.style.transform = 'scale(1)';
-            title.style.filter = 'blur(0)';
-            
-            setTimeout(() => { sub.style.opacity = '1'; }, 2500);
-            setTimeout(() => { cap.style.opacity = '1'; }, 3500);
-            
-            // Recarga final automática para volver al menú con el botón activado
-            setTimeout(() => { location.reload(); }, 8000);
-        }, 500);
+    // 10. EXTRAS: RELOJ, LOGS Y PARTÍCULAS
+    function updateRealtimeClock() {
+        setInterval(() => { document.getElementById('hud-realtime-clock').innerText = new Date().toLocaleTimeString('es-ES', {hour12:false}); }, 1000);
     }
 
-    function toggleSettings(on) { document.getElementById('settings-overlay').style.display = on ? 'block' : 'none'; }
-
-    function tacticalToggle(btn, action) {
-        const state = btn.classList.contains('on');
-        if(state) {
-            btn.classList.remove('on'); btn.classList.add('off'); btn.innerText = "STATUS: OFF";
-        } else {
-            btn.classList.remove('off'); btn.classList.add('on'); btn.innerText = "STATUS: ON";
-        }
-        if(action === 'fs') {
-            if(!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else document.exitFullscreen();
-        }
-    }
-
-    function terminateSession() {
-        document.getElementById('master-fade').style.opacity = '1';
-        setTimeout(() => {
-            alert("SESIÓN FINALIZADA. DESCONECTANDO DE DEA_NETWORK...");
-            window.close();
-            // Fallback por si el navegador bloquea window.close()
-            window.location.href = "about:blank";
-        }, 1500);
-    }
-
-    function runClock() {
+    function initTerminalLogsStream() {
+        const logs = ["SATELLITE_LINK_LOCKED", "DEA_DATA_ESTABLISHED", "SCANNING_W_WHITE_MOBILE", "TARGET_CONFIRMED_RV", "ENCRYPTING_NODE_B4", "UPLOADING_SURVEILLANCE_DATA"];
+        const term = document.getElementById('dea-terminal-stream');
         setInterval(() => {
-            const d = new Date();
-            document.getElementById('sync-clock').innerText = d.toLocaleTimeString('es-ES', {hour12:false});
-        }, 1000);
+            const d = document.createElement('div');
+            d.innerText = `[${new Date().toLocaleTimeString()}] > ${logs[Math.floor(Math.random()*logs.length)]}`;
+            term.appendChild(d);
+            if(term.children.length > 7) term.removeChild(term.firstChild);
+        }, 3200);
     }
 
-    function runLogs() {
-        const logs = ["SATELLITE_LOCK_OK", "DEA_ALBUQUERQUE_CONNECTED", "SCANNING_RADIO_FREQUENCIES", "TARGET_CONFIRMED", "ENCRYPTING_PACKETS..."];
-        const term = document.getElementById('dea-log');
-        setInterval(() => {
-            const p = document.createElement('div');
-            p.innerText = `> ${logs[Math.floor(Math.random()*logs.length)]}`;
-            term.appendChild(p);
-            if(term.children.length > 5) term.removeChild(term.firstChild);
-        }, 3000);
+    function startParticleBackground() {
+        const canvas = document.getElementById('bg-canvas-particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        for(let i=0; i<60; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*3+1, v: Math.random()*0.5+0.2 });
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#39ff14";
+            particles.forEach(p => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+                p.y -= p.v; if(p.y < -10) p.y = canvas.height+10;
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
     }
 </script>
 </body>
