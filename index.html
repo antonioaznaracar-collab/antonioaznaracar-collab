@@ -2,385 +2,348 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NARCOS: DISPATCH | Tiñi Games</title>
     <style>
-        :root { 
-            --accent: #39ff14; 
-            --accent-dim: rgba(57, 255, 20, 0.3);
-            --brightness: 100%; 
-            --terminal-bg: rgba(0, 5, 0, 0.98);
-        }
-
+        :root { --accent: #39ff14; --brightness: 100%; }
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: #000; 
-            font-family: 'Courier New', Courier, monospace; 
-            overflow: hidden; 
-            color: white; 
-            filter: brightness(var(--brightness)); 
-            transition: filter 0.6s ease;
+            background: #000; font-family: 'Courier New', Courier, monospace; 
+            overflow: hidden; color: white; filter: brightness(var(--brightness)); 
+            transition: filter 0.5s ease-in-out; 
         }
 
-        /* --- INTRO LEGENDARIA: TIÑI GAMES --- */
+        /* --- EFECTO GLITCH LEGENDARIO --- */
+        @keyframes glitch-anim {
+            0% { transform: translate(0); text-shadow: 2px 2px red, -2px -2px blue; }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); text-shadow: -2px -2px red, 2px 2px blue; }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
+        }
+        .glitch-active { animation: glitch-anim 0.2s linear infinite; }
+
+        /* --- INTRO CON SIRENAS DE POLICÍA --- */
         #intro { 
-            position: fixed; width: 100%; height: 100%; z-index: 9999; 
+            position: fixed; width: 100%; height: 100%; z-index: 5000; 
             display: flex; align-items: center; justify-content: center; 
-            background: #000; cursor: pointer; transition: 2s cubic-bezier(0.4, 0, 0.2, 1); 
+            background: #000; cursor: pointer; transition: 1.5s cubic-bezier(0.7, 0, 0.3, 1); 
         }
         .flash { 
             position: absolute; width: 100%; height: 100%; 
-            animation: sirenas 0.12s infinite; opacity: 0; pointer-events: none; 
+            animation: sirenas 0.1s infinite; opacity: 0; pointer-events: none; 
         }
         @keyframes sirenas { 
-            0% { background: #f00; opacity: 0.15; } 
-            50% { background: #00f; opacity: 0.15; } 
+            0% { background: #f00; opacity: 0.2; } 
+            50% { background: #00f; opacity: 0.2; } 
         }
-        
-        #lt { 
-            font-size: 5.5rem; letter-spacing: 30px; opacity: 1; 
-            transition: 2.5s; z-index: 10000; text-transform: uppercase;
-        }
-        .glitch-text { 
-            animation: glitch-anim 0.25s linear infinite; 
-            color: #fff; text-shadow: 3px 0 #f00, -3px 0 #00f; 
-        }
-        @keyframes glitch-anim {
-            0% { transform: translate(0); }
-            25% { transform: translate(-4px, 3px); }
-            50% { transform: translate(-4px, -3px); }
-            75% { transform: translate(4px, 3px); }
-            100% { transform: translate(4px, -3px); }
-        }
+        #lt { font-size: 5rem; letter-spacing: 25px; opacity: 0; transition: 3s; z-index: 5001; }
 
-        /* --- INTERFAZ DINÁMICA DE JUEGO --- */
-        .game-ui-wrapper { 
-            opacity: 0; visibility: hidden; 
-            transition: opacity 2.5s ease, visibility 2.5s; 
-        }
+        /* --- UI DISPATCH: RADAR, RELOJ Y COORDENADAS --- */
         #bg-container { 
             position: fixed; width: 100%; height: 100%; 
             background: url('https://alphacoders.com') center/cover; 
-            z-index: 0; opacity: 0; transition: 4s ease-in-out; 
+            z-index: 0; opacity: 0; transition: opacity 3s ease-in-out; 
         }
         .vignette { 
             position: fixed; width: 100%; height: 100%; 
-            box-shadow: inset 0 0 350px #000, inset 0 0 150px #000; 
+            box-shadow: inset 0 0 300px #000, inset 0 0 100px #000; 
             z-index: 1; pointer-events: none; 
         }
-
-        /* --- UI ELEMENTS: RADAR & DATA --- */
         .ui-top { 
-            position: fixed; top: 50px; right: 80px; text-align: right; 
-            color: var(--accent); font-size: 0.85rem; line-height: 2; 
-            z-index: 101; text-shadow: 0 0 12px var(--accent); 
+            position: fixed; top: 40px; right: 80px; text-align: right; 
+            color: var(--accent); font-size: 0.8rem; line-height: 1.8; z-index: 101; 
+            text-shadow: 0 0 10px var(--accent); 
         }
         .radar { 
-            position: absolute; bottom: 60px; right: 80px; 
-            width: 130px; height: 130px; border: 1px solid var(--accent); 
-            border-radius: 50%; opacity: 0.6; z-index: 101; 
-            box-shadow: 0 0 20px var(--accent-dim);
+            position: absolute; bottom: 50px; right: 80px; 
+            width: 120px; height: 120px; border: 1px solid var(--accent); 
+            border-radius: 50%; opacity: 0.5; z-index: 101; 
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); 
         }
         .radar-line { 
             position: absolute; width: 50%; height: 2px; 
             background: var(--accent); top: 50%; left: 50%; 
-            transform-origin: left; animation: spin-radar 3.5s linear infinite; 
+            transform-origin: left; animation: spin 3s linear infinite; 
         }
-        @keyframes spin-radar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* --- MENÚ PRINCIPAL --- */
         #menu { 
-            position: relative; z-index: 105; height: 100%; 
-            display: flex; flex-direction: column; justify-content: center; 
-            padding-left: 100px; transform: translateX(-50px); transition: 1.5s;
+            position: relative; z-index: 100; height: 100%; 
+            display: none; flex-direction: column; justify-content: center; 
+            padding-left: 80px; opacity: 0; transition: 1s ease-in-out; 
         }
-        .logo { font-size: 8rem; font-weight: 900; letter-spacing: -8px; margin-bottom: 30px; }
+        .logo { font-size: 7rem; font-weight: 900; letter-spacing: -6px; margin-bottom: 20px; }
         .btn-main { 
-            background: rgba(0,0,0,0.85); color: var(--accent); 
-            border: 1px solid var(--accent); padding: 18px 50px; 
+            background: rgba(0,0,0,0.8); color: var(--accent); 
+            border: 1px solid var(--accent); padding: 15px 45px; 
             width: 380px; text-align: left; cursor: pointer; 
-            margin: 12px 0; font-weight: bold; text-transform: uppercase; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            margin: 10px 0; font-weight: bold; text-transform: uppercase; 
+            transition: 0.3s; position: relative; overflow: hidden; 
         }
         .btn-main:hover { 
             background: var(--accent); color: #000; 
-            box-shadow: 0 0 35px var(--accent); transform: translateX(20px); 
+            box-shadow: 0 0 30px var(--accent); transform: scale(1.05); 
         }
-        .btn-main:disabled { opacity: 0.25; cursor: not-allowed; border-color: #333; }
+        .btn-main:disabled { opacity: 0.2; cursor: not-allowed; filter: grayscale(1); }
 
         /* --- AJUSTES PROFESIONALES --- */
         #settings-panel { 
             display: none; position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; background: var(--terminal-bg); 
-            z-index: 9000; padding: 70px 12%; border: 2px solid var(--accent); 
+            width: 100%; height: 100%; background: rgba(0,5,0,0.99); 
+            z-index: 9999; padding: 60px 10%; border: 2px solid var(--accent); 
             box-sizing: border-box; overflow-y: auto; 
         }
-        .tabs-header { display: flex; gap: 15px; margin-bottom: 45px; border-bottom: 1px solid var(--accent); }
-        .tab-btn { 
-            padding: 18px 40px; border: 1px solid var(--accent); 
-            border-bottom: none; cursor: pointer; color: var(--accent); 
-            background: rgba(57, 255, 20, 0.05); font-weight: bold;
+        .tabs { display: flex; gap: 15px; margin-bottom: 40px; border-bottom: 1px solid #222; }
+        .tab { 
+            padding: 15px 30px; cursor: pointer; color: #444; 
+            font-weight: bold; border: 1px solid transparent; 
         }
-        .tab-btn.active { background: var(--accent); color: #000; }
-        .setting-row { 
-            background: rgba(57, 255, 20, 0.03); border: 1px solid var(--accent-dim); 
-            padding: 25px; margin-bottom: 15px; display: flex; 
+        .tab.active { 
+            color: var(--accent); border: 1px solid var(--accent); 
+            border-bottom: 2px solid black; background: rgba(57,255,20,0.05); 
+        }
+        .row { 
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(57, 255, 20, 0.1); 
+            padding: 20px; margin-bottom: 12px; display: flex; 
             justify-content: space-between; align-items: center; 
         }
 
-        /* --- POKÉBOX & CARGA --- */
+        /* --- CARGA CON BARRA --- */
         #loading-screen { 
-            display:none; position:fixed; z-index:11000; width:100%; height:100%; 
+            display:none; position:fixed; z-index:9000; width:100%; height:100%; 
             background:black; flex-direction:column; align-items:center; justify-content:center; 
         }
-        #load-bar-wrapper { width: 450px; height: 10px; background: #111; border: 1px solid var(--accent); position: relative; }
-        #load-bar { width: 0%; height: 100%; background: var(--accent); transition: 5s linear; box-shadow: 0 0 15px var(--accent); }
-        
-        #story-box { display:none; position:fixed; z-index:10500; width:100%; height:100%; background:black; }
+        #load-bar-cont { 
+            width:400px; height:8px; background:#111; 
+            border: 1px solid var(--accent); box-shadow: 0 0 15px rgba(57,255,20,0.2); 
+        }
+        #load-bar { width:0%; height:100%; background:var(--accent); transition: 4s linear; }
+
+        /* --- HISTORIA POKÉMON STYLE --- */
+        #story-box { display:none; position:fixed; z-index:8000; width:100%; height:100%; background:black; }
         .pkmn-msg { 
-            position:absolute; bottom:40px; left:50%; transform:translateX(-50%); 
-            width:92%; height:180px; background:white; border:8px solid #222; 
-            border-radius:20px; padding:35px; color:black; font-size: 1.7rem; 
-            font-weight:bold; cursor:pointer; box-shadow: 0 15px 60px rgba(0,0,0,0.9);
+            position:absolute; bottom:30px; left:50%; transform:translateX(-50%); 
+            width:90%; height:160px; background:white; border:6px solid #333; 
+            border-radius:15px; padding:30px; color:black; font-size:1.6rem; 
+            font-weight:bold; cursor:pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.9); 
         }
 
-        /* --- TÍTULO ÉPICO CINEMÁTICO --- */
+        /* --- PANTALLA DE TÍTULO ÉPICA --- */
         #epic-title-screen { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: black; z-index: 15000; flex-direction: column; 
+            background: black; z-index: 12000; flex-direction: column; 
             align-items: center; justify-content: center; 
         }
-        .title-element { 
-            opacity: 0; filter: blur(25px); transform: scale(0.7); 
-            transition: 2.5s cubic-bezier(0.23, 1, 0.32, 1); text-align: center; 
+        .t-step { opacity: 0; filter: blur(20px); transition: all 2.5s cubic-bezier(0.2, 0, 0.2, 1); text-align: center; }
+        .reveal { opacity: 1; filter: blur(0px); transform: scale(1.1); }
+        .clickable-cap { 
+            color: #555; margin-top: 40px; font-size: 1.2rem; 
+            cursor: pointer; letter-spacing: 5px; transition: 0.5s; 
         }
-        .title-element.visible { opacity: 1; filter: blur(0); transform: scale(1.1); }
-        
-        #global-fade { 
+        .clickable-cap:hover { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
+
+        #fade-layer { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: black; z-index: 25000; pointer-events: none; 
-            opacity: 0; transition: 1.8s ease-in-out; 
+            background: black; z-index: 20000; pointer-events: none; 
+            opacity: 0; transition: opacity 1.5s; 
         }
     </style>
 </head>
-<body>
+<body id="master-body">
 
-    <div id="global-fade"></div>
-    <audio id="siren-loop" loop src="https://soundjay.com"></audio>
+    <div id="fade-layer"></div>
+    <audio id="siren" loop src="https://soundjay.com"></audio>
 
-    <!-- INTRO TIÑI GAMES -->
-    <div id="intro" onclick="handleLegendaryStart()">
+    <!-- Intro -->
+    <div id="intro" onclick="legendaryStart()">
         <div class="flash"></div>
-        <h1 id="lt">TIÑI GAMES</h1>
+        <h1 id="lt" style="letter-spacing: 25px; opacity:0;">TIÑI GAMES</h1>
     </div>
 
-    <!-- WRAPPER DE INTERFAZ -->
-    <div class="game-ui-wrapper" id="ui-wrapper">
-        <div id="bg-container"></div>
-        <div class="vignette"></div>
+    <div id="bg-container"></div>
+    <div class="vignette"></div>
 
-        <div class="ui-top">
-            LAT: 35.0844 N / LONG: 106.6504 W<br>
-            UNIT: DEA_SURVEILLANCE_TECH<br>
-            SYS_TIME: <span id="clock">00:00:00</span>
-        </div>
+    <!-- UI Dispatch -->
+    <div class="ui-top">
+        LOC: 35.0844 N / 106.6504 W<br>
+        DEPT: DEA_SURVEILLANCE<br>
+        TIME: <span id="clock">00:00:00</span>
+    </div>
+    <div class="radar"><div class="radar-line"></div></div>
 
-        <div class="radar"><div class="radar-line"></div></div>
-
-        <div id="menu">
-            <div id="txt-cap" style="color:var(--accent); letter-spacing:6px; font-size:1.1rem; margin-bottom:15px; font-weight: bold;">[ CAPÍTULO 1 // LA CARAVANA ]</div>
-            <div class="logo">NARCOS</div>
-            <button class="btn-main" id="btn-new" onclick="iniciarNuevaAventura()">NUEVA PARTIDA</button>
-            <button class="btn-main" id="btn-cont" onclick="cargarCheckpoint()" disabled>SEGUIR CON PARTIDA</button>
-            <button class="btn-main" id="btn-sett" onclick="toggleSettingsMenu(true)">AJUSTES</button>
-        </div>
+    <!-- Menú Principal -->
+    <div id="menu">
+        <div id="txt-cap" style="color:var(--accent); letter-spacing:5px; font-size:1rem; margin-bottom:15px;">CAPÍTULO 1 // LA CARAVANA</div>
+        <div class="logo">NARCOS</div>
+        <button class="btn-main" id="btn-new" onclick="nuevaPartida()">Nueva Partida</button>
+        <button class="btn-main" id="btn-cont" onclick="continuarPartida()" disabled>Seguir con partida</button>
+        <button class="btn-main" id="btn-sett" onclick="toggleSettings(true)">AJUSTES</button>
     </div>
 
-    <!-- PANEL DE AJUSTES AVANZADO -->
+    <!-- Ajustes -->
     <div id="settings-panel">
-        <h1 id="sett-tit" style="color:var(--accent); letter-spacing:15px; margin-bottom: 50px;">SISTEMA // CONFIGURACIÓN</h1>
-        <div class="tabs-header">
-            <div class="tab-btn active" onclick="manageTabs(event, 'general')" id="t-gen">GENERAL</div>
-            <div class="tab-btn" onclick="manageTabs(event, 'video')" id="t-vid">VIDEO</div>
-            <div class="tab-btn" onclick="manageTabs(event, 'audio')" id="t-aud">SONIDO</div>
+        <h1 id="sett-tit" style="color:var(--accent); letter-spacing:10px; margin-bottom:40px;">AJUSTES DEL SISTEMA</h1>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(event, 'general')" id="t-gen">GENERAL</div>
+            <div class="tab" onclick="switchTab(event, 'video')" id="t-vid">VIDEO</div>
+            <div class="tab" onclick="switchTab(event, 'audio')" id="t-aud">SONIDO</div>
         </div>
 
-        <div id="general" class="tab-content active">
-            <div class="setting-row"><span id="lb-fs">MODO PANTALLA COMPLETA</span><button class="btn-main" style="width:140px; text-align:center;" onclick="executeFS()" id="fs-txt">OFF</button></div>
-            <div class="setting-row"><span id="lb-lang">LOCALIZACIÓN DE IDIOMA</span>
-                <select onchange="applyGlobalLanguage(this.value)" style="background:#000; color:var(--accent); border:1px solid var(--accent); padding:12px; font-weight: bold;">
+        <div id="general" class="tab-content" style="display:block;">
+            <div class="row"><span>PANTALLA COMPLETA</span><button class="btn-main" style="width:120px; text-align:center;" onclick="toggleFS()" id="fs-txt">OFF</button></div>
+            <div class="row"><span>IDIOMA GLOBAL</span>
+                <select onchange="translateAll(this.value)" id="lang-sel" style="background:#000; color:var(--accent); border:1px solid var(--accent); padding:10px;">
                     <option value="es">ESPAÑOL</option>
                     <option value="en">ENGLISH</option>
                     <option value="fr">FRANÇAIS</option>
-                    <option value="de">DEUTSCH</option>
                 </select>
             </div>
         </div>
 
         <div id="video" class="tab-content" style="display:none;">
-            <div class="setting-row"><span>BRILLO DEL TERMINAL</span><input type="range" min="40" max="160" value="100" oninput="updateBrightness(this.value)"></div>
-            <div class="setting-row"><span>FILTRO DE CENSURA (SANGRE)</span><button class="btn-main" style="width:140px; text-align:center;" onclick="this.innerText=(this.innerText=='OFF'?'ON':'OFF')">OFF</button></div>
+            <div class="row"><span>BRILLO DINÁMICO</span><input type="range" min="40" max="150" value="100" oninput="changeBrightness(this.value)"></div>
+            <div class="row"><span>CENSURAR SANGRE</span><button class="btn-main" style="width:120px; text-align:center;" onclick="this.innerText=(this.innerText=='OFF'?'ON':'OFF')">OFF</button></div>
         </div>
 
-        <button class="btn-main" id="btn-back" style="margin-top:60px; width:100%; text-align:center;" onclick="toggleSettingsMenu(false)">VOLVER AL TERMINAL CENTRAL</button>
+        <div id="audio" class="tab-content" style="display:none;">
+            <div class="row"><span>VOLUMEN MAESTRO</span><input type="range" value="80"></div>
+            <div class="row"><span>MÚSICA</span><input type="range" value="60"></div>
+        </div>
+
+        <button class="btn-main" id="btn-back" style="margin-top:50px; width:100%; text-align:center;" onclick="toggleSettings(false)">VOLVER AL TERMINAL</button>
     </div>
 
-    <!-- CARGA DE DATOS -->
+    <!-- Carga -->
     <div id="loading-screen">
-        <div id="load-bar-wrapper"><div id="load-bar"></div></div>
-        <p id="load-quote" style="margin-top:25px; color:white; font-style:italic; font-size:1.3rem; letter-spacing:3px;"></p>
+        <div id="load-bar-cont"><div id="load-bar"></div></div>
+        <p id="load-quote" style="margin-top:20px; color:white; font-style:italic; font-size:1.2rem; letter-spacing:2px;"></p>
     </div>
 
-    <!-- NARRATIVA VISUAL -->
+    <!-- Historia -->
     <div id="story-box">
-        <div id="story-bg" style="width:100%; height:100%; background-size:cover; background-position:center; transition: 2.5s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-        <div class="pkmn-msg" onclick="processStoryClick()"><span id="story-txt"></span></div>
+        <div id="story-bg" style="width:100%; height:100%; background-size:cover; transition: 2s ease-in-out;"></div>
+        <div class="pkmn-msg" onclick="handleStoryClick()"><span id="story-txt"></span></div>
     </div>
 
-    <!-- TÍTULO LEGENDARIO FINAL -->
+    <!-- Pantalla Título Épica -->
     <div id="epic-title-screen">
-        <h1 class="title-element" id="step1" style="font-size:10rem; margin:0; letter-spacing: 25px;">NARCOS</h1>
-        <p class="title-element" id="step2" style="color:var(--accent); font-size: 2.2rem; letter-spacing: 12px; margin-top:-20px; font-weight: bold;"></p>
-        <p class="title-element" id="step3" style="color:#666; margin-top:60px; font-size: 1.3rem; letter-spacing: 6px;"></p>
+        <h1 class="t-step" id="step1" style="font-size:8rem; margin:0;">NARCOS</h1>
+        <p class="t-step" id="step2" style="color:var(--accent); font-size: 1.5rem; letter-spacing: 5px;">UN VIDEOJUEGO DE BREAKING BAD</p>
+        <p class="t-step clickable-cap" id="step3" onclick="alert('INICIANDO MISIÓN...')">CAPÍTULO 1 // LA CARAVANA</p>
     </div>
 
     <script>
-        const langPack = {
-            es: { cap: "[ CAPÍTULO 1 // LA CARAVANA ]", new: "NUEVA PARTIDA", cont: "SEGUIR CON PARTIDA", sett: "AJUSTES", back: "VOLVER AL TERMINAL CENTRAL", game: "UN VIDEOJUEGO DE BREAKING BAD", fs: "MODO PANTALLA COMPLETA", lang: "LOCALIZACIÓN DE IDIOMA" },
-            en: { cap: "[ CHAPTER 1 // THE RV ]", new: "NEW GAME", cont: "CONTINUE MISSION", sett: "SETTINGS", back: "BACK TO MAIN TERMINAL", game: "A BREAKING BAD VIDEO GAME", fs: "FULLSCREEN MODE", lang: "LANGUAGE LOCALIZATION" },
-            fr: { cap: "[ CHAPITRE 1 // LE CAMPING-CAR ]", new: "NOUVELLE PARTIE", cont: "CONTINUER", sett: "PARAMÈTRES", back: "RETOUR", game: "UN JEU VIDÉO DE BREAKING BAD", fs: "PLEIN ÉCRAN", lang: "LANGUE" }
+        const translations = {
+            es: { cap: "CAPÍTULO 1 // LA CARAVANA", game: "UN VIDEOJUEGO DE BREAKING BAD", new: "Nueva Partida", sett: "AJUSTES", back: "VOLVER AL TERMINAL", sett_tit: "AJUSTES DEL SISTEMA" },
+            en: { cap: "CHAPTER 1 // THE RV", game: "A BREAKING BAD VIDEO GAME", new: "New Game", sett: "SETTINGS", back: "BACK TO TERMINAL", sett_tit: "SYSTEM SETTINGS" },
+            fr: { cap: "CHAPITRE 1 // LE CAMPING-CAR", game: "UN JEU VIDÉO DE BREAKING BAD", new: "Nouvelle Partie", sett: "PARAMÈTRES", back: "RETOUR", sett_tit: "PARAMÈTRES" }
         };
 
-        const loadingFrases = [
-            "ESTABLECIENDO CONEXIÓN CON EL LABORATORIO...",
-            "GUARDANDO PROGRESO EN EL DISCO DURO SEGURO...",
-            "LA MUERTE ME TIENE MIEDO A MÍ.",
-            "COCINANDO EL PRODUCTO MÁS PURO DE ALBURQUERQUE...",
-            "EVADIENDO FRECUENCIAS DE LA DEA...",
-            "HAY QUE COCINAR, JESSE."
-        ];
+        const frases = ["Cocinando cristales...", "Guardando progreso en disco duro local...", "No le tengo miedo a la muerte...", "Heisenberg está naciendo...", "Sincronizando señal con la DEA..."];
         
-        const narrativeSteps = [
-            { t: "Walter White es un genio de la química cuya vida se ha vuelto un laberinto sin salida. Su talento es desperdiciado en un lavadero y una secundaria donde nadie lo respeta.", i: "url('https://alphacoders.com')" },
-            { t: "Pero un diagnóstico de cáncer terminal detona una chispa de rebelión. Un hombre que ya no tiene nada que perder es el hombre más peligroso del mundo.", i: "url('https://alphacoders.com')" },
-            { t: "Ha decidido usar su intelecto superior para construir un imperio criminal. Su objetivo es claro: asegurar la supervivencia de su familia tras su partida.", i: "url('https://alphacoders.com')" },
-            { t: "Junto a Jesse Pinkman, se adentra en las profundidades del desierto para cocinar el cristal azul más puro jamás fabricado por el hombre.", i: "url('https://alphacoders.com')" },
-            { t: "'I AM THE ONE WHO KNOCKS.' - Heisenberg ha despertado. El destino de Alburquerque está a punto de cambiar para siempre.", i: "url('https://alphacoders.com')" }
+        const historia = [
+            { t: "Walter White es un genio de la química atrapado en una vida mediocre, trabajando en una secundaria y un lavadero donde nadie lo respeta...", i: "url('https://alphacoders.com')" },
+            { t: "Pero tras su diagnóstico de cáncer terminal, el sistema ya no le sirve. Es hora de actuar.", i: "url('https://alphacoders.com')" },
+            { t: "Su familia no sabe que este hombre callado está a punto de convertirse en el criminal más buscado del país.", i: "url('https://alphacoders.com')" },
+            { t: "Junto a Jesse Pinkman, cocinarán el producto más puro que Alburquerque haya visto jamás.", i: "url('https://alphacoders.com')" },
+            { t: "La caravana está lista en el desierto. El destino está sellado. Heisenberg ha nacido.", i: "url('https://alphacoders.com')" },
+            { t: "'I AM THE ONE WHO KNOCKS.'", i: "url('https://alphacoders.com')" }
         ];
 
-        let storyPointer = 0; let typingStatus = false;
+        let step = 0; let isTyping = false;
 
-        // VERIFICAR PERSISTENCIA DE DATOS
         window.onload = () => {
-            if(localStorage.getItem('narcos_dispatch_checkpoint')) document.getElementById('btn-cont').disabled = false;
+            document.getElementById('lt').style.opacity = "1";
+            if(localStorage.getItem('narcos_save')) document.getElementById('btn-cont').disabled = false;
         };
 
-        // TRANSICIÓN LEGENDARIA DE INTRO
-        function handleLegendaryStart() {
-            const lt = document.getElementById('lt');
-            lt.classList.add('glitch-text');
+        function legendaryStart() {
+            document.documentElement.requestFullscreen().catch(() => {});
+            document.getElementById('lt').classList.add('glitch-active');
             setTimeout(() => {
-                document.getElementById('intro').style.transform = "scale(1.5)";
+                document.getElementById('intro').style.transform = "scale(2)";
                 document.getElementById('intro').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('intro').style.display = "none";
-                    const ui = document.getElementById('ui-wrapper');
-                    ui.style.visibility = "visible";
-                    ui.style.opacity = "1";
-                    document.getElementById('menu').style.transform = "translateX(0)";
-                    document.getElementById('bg-container').style.opacity = "0.45";
+                    document.getElementById('menu').style.display = "flex";
+                    setTimeout(() => { document.getElementById('menu').style.opacity = "1"; document.getElementById('bg-container').style.opacity = "0.45"; }, 100);
                 }, 1000);
-            }, 1400);
+            }, 1500);
         }
 
-        function iniciarNuevaAventura() {
-            triggerGlobalFade(() => {
-                document.getElementById('menu').parentElement.style.display = "none";
-                document.getElementById('loading-screen').style.display = "flex";
-                document.getElementById('load-quote').innerText = loadingFrases[Math.floor(Math.random()*loadingFrases.length)];
-                setTimeout(() => { document.getElementById('load-bar').style.width = "100%"; }, 100);
-                setTimeout(() => {
-                    triggerGlobalFade(() => {
-                        document.getElementById('loading-screen').style.display = "none";
-                        document.getElementById('story-box').style.display = "block";
-                        renderNextScene();
-                    });
-                }, 5000);
-            });
+        function nuevaPartida() {
+            document.getElementById('menu').style.display = "none";
+            document.getElementById('loading-screen').style.display = "flex";
+            document.getElementById('load-quote').innerText = frases[Math.floor(Math.random()*frases.length)];
+            setTimeout(() => { document.getElementById('load-bar').style.width = "100%"; }, 100);
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = "none";
+                document.getElementById('story-box').style.display = "block";
+                showNextStory();
+            }, 4500);
         }
 
-        function cargarCheckpoint() {
-            alert("Sincronizando con el disco duro... Restaurando sesión de despacho.");
-        }
-
-        function renderNextScene() {
-            if (storyPointer < narrativeSteps.length) {
+        function showNextStory() {
+            if (step < historia.length) {
                 const bg = document.getElementById('story-bg');
                 bg.style.opacity = "0";
                 setTimeout(() => {
-                    bg.style.backgroundImage = narrativeSteps[storyPointer].i;
+                    bg.style.backgroundImage = historia[step].i;
                     bg.style.opacity = "1";
-                    startTypingEngine(narrativeSteps[storyPointer].t, "story-txt");
-                    storyPointer++;
+                    typeWriter(historia[step].t, "story-txt");
+                    step++;
                 }, 1000);
             } else {
-                localStorage.setItem('narcos_dispatch_checkpoint', 'active');
-                triggerEpicTitle();
+                localStorage.setItem('narcos_save', 'true');
+                showEpicTitle();
             }
         }
 
-        function startTypingEngine(text, targetId) {
-            typingStatus = true; let index = 0; let container = document.getElementById(targetId);
-            container.innerHTML = "";
+        function typeWriter(text, id) {
+            isTyping = true; let i = 0; let el = document.getElementById(id); el.innerHTML = "";
             let timer = setInterval(() => {
-                container.innerHTML += text.charAt(index); index++;
-                if(index >= text.length) { clearInterval(timer); typingStatus = false; }
+                el.innerHTML += text.charAt(i); i++;
+                if(i >= text.length) { clearInterval(timer); isTyping = false; }
             }, 35);
         }
 
-        function processStoryClick() { if(!typingStatus) renderNextScene(); }
+        function handleStoryClick() { if(!isTyping) showNextStory(); }
 
-        function triggerEpicTitle() {
+        function showEpicTitle() {
             document.getElementById('story-box').style.display = "none";
             document.getElementById('epic-title-screen').style.display = "flex";
-            setTimeout(() => { document.getElementById('step1').classList.add('visible'); }, 600);
-            setTimeout(() => { document.getElementById('step2').classList.add('visible'); }, 2800);
-            setTimeout(() => { document.getElementById('step3').classList.add('visible'); }, 4800);
+            setTimeout(() => { document.getElementById('step1').classList.add('reveal'); }, 500);
+            setTimeout(() => { document.getElementById('step2').classList.add('reveal'); }, 2500);
+            setTimeout(() => { document.getElementById('step3').classList.add('reveal'); }, 4500);
         }
 
-        function applyGlobalLanguage(code) {
-            const pack = langPack[code];
-            document.getElementById('txt-cap').innerText = pack.cap;
-            document.getElementById('btn-new').innerText = pack.new;
-            document.getElementById('btn-cont').innerText = pack.cont;
-            document.getElementById('btn-sett').innerText = pack.sett;
-            document.getElementById('btn-back').innerText = pack.back;
-            document.getElementById('lb-lang').innerText = pack.lang;
-            document.getElementById('lb-fs').innerText = pack.fs;
-            document.getElementById('step2').innerText = pack.game;
-            document.getElementById('step3').innerText = pack.cap;
+        function translateAll(lang) {
+            const t = translations[lang];
+            document.getElementById('txt-cap').innerText = t.cap;
+            document.getElementById('btn-new').innerText = t.new;
+            document.getElementById('btn-sett').innerText = t.sett;
+            document.getElementById('btn-back').innerText = t.back;
+            document.getElementById('step2').innerText = t.game;
+            document.getElementById('step3').innerText = t.cap;
+            document.getElementById('sett-tit').innerText = t.sett_tit;
         }
 
-        function triggerGlobalFade(callback) {
-            const f = document.getElementById('global-fade');
-            f.style.opacity = "1";
-            setTimeout(() => { callback(); f.style.opacity = "0"; }, 1800);
+        function toggleSettings(s) { document.getElementById('settings-panel').style.display = s ? "block" : "none"; }
+        function switchTab(e, id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = "none");
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).style.display = "block";
+            e.currentTarget.classList.add('active');
         }
-
-        function toggleSettingsMenu(status) { document.getElementById('settings-panel').style.display = status ? "block" : "none"; }
-        function manageTabs(evt, sectionId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.style.display = "none");
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(sectionId).style.display = "block";
-            evt.currentTarget.classList.add('active');
-        }
-        function updateBrightness(val) { document.body.style.filter = `brightness(${val}%)`; }
-        function executeFS() { 
+        function changeBrightness(v) { document.body.style.filter = `brightness(${v}%)`; }
+        function toggleFS() { 
             if(!document.fullscreenElement) { document.documentElement.requestFullscreen(); document.getElementById('fs-txt').innerText = "ON"; }
             else { document.exitFullscreen(); document.getElementById('fs-txt').innerText = "OFF"; }
         }
-
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
+
