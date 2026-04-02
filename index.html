@@ -3,155 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | PRESTIGE v24.0</title>
+    <title>NARCOS: DISPATCH | PRESTIGE UI</title>
     <link href="https://googleapis.com" rel="stylesheet">
-    
     <style>
         :root { 
             --accent: #d4ff00; 
-            --accent-low: rgba(212, 255, 0, 0.15);
-            --bg: #050607; 
-            --terminal-green: #15ff00;
+            --bg: #020202; 
+            --ui-panel: rgba(0,0,0,0.9);
         }
 
-        * { box-sizing: border-box; cursor: crosshair; transition: 0.15s cubic-bezier(0.23, 1, 0.32, 1); }
+        * { box-sizing: border-box; cursor: crosshair; outline: none; }
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: var(--bg); color: white; font-family: 'JetBrains Mono', monospace;
-            overflow: hidden; user-select: none;
+            overflow: hidden;
         }
 
-        /* --- POST-PROCESADO CINEMÁTICO (EFECTOS DE LENTE) --- */
-        .fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
-        .vignette { background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.8) 120%); }
-        .crt-grain { opacity: 0.05; background: url('https://giphy.com'); }
-        .scanlines { background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%); background-size: 100% 3px; }
+        /* --- CAPAS GLOBALES DE AJUSTES --- */
+        #brightness-overlay { position: fixed; inset: 0; background: black; pointer-events: none; z-index: 99999; opacity: 0; }
+        #blood-fx { position: fixed; inset: 0; border: 0px solid red; pointer-events: none; z-index: 99998; transition: 0.5s; }
+        .censored { filter: grayscale(1) blur(2px) !important; }
 
-        /* --- INTRO & FULLSCREEN PROTOCOL --- */
-        #boot-screen {
-            position: fixed; inset: 0; z-index: 10000; background: #000;
+        /* --- INTRO CINEMÁTICA --- */
+        #intro-layer {
+            position: fixed; inset: 0; z-index: 10000; background: black;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .logo-main {
-            font-family: 'Oswald'; font-size: 6rem; letter-spacing: 25px;
-            text-shadow: 0 0 30px var(--accent-low); animation: pulse 2s infinite;
+        .intro-logo { font-family: 'Oswald'; font-size: 8rem; letter-spacing: 40px; animation: glitch 0.2s infinite alternate; }
+
+        /* --- MENÚ PRINCIPAL --- */
+        #main-menu { 
+            display: none; height: 100vh; padding: 8% 10%; 
+            background: linear-gradient(to right, black, transparent), url('https://unsplash.com') center/cover;
         }
-
-        /* --- INTERFAZ PRINCIPAL ESTILO "DASHBOARD" --- */
-        #game-interface { display: none; padding: 40px; height: 100vh; grid-template-columns: 350px 1fr 300px; gap: 20px; }
-        
-        .side-panel { 
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-            padding: 20px; display: flex; flex-direction: column; gap: 20px;
+        .menu-title { font-family: 'Oswald'; font-size: 6rem; line-height: 0.8; margin-bottom: 50px; }
+        .btn-list { display: flex; flex-direction: column; gap: 15px; }
+        .m-btn {
+            background: none; border: none; color: #666; font-size: 1.5rem; font-weight: 800;
+            text-align: left; letter-spacing: 5px; cursor: pointer; transition: 0.3s;
         }
+        .m-btn:hover { color: var(--accent); transform: translateX(30px); }
+        .m-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
-        .nav-btn {
-            background: none; border: 1px solid transparent; color: #555;
-            padding: 15px; text-align: left; font-weight: 800; font-size: 0.9rem;
-            letter-spacing: 3px; cursor: pointer; text-transform: uppercase;
+        /* --- VENTANAS MODALES (AJUSTES / HISTORIA) --- */
+        .modal {
+            display: none; position: fixed; inset: 0; z-index: 5000;
+            background: var(--ui-panel); padding: 5%; backdrop-filter: blur(10px);
         }
-        .nav-btn:hover { color: var(--accent); border-left: 4px solid var(--accent); background: var(--accent-low); }
-        .nav-btn.active { color: white; border-left: 4px solid var(--accent); }
+        .setting-row { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid #222; }
 
-        /* --- TERMINAL DE LOGS (ESTILO DISPATCH) --- */
-        .terminal-box {
-            background: #000; border: 1px solid #111; height: 100%;
-            padding: 20px; font-size: 0.75rem; overflow-y: hidden;
-            box-shadow: inset 0 0 20px rgba(0,255,0,0.05); color: var(--terminal-green);
+        /* --- PANTALLA DE CARGA --- */
+        #loading-screen {
+            display: none; position: fixed; inset: 0; z-index: 20000; background: black;
+            flex-direction: column; align-items: center; justify-content: center;
         }
-        .log-entry { margin-bottom: 8px; border-left: 2px solid #111; padding-left: 10px; opacity: 0.8; }
+        .loader-bar { width: 400px; height: 2px; background: #222; margin-top: 20px; }
+        #loader-fill { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 20px var(--accent); }
 
-        /* --- STATS DINÁMICOS --- */
-        .stat-card { background: #0a0a0a; padding: 15px; border-bottom: 2px solid var(--accent); }
-        .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+        /* --- NARRATIVA --- */
+        #story-screen { background: black; text-align: center; }
+        .char-img { width: 100%; max-width: 800px; height: 400px; background: #111 url('https://unsplash.com') center/cover; margin: 0 auto; border: 5px solid var(--accent); }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.98); } }
+        /* --- TÍTULO CAPÍTULO --- */
+        #cap-title {
+            display: none; position: fixed; inset: 0; z-index: 30000; background: black;
+            align-items: center; justify-content: center; font-family: 'Oswald';
+        }
+        .cap-text { font-size: 5rem; letter-spacing: 20px; border-top: 2px solid white; border-bottom: 2px solid white; padding: 20px; }
+
+        @keyframes glitch { 
+            0% { transform: translate(2px, -2px); text-shadow: 2px 0 red; }
+            100% { transform: translate(-2px, 2px); text-shadow: -2px 0 blue; }
+        }
     </style>
 </head>
-<body>
+<body onload="checkSave()">
 
-    <div class="fx-layer vignette"></div>
-    <div class="fx-layer crt-grain"></div>
-    <div class="fx-layer scanlines"></div>
+    <div id="brightness-overlay"></div>
+    <div id="blood-fx"></div>
 
-    <!-- PANTALLA DE ENTRADA -->
-    <div id="boot-screen" onclick="launchGame()">
-        <div class="logo-main">NARCOS</div>
-        <div style="letter-spacing: 8px; color: var(--accent); font-weight: 300;">[ CLICK_TO_AUTHORIZE_ACCESS ]</div>
+    <!-- 1. INTRO -->
+    <div id="intro-layer" onclick="initSystem()">
+        <div class="intro-logo">NARCOS</div>
+        <p style="letter-spacing: 10px; color: #444;">[ CLICK PARA ACCEDER AL DESPACHO ]</p>
     </div>
 
-    <!-- INTERFAZ DE JUEGO (REFORMADA) -->
-    <div id="game-interface">
-        
-        <!-- PANEL IZQUIERDO: NAVEGACIÓN -->
-        <aside class="side-panel">
-            <div style="margin-bottom: 40px;">
-                <h2 style="margin:0; font-family: 'Oswald'; letter-spacing: 2px;">SISTEMA_DISPATCH</h2>
-                <small style="color: #444;">V.24.0 FINAL PRESTIGE</small>
-            </div>
-            <nav style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="nav-btn active" onclick="changeTab('map')">CENTRO_MANDO</button>
-                <button class="nav-btn" onclick="changeTab('ops')">OPERACIONES_CAP_1</button>
-                <button class="nav-btn" onclick="changeTab('fin')">LAVADO_ACTIVOS</button>
-                <button class="nav-btn" onclick="toggleSettings()">ENCRIPTACIÓN_AJUSTES</button>
-            </nav>
-        </aside>
+    <!-- 2. MENÚ PRINCIPAL -->
+    <div id="main-menu">
+        <div class="menu-title">NARCOS<br><span style="color:var(--accent); font-size: 2rem;">DISPATCH TACTICAL</span></div>
+        <div class="btn-list">
+            <button class="m-btn" onclick="startNewGame()">NUEVA OPERACIÓN</button>
+            <button id="cont-btn" class="m-btn" onclick="loadGame()" disabled>SEGUIR RUTA</button>
+            <button class="m-btn" onclick="openModal('settings-modal')">CONFIGURACIÓN</button>
+            <button class="m-btn" style="color:red" onclick="window.close()">SALIR</button>
+        </div>
+    </div>
 
-        <!-- PANEL CENTRAL: TERMINAL DE OPERACIONES -->
-        <main class="terminal-box" id="main-terminal">
-            <div class="log-entry">[ SYSTEM ] ESTABLECIENDO CONEXIÓN CON SATELITE...</div>
-            <div class="log-entry">[ INFO ] OBJETIVO: WALTER W. / LOCALIZACIÓN: ALBUQUERQUE</div>
-            <div class="log-entry" style="color: var(--accent)">> ESPERANDO ÓRDENES DEL DESPACHO_</div>
-        </main>
+    <!-- 3. AJUSTES INTERACTIVOS -->
+    <div id="settings-modal" class="modal">
+        <h1 style="font-family: 'Oswald';">AJUSTES DE SISTEMA</h1>
+        <div class="setting-row">
+            <label>CENSURAR CONTENIDO (SANGRE/INSULTOS)</label>
+            <input type="checkbox" id="censorship" onchange="applySettings()">
+        </div>
+        <div class="setting-row">
+            <label>BRILLO DE PANTALLA</label>
+            <input type="range" min="0" max="80" value="0" id="br-range" oninput="applySettings()">
+        </div>
+        <div class="setting-row">
+            <label>VOLUMEN GENERAL</label>
+            <input type="range" id="vol-range">
+        </div>
+        <button onclick="closeModal('settings-modal')" style="margin-top:40px; padding:15px; background:var(--accent); border:none; cursor:pointer;">GUARDAR Y VOLVER</button>
+    </div>
 
-        <!-- PANEL DERECHO: ESTADO DEL CARTEL -->
-        <aside class="side-panel">
-            <div class="stat-card">
-                <small>EFECTIVO_NETO</small>
-                <div class="stat-val">$0.00</div>
-            </div>
-            <div class="stat-card">
-                <small>PUREZA_PRODUCTO</small>
-                <div class="stat-val">0%</div>
-            </div>
-            <div class="stat-card" style="border-bottom-color: #ff0044;">
-                <small>NOTORIEDAD_DEA</small>
-                <div class="stat-val">Baja</div>
-            </div>
-        </aside>
+    <!-- 4. HISTORIA DEL PERSONAJE -->
+    <div id="story-modal" class="modal" style="background: black;">
+        <div class="char-img"></div>
+        <h2 style="color:var(--accent); font-size: 3rem;">EL "QUÍMICO" DESCONOCIDO</h2>
+        <p style="max-width: 800px; margin: 0 auto; font-size: 1.2rem; line-height: 1.6; color: #aaa;">
+            Eras un simple profesor de química hasta que el sistema te dio la espalda. Ahora, con una terminal encriptada y contactos en la frontera, debes decidir: ¿Construirás un imperio o morirás como un cabo suelto? Tu primer envío te espera en los valles de Albuquerque.
+        </p>
+        <button onclick="launchLoading()" style="margin-top:40px; padding:20px 50px; background:white; color:black; font-weight:800; border:none; cursor:pointer;">INICIAR CAPÍTULO 1</button>
+    </div>
+
+    <!-- 5. PANTALLA DE CARGA -->
+    <div id="loading-screen">
+        <div id="loading-quote" style="font-style: italic; color: var(--accent); text-align:center;">"Plata o plomo." - Pablo Escobar</div>
+        <div class="loader-bar"><div id="loader-fill"></div></div>
+    </div>
+
+    <!-- 6. TÍTULO CAPÍTULO -->
+    <div id="cap-title">
+        <div class="cap-text">CAP 1: LOS CRISTALES</div>
     </div>
 
     <script>
-        function launchGame() {
-            // REFORMA OBLIGATORIA: FULLSCREEN
-            const doc = document.documentElement;
-            if (doc.requestFullscreen) doc.requestFullscreen();
-            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+        const quotes = [
+            "\"No estoy en peligro, yo SOY el peligro.\" - W.W.",
+            "\"La familia es todo.\" - H. Salamanca",
+            "\"Solo se necesita un mal día...\"",
+            "\"Sincronizando servidores de la DEA...\""
+        ];
 
-            // TRANSICIÓN CINEMÁTICA
-            document.getElementById('boot-screen').style.opacity = '0';
+        function initSystem() {
+            // FULLSCREEN OBLIGATORIO
+            document.documentElement.requestFullscreen();
+            document.getElementById('intro-layer').style.display = 'none';
+            document.getElementById('main-menu').style.display = 'block';
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'block'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function applySettings() {
+            const br = document.getElementById('br-range').value;
+            const cens = document.getElementById('censorship').checked;
+            
+            document.getElementById('brightness-overlay').style.opacity = br / 100;
+            
+            if(cens) {
+                document.body.classList.add('censored');
+            } else {
+                document.body.classList.remove('censored');
+            }
+        }
+
+        function startNewGame() {
+            openModal('story-modal');
+        }
+
+        function launchLoading() {
+            closeModal('story-modal');
+            document.getElementById('loading-screen').style.display = 'flex';
+            let progress = 0;
+            const bar = document.getElementById('loader-fill');
+            
+            // GUARDAR EN DISCO (LocalStorage)
+            localStorage.setItem('narcos_save', JSON.stringify({cap: 1, date: new Date()}));
+
+            const interval = setInterval(() => {
+                progress += Math.random() * 5;
+                bar.style.width = progress + '%';
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    showChapterTitle();
+                }
+            }, 100);
+        }
+
+        function showChapterTitle() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('cap-title').style.display = 'flex';
             setTimeout(() => {
-                document.getElementById('boot-screen').style.display = 'none';
-                document.getElementById('game-interface').style.display = 'grid';
-                addLog("ACCESO CONCEDIDO: BIENVENIDO AL DESPACHO");
-            }, 800);
+                document.getElementById('cap-title').style.opacity = '0';
+                setTimeout(() => {
+                    alert("AQUÍ COMIENZA TU JUEGO: CAPÍTULO 1");
+                }, 1000);
+            }, 3000);
         }
 
-        function addLog(text) {
-            const term = document.getElementById('main-terminal');
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            entry.innerHTML = `[ ${new Date().toLocaleTimeString()} ] > ${text}`;
-            term.prepend(entry); // Los logs más nuevos arriba como en Dispatch
-        }
-
-        function changeTab(id) {
-            // Sonido mecánico de cambio (simulado por ahora)
-            addLog("CAMBIANDO FRECUENCIA A: " + id.toUpperCase());
+        function checkSave() {
+            if(localStorage.getItem('narcos_save')) {
+                document.getElementById('cont-btn').disabled = false;
+                document.getElementById('cont-btn').style.color = 'white';
+            }
         }
     </script>
-</body>
-</html>
-
 </body>
 </html>
