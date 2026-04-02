@@ -3,469 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | PRESTIGE v24.0 FINAL EDITION</title>
+    <title>NARCOS: DISPATCH | THE HEISENBERG ENGINE v24.0</title>
     
-    <!-- TIPOGRAFÍAS DE ALTO PRESUPUESTO -->
     <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
-        /* --- ARQUITECTURA DE VARIABLES --- */
+        /* --- CORE VARIABLES --- */
         :root {
             --accent: #d4ff00;
             --accent-glow: rgba(212, 255, 0, 0.4);
             --bg-deep: #020305;
             --bg-panel: rgba(5, 7, 10, 0.98);
-            --text-main: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.4);
-            --border-ui: 1px solid rgba(255, 255, 255, 0.08);
             --transition-main: 1.2s cubic-bezier(0.8, 0, 0.2, 1);
             --blur-fx: blur(25px);
         }
 
-        /* --- RESET Y BASE --- */
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; outline: none; }
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--bg-deep); color: var(--text-main);
+            background: var(--bg-deep); color: white;
             font-family: 'Inter', sans-serif; overflow: hidden;
-            user-select: none;
         }
 
         /* --- MOTOR DE POST-PROCESADO (VFX) --- */
-        #vfx-master-container { position: fixed; inset: 0; z-index: 99999; pointer-events: none; }
+        #vfx-master { position: fixed; inset: 0; z-index: 99999; pointer-events: none; }
         .vfx-vignette { position: absolute; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,1) 160%); }
         .vfx-grain { position: absolute; inset: 0; opacity: 0.04; background: url('https://giphy.com'); }
         .vfx-scanlines { position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%); background-size: 100% 4px; }
         #vfx-brightness { position: absolute; inset: 0; background: black; opacity: 0; transition: 0.3s; }
-        #vfx-blood-overlay { position: absolute; inset: 0; background: radial-gradient(circle, transparent 50%, rgba(150,0,0,0.3) 150%); opacity: 0; transition: 1s; }
 
-        /* --- SISTEMA DE CAPAS (VIEWS) --- */
+        /* --- SISTEMA DE CAPAS --- */
         .view-layer {
             position: absolute; inset: 0; display: none;
             opacity: 0; transform: scale(1.05); filter: var(--blur-fx);
             transition: var(--transition-main);
             z-index: 10;
         }
-        .view-layer.active { 
-            display: flex; flex-direction: column; opacity: 1; 
-            transform: scale(1); filter: blur(0px); 
-        }
+        .view-layer.active { display: flex; flex-direction: column; opacity: 1; transform: scale(1); filter: blur(0px); }
 
-        /* --- 1. INTRO CINEMATOGRÁFICA --- */
-        #view-intro { 
-            background: #000; justify-content: center; align-items: center; 
-            text-align: center; cursor: pointer;
-        }
-        .intro-brand {
-            font-family: 'Oswald'; font-size: 9vw; font-weight: 200;
-            letter-spacing: 60px; text-transform: uppercase;
-            animation: introReveal 6s infinite alternate;
-        }
-        .intro-prompt { 
-            position: absolute; bottom: 10%; letter-spacing: 15px; 
-            color: var(--text-dim); font-size: 0.8rem;
-            animation: pulse 2s infinite;
-        }
-
-        /* --- 2. MENÚ PRINCIPAL (REDISEÑO SONY) --- */
-        #view-main-menu { 
-            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, transparent 80%);
-            padding: 8% 10%;
-        }
-        .menu-bg-video {
-            position: absolute; inset: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: -1; opacity: 0.3; filter: grayscale(1) contrast(1.2);
-        }
-        .brand-header { margin-bottom: 60px; }
-        .brand-header h1 { 
-            font-family: 'Oswald'; font-size: 7rem; margin: 0; 
-            line-height: 0.8; letter-spacing: -4px;
-        }
-        .brand-header span { 
-            font-family: 'JetBrains Mono'; color: var(--accent); 
-            font-size: 1rem; letter-spacing: 15px; font-weight: 500;
-        }
+        /* --- 1. INTRO --- */
+        #view-intro { background: #000; justify-content: center; align-items: center; cursor: pointer; }
+        .intro-brand { font-family: 'Oswald'; font-size: 9vw; letter-spacing: 60px; text-transform: uppercase; animation: introReveal 6s infinite alternate; }
         
-        .nav-container { display: flex; flex-direction: column; gap: 10px; width: fit-content; }
+        /* --- 2. MENÚ PRINCIPAL --- */
+        #view-main-menu { background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, transparent 80%); padding: 8% 10%; }
+        .menu-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.3; filter: grayscale(1); }
+        .brand-header h1 { font-family: 'Oswald'; font-size: 7rem; margin: 0; line-height: 0.8; }
+        .nav-container { display: flex; flex-direction: column; gap: 10px; margin-top: 40px; }
         .nav-item {
-            background: none; border: none; color: var(--text-dim);
+            background: none; border: none; color: rgba(255,255,255,0.4);
             font-size: 2.2rem; font-weight: 900; text-align: left;
-            padding: 10px 0; cursor: pointer; transition: 0.4s;
-            text-transform: uppercase; letter-spacing: -1px;
-            display: flex; align-items: center;
+            padding: 15px 0; cursor: pointer; transition: 0.4s;
+            text-transform: uppercase;
         }
-        .nav-item::before {
-            content: ''; width: 0px; height: 4px; background: var(--accent);
-            margin-right: 0; transition: 0.4s;
-        }
-        .nav-item:hover { color: white; transform: translateX(25px); }
-        .nav-item:hover::before { width: 40px; margin-right: 20px; }
-        .nav-item:disabled { opacity: 0.1; cursor: not-allowed; filter: grayscale(1); }
+        .nav-item:hover:not(:disabled) { color: white; transform: translateX(25px); }
+        .nav-item:disabled { opacity: 0.1; cursor: not-allowed; }
 
-        /* --- 3. SISTEMA DE AJUSTES (ESTILO THE LAST OF US) --- */
+        /* --- 3. AJUSTES (ESTILO TLOU) --- */
         #view-settings { background: var(--bg-panel); padding: 5% 10%; }
-        .settings-layout { 
-            display: grid; grid-template-columns: 350px 1fr; gap: 80px; 
-            height: 70vh; margin-top: 40px;
-        }
-        .settings-tabs { display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
-        .tab-btn {
-            background: none; border: none; color: var(--text-dim);
-            padding: 25px; text-align: left; font-weight: 800;
-            font-size: 0.9rem; letter-spacing: 4px; cursor: pointer;
-        }
-        .tab-btn.active { color: var(--accent); border-right: 4px solid var(--accent); background: linear-gradient(90deg, transparent, rgba(212,255,0,0.03)); }
-        
-        .settings-pane { overflow-y: auto; padding-right: 50px; }
-        .setting-group { margin-bottom: 40px; }
-        .setting-group h3 { font-size: 0.7rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 20px; opacity: 0.6; }
-        .setting-row { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 22px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
-        }
-        .setting-row label { font-size: 0.85rem; font-weight: 400; color: #ddd; letter-spacing: 1px; }
-        
-        /* Controles */
-        input[type="range"] { -webkit-appearance: none; width: 250px; height: 2px; background: #333; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: var(--accent); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--accent); }
-        select { background: #000; color: white; border: 1px solid #222; padding: 8px 20px; font-family: inherit; }
+        .settings-grid { display: grid; grid-template-columns: 350px 1fr; gap: 80px; margin-top: 40px; height: 60vh; }
+        .tab-btn { background: none; border: none; color: #444; padding: 20px; text-align: left; font-weight: 800; cursor: pointer; border-right: 2px solid transparent; }
+        .tab-btn.active { color: var(--accent); border-right: 4px solid var(--accent); }
+        .setting-row { display: flex; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid #111; }
 
-        /* --- 4. NARRATIVA (DIAPOSITIVAS) --- */
-        #view-story { background: #000; justify-content: center; align-items: center; }
-        .story-slider { width: 100%; height: 100%; position: relative; }
-        .slide {
-            position: absolute; inset: 0; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 0 15%;
+        /* --- 4. TUTORIAL & MAPA (NUEVO) --- */
+        #view-tutorial { position: relative; background: #000; overflow: hidden; }
+        #map-sat { 
+            position: absolute; inset: 0; 
+            background: url('https://unsplash.com') center/cover;
+            opacity: 0.4; filter: grayscale(1) contrast(1.5);
+            transform: scale(1.2); transition: 10s linear;
         }
-        .slide.active { display: flex; animation: slideIn 1.5s forwards; }
-        .slide-frame {
-            width: 60vw; height: 35vh; background-size: cover; background-position: center;
-            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 50px;
-            box-shadow: 0 30px 100px rgba(0,0,0,0.8);
+        #view-tutorial.active #map-sat { transform: scale(1); }
+
+        /* INTERFAZ WALTER */
+        #walter-comms {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            width: 85%; background: rgba(0,0,0,0.95); border-left: 8px solid var(--accent);
+            padding: 35px; display: flex; align-items: center; gap: 40px;
+            z-index: 100; box-shadow: 0 30px 60px rgba(0,0,0,0.8);
         }
-        .slide h2 { font-family: 'Oswald'; font-size: 4rem; margin: 0; letter-spacing: 15px; color: var(--accent); }
-        .slide p { font-size: 1.2rem; line-height: 1.8; color: #888; max-width: 900px; }
+        .walter-avatar { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent); background: url('https://imgur.com') center/cover; box-shadow: 0 0 20px var(--accent-glow); }
+        #walter-msg { font-family: 'JetBrains Mono'; font-size: 1.2rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- 5. PANTALLA DE CARGA (SYNC) --- */
-        #view-loading { background: #000; justify-content: flex-end; padding: 100px; }
-        .loading-meta { font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; text-transform: none; }
-        .loading-bar-container { width: 100%; height: 1px; background: rgba(255,255,255,0.05); position: relative; overflow: hidden; }
-        #loading-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 30px var(--accent); }
-        .loading-tip { margin-top: 30px; font-size: 0.8rem; color: #444; letter-spacing: 2px; }
-
-        /* --- 6. TÍTULO DE CAPÍTULO --- */
-        #view-chapter-intro { background: #000; justify-content: center; align-items: center; }
-        .chapter-number { font-size: 1rem; letter-spacing: 20px; color: var(--accent); margin-bottom: 30px; transform: translateY(30px); opacity: 0; }
-        .chapter-title { font-family: 'Oswald'; font-size: 7vw; font-weight: 700; letter-spacing: 40px; transform: scale(1.2); filter: blur(20px); opacity: 0; }
-        
-        .view-chapter-intro.active .chapter-number { animation: revealUp 1.5s 0.5s forwards; }
-        .view-chapter-intro.active .chapter-title { animation: revealBlur 2.5s 1s forwards; }
-
-        /* --- ANIMACIONES CORE --- */
-        @keyframes introReveal { 
-            0% { opacity: 0; letter-spacing: 100px; filter: blur(20px); }
-            50% { opacity: 1; letter-spacing: 60px; filter: blur(0); }
-            100% { opacity: 0.4; letter-spacing: 40px; filter: blur(5px); }
+        /* PINGS TÁCTICOS */
+        .tactical-ping {
+            position: absolute; width: 60px; height: 60px; border: 2px solid var(--accent);
+            border-radius: 50%; display: none; cursor: pointer; z-index: 50;
+            animation: pingRadar 1.5s infinite;
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        @keyframes slideIn { from { opacity: 0; transform: scale(1.1) translateY(30px); filter: blur(10px); } to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); } }
-        @keyframes revealUp { to { transform: translateY(0); opacity: 1; } }
-        @keyframes revealBlur { to { transform: scale(1); filter: blur(0); opacity: 1; } }
+        .tactical-ping::after { content: '!'; color: var(--accent); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; }
+
+        /* BAUTIZO MAFIA */
+        #naming-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.98);
+            z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        #mafia-input {
+            background: none; border: none; border-bottom: 3px solid var(--accent);
+            color: white; font-family: 'Oswald'; font-size: 5rem; text-align: center;
+            width: 70%; letter-spacing: 20px; margin: 50px 0; text-transform: uppercase;
+        }
+
+        /* --- LOADING SCREEN --- */
+        #view-loading { background: #000; justify-content: center; padding: 15%; }
+        .load-track { width: 100%; height: 2px; background: #111; position: relative; margin-top: 20px; }
+        #load-bar { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 30px var(--accent); }
+
+        /* ANIMACIONES */
+        @keyframes introReveal { 0% { opacity: 0; letter-spacing: 100px; filter: blur(20px); } 100% { opacity: 0.4; letter-spacing: 40px; filter: blur(5px); } }
+        @keyframes pingRadar { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
 
     </style>
 </head>
 <body onload="initEngine()">
 
-    <!-- POST-PROCESADO GLOBAL -->
-    <div id="vfx-master-container">
+    <div id="vfx-master">
         <div class="vfx-vignette"></div>
         <div class="vfx-grain"></div>
         <div class="vfx-scanlines"></div>
         <div id="vfx-brightness"></div>
-        <div id="vfx-blood-overlay"></div>
     </div>
 
-    <!-- 1. INTRO SONY-STYLE -->
-    <section id="view-intro" class="view-layer active" onclick="transitionTo('view-main-menu')">
+    <!-- VISTA 1: INTRO -->
+    <section id="view-intro" class="view-layer active" onclick="navTo('view-main-menu')">
         <div class="intro-brand">NARCOS</div>
-        <div class="intro-prompt">PRESIONA CUALQUIER TECLA PARA CONECTAR</div>
+        <p style="position:absolute; bottom:10%; letter-spacing:15px; color:#333;">[ CONEXIÓN SATELITAL REQUERIDA ]</p>
     </section>
 
-    <!-- 2. MENÚ PRINCIPAL -->
+    <!-- VISTA 2: MENÚ PRINCIPAL -->
     <section id="view-main-menu" class="view-layer">
         <video class="menu-bg-video" autoplay muted loop>
             <source src="https://mixkit.co" type="video/mp4">
         </video>
-        
         <header class="brand-header">
-            <span>UN JUEGO DE TIÑI GAMES</span>
+            <span style="letter-spacing:10px; color:var(--accent)">UN JUEGO DE TIÑI GAMES</span>
             <h1>NARCOS</h1>
-            <span style="color:white; opacity: 0.3;">DISPATCH TACTICAL // FINAL PRESTIGE</span>
+            <p style="font-family:'JetBrains Mono'; opacity:0.3;">SYSTEM_ACCESS_v24.0_FINAL</p>
         </header>
-
         <nav class="nav-container">
-            <button class="nav-item" onclick="transitionTo('view-story')">Nueva Operación</button>
+            <button class="nav-item" onclick="startNewGame()">Nueva Operación</button>
             <button id="btn-continue" class="nav-item" disabled onclick="continueGame()">Continuar</button>
-            <button class="nav-item" onclick="transitionTo('view-settings')">Ajustes de Sistema</button>
-            <button class="nav-item" onclick="location.reload()">Cerrar Sesión</button>
+            <button class="nav-item" onclick="navTo('view-settings')">Ajustes</button>
+            <button class="nav-item" onclick="location.reload()" style="color:#ff4444">Desconectar</button>
         </nav>
-
-        <div style="margin-top: auto; font-size: 0.7rem; color: var(--text-dim); font-family: 'JetBrains Mono';">
-            ESTADO DEL SERVIDOR: <span style="color:var(--accent)">OPERATIVO</span> | LATENCIA: 14MS
-        </div>
     </section>
 
-    <!-- 3. AJUSTES AAA (TOTALMENTE INTERACTIVOS) -->
+    <!-- VISTA 3: AJUSTES -->
     <section id="view-settings" class="view-layer">
-        <h2 style="font-family: 'Oswald'; font-size: 3rem; letter-spacing: 10px;">CONFIGURACIÓN</h2>
-        
-        <div class="settings-layout">
-            <div class="settings-tabs">
-                <button class="tab-btn active" onclick="switchTab(this, 'pane-video')">PANTALLA</button>
-                <button class="tab-btn" onclick="switchTab(this, 'pane-audio')">AUDIO</button>
-                <button class="tab-btn" onclick="switchTab(this, 'pane-game')">JUEGO</button>
-                <button class="tab-btn" onclick="switchTab(this, 'pane-access')">ACCESIBILIDAD</button>
+        <h2 style="font-family:'Oswald'; font-size:4rem; letter-spacing:10px;">CONFIGURACIÓN</h2>
+        <div class="settings-grid">
+            <div style="display:flex; flex-direction:column; border-right:1px solid #111;">
+                <button class="tab-btn active">VIDEO</button>
+                <button class="tab-btn">AUDIO</button>
+                <button class="tab-btn">JUEGO</button>
             </div>
-
-            <div class="settings-content">
-                <!-- PANE VIDEO -->
-                <div id="pane-video" class="settings-pane">
-                    <div class="setting-group">
-                        <h3>VISUALIZACIÓN</h3>
-                        <div class="setting-row">
-                            <label>BRILLO GAMA</label>
-                            <input type="range" min="0" max="100" value="100" oninput="engineSetBrightness(this.value)">
-                        </div>
-                        <div class="setting-row">
-                            <label>DESENFOQUE DE MOVIMIENTO (MOTION BLUR)</label>
-                            <input type="checkbox" checked>
-                        </div>
-                        <div class="setting-row">
-                            <label>GRANO DE PELÍCULA</label>
-                            <input type="range" min="0" max="100" value="4">
-                        </div>
-                        <div class="setting-row">
-                            <label>MODO DALTONISMO</label>
-                            <select><option>DESACTIVADO</option><option>PROTANOPIA</option><option>DEUTERANOPIA</option></select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PANE AUDIO -->
-                <div id="pane-audio" class="settings-pane" style="display:none">
-                    <div class="setting-group">
-                        <h3>MEZCLA DE SONIDO</h3>
-                        <div class="setting-row"><label>VOLUMEN MAESTRO</label><input type="range"></div>
-                        <div class="setting-row"><label>EFECTOS TÁCTICOS</label><input type="range"></div>
-                        <div class="setting-row"><label>MÚSICA CINEMÁTICA</label><input type="range"></div>
-                        <div class="setting-row"><label>RANGO DINÁMICO</label><select><option>AURICULARES</option><option>HOME CINEMA</option></select></div>
-                    </div>
-                </div>
-
-                <!-- PANE JUEGO -->
-                <div id="pane-game" class="settings-pane" style="display:none">
-                    <div class="setting-group">
-                        <h3>NARCO-LOGÍSTICA</h3>
-                        <div class="setting-row"><label>CENSURA DE VIOLENCIA EXTREMA</label><input type="checkbox" onchange="engineSetBlood(!this.checked)"></div>
-                        <div class="setting-row"><label>IDIOMA DE DIÁLOGOS</label><select><option>ESPAÑOL (LATAM)</option><option>INGLÉS</option></select></div>
-                        <div class="setting-row"><label>DIFICULTAD OPERATIVA</label><select><option>RECLUTA</option><option>CAPO</option><option>HEISENBERG</option></select></div>
-                    </div>
-                </div>
+            <div style="overflow-y:auto; padding-right:40px;">
+                <div class="setting-row"><label>BRILLO GAMA</label><input type="range" oninput="setBr(this.value)"></div>
+                <div class="setting-row"><label>GRANO CINEMÁTICO</label><input type="checkbox" checked></div>
+                <div class="setting-row"><label>CENSURA DE SANGRE</label><input type="checkbox"></div>
+                <div class="setting-row"><label>RESOLUCIÓN TÁCTICA</label><select><option>4K ULTRA</option><option>1080P</option></select></div>
             </div>
         </div>
-        
-        <button class="nav-item" style="font-size: 1rem; margin-top: 30px;" onclick="transitionTo('view-main-menu')">VOLVER AL MENÚ</button>
+        <button class="nav-item" style="font-size:1.2rem;" onclick="navTo('view-main-menu')">VOLVER</button>
     </section>
 
-    <!-- 4. NARRATIVA POR DIAPOSITIVAS (5 SLIDES) -->
-    <section id="view-story" class="view-layer">
-        <div class="story-slider">
-            <!-- SLIDE 1 -->
-            <div class="slide active">
-                <div class="slide-frame" style="background-image: url('https://unsplash.com')"></div>
-                <h2>LA LLAMADA</h2>
-                <p>Enero, 2008. Una cabina telefónica en el desierto de Nuevo México. No buscabas el imperio, pero el imperio te encontró a ti.</p>
-                <button class="nav-item" style="margin: 30px auto;" onclick="nextSlide(1)">Siguiente</button>
-            </div>
-            <!-- SLIDE 2 -->
-            <div class="slide">
-                <div class="slide-frame" style="background-image: url('https://unsplash.com')"></div>
-                <h2>EL QUÍMICO</h2>
-                <p>Tu conocimiento es tu arma. La pureza de lo que cocinas decidirá cuántos días más seguirás respirando.</p>
-                <button class="nav-item" style="margin: 30px auto;" onclick="nextSlide(2)">Siguiente</button>
-            </div>
-            <!-- SLIDE 3 -->
-            <div class="slide">
-                <div class="slide-frame" style="background-image: url('https://unsplash.com')"></div>
-                <h2>LA FRONTERA</h2>
-                <p>El cártel no perdona errores. Cada despacho de mercancía es un juego de ajedrez contra la DEA y la muerte.</p>
-                <button class="nav-item" style="margin: 30px auto;" onclick="nextSlide(3)">Siguiente</button>
-            </div>
-            <!-- SLIDE 4 -->
-            <div class="slide">
-                <div class="slide-frame" style="background-image: url('https://unsplash.com')"></div>
-                <h2>EL DESPACHO</h2>
-                <p>Usa la terminal. Controla las rutas. Soborna a los guardias. Conviértete en la sombra que mueve los hilos.</p>
-                <button class="nav-item" style="margin: 30px auto;" onclick="nextSlide(4)">Siguiente</button>
-            </div>
-            <!-- SLIDE 5 -->
-            <div class="slide">
-                <div class="slide-frame" style="background-image: url('https://unsplash.com')"></div>
-                <h2>EL PRESTIGIO</h2>
-                <p>Cinco capítulos separan al hombre del mito. ¿Estás listo para reclamar tu plaza?</p>
-                <button class="nav-item" style="margin: 30px auto; color: var(--accent);" onclick="engineStartLoading()">INICIAR CAPÍTULO I</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. PANTALLA DE CARGA -->
+    <!-- VISTA 4: CARGA -->
     <section id="view-loading" class="view-layer">
-        <div class="loading-meta">
-            > INITIALIZING_DEA_DATABASE_ENCRYPTION...<br>
-            > LOCALIZING_SATELLITE_FEED: 35.0844° N, 106.6504° W<br>
-            > STATUS: <span id="load-status">SYNCING</span>
+        <div id="load-status" style="font-family:'JetBrains Mono'; color:var(--accent);">SINCRONIZANDO VÍNCULO CON WALTER...</div>
+        <div class="load-track"><div id="load-bar"></div></div>
+    </section>
+
+    <!-- VISTA 5: TUTORIAL TÁCTICO -->
+    <section id="view-tutorial" class="view-layer">
+        <div id="map-sat"></div>
+        
+        <!-- PINGS INTERACTIVOS -->
+        <div id="ping-lab" class="tactical-ping" style="top:35%; left:42%;" onclick="runTutorial(2)"></div>
+        <div id="ping-deal" class="tactical-ping" style="top:65%; left:58%;" onclick="runTutorial(3)"></div>
+
+        <div id="walter-comms">
+            <div class="walter-avatar"></div>
+            <div id="walter-msg">ESPERANDO SEÑAL...</div>
         </div>
-        <div class="loading-bar-container">
-            <div id="loading-fill"></div>
-        </div>
-        <div class="loading-tip" id="load-tip">
-            CONSEJO: No confíes en nadie que use traje en el desierto.
+
+        <!-- BAUTIZO -->
+        <div id="naming-overlay">
+            <h2 style="font-family:'Oswald'; color:var(--accent); letter-spacing:15px;">ASIGNA UN NOMBRE A TU MAFIA</h2>
+            <input type="text" id="mafia-input" placeholder="INTRODUCE NOMBRE" maxlength="15">
+            <button class="nav-item" style="font-size:1.5rem;" onclick="finishTutorial()">CONFIRMAR IDENTIDAD</button>
         </div>
     </section>
 
-    <!-- 6. TÍTULO DE CAPÍTULO CINEMÁTICO -->
-    <section id="view-chapter-intro" class="view-layer">
-        <div class="chapter-number">OPERACIÓN_01</div>
-        <div class="chapter-title">LOS CRISTALES</div>
-    </section>
-
-    <!-- MOTOR JAVASCRIPT (THE CORE) -->
     <script>
-        const EngineState = {
-            currentView: 'view-intro',
-            isCensored: false,
-            saveData: null,
-            tips: [
-                "CONSEJO: La pureza superior al 96% atrae la atención de Salamanca.",
-                "CONSEJO: Un despacho rápido reduce el riesgo de interceptación.",
-                "CONSEJO: Los informantes en la frontera son caros, pero vitales.",
-                "CONSEJO: Plata o plomo. No hay una tercera opción."
-            ]
+        const Engine = {
+            view: 'view-intro',
+            step: 1
         };
 
-        // --- SISTEMA DE TRANSICIONES SONY ---
-        function transitionTo(targetId) {
-            const current = document.getElementById(EngineState.currentView);
-            const target = document.getElementById(targetId);
-
-            // Efecto de salida
-            current.style.opacity = '0';
-            current.style.filter = 'blur(30px)';
-            current.style.transform = 'scale(0.95)';
-
+        function navTo(id) {
+            const cur = document.getElementById(Engine.view);
+            const tar = document.getElementById(id);
+            cur.style.opacity = '0';
             setTimeout(() => {
-                current.classList.remove('active');
-                current.style.display = 'none';
-
-                target.style.display = 'flex';
-                // Pequeño delay para el render
-                setTimeout(() => {
-                    target.classList.add('active');
-                    target.style.opacity = '1';
-                    target.style.filter = 'blur(0)';
-                    target.style.transform = 'scale(1)';
-                    EngineState.currentView = targetId;
-                }, 50);
+                cur.classList.remove('active');
+                cur.style.display = 'none';
+                tar.style.display = tar.id === 'view-tutorial' ? 'block' : 'flex';
+                setTimeout(() => { tar.classList.add('active'); tar.style.opacity = '1'; Engine.view = id; }, 50);
             }, 1000);
         }
 
-        // --- SISTEMA DE AJUSTES ---
-        function switchTab(btn, paneId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.settings-pane').forEach(p => p.style.display = 'none');
+        function setBr(v) { document.getElementById('vfx-brightness').style.opacity = (100-v)/150; }
+
+        function startNewGame() {
+            navTo('view-loading');
+            let p = 0;
+            const bar = document.getElementById('load-bar');
+            const iv = setInterval(() => {
+                p += 1.5;
+                bar.style.width = p + '%';
+                if(p >= 100) { clearInterval(iv); navTo('view-tutorial'); setTimeout(() => runTutorial(1), 1500); }
+            }, 40);
+        }
+
+        function runTutorial(s) {
+            const msg = document.getElementById('walter-msg');
+            const pLab = document.getElementById('ping-lab');
+            const pDeal = document.getElementById('ping-deal');
+
+            if(s === 1) {
+                msg.innerText = "Walter: Bienvenido al negocio. Localiza el laboratorio en el mapa y confírmame que Jesse está cocinando.";
+                pLab.style.display = 'block';
+            } else if(s === 2) {
+                pLab.style.display = 'none';
+                msg.innerText = "Walter: La pureza es del 99%. Ahora, tenemos un comprador en el sector sur. Despacha la mercancía ahora.";
+                pDeal.style.display = 'block';
+            } else if(s === 3) {
+                pDeal.style.display = 'none';
+                msg.innerText = "Walter: Bien hecho. Plata o plomo... ahora dime, ¿con qué nombre te conocerán en Albuquerque?";
+                setTimeout(() => document.getElementById('naming-overlay').style.display = 'flex', 2000);
+            }
+        }
+
+        function finishTutorial() {
+            const name = document.getElementById('mafia-input').value;
+            if(!name) return alert("WALTER: No me hagas perder el tiempo. Ponle un nombre.");
             
-            btn.classList.add('active');
-            document.getElementById(paneId).style.display = 'block';
-        }
-
-        function engineSetBrightness(val) {
-            document.getElementById('vfx-brightness').style.opacity = (100 - val) / 150;
-        }
-
-        function engineSetBlood(enabled) {
-            document.getElementById('vfx-blood-overlay').style.opacity = enabled ? '1' : '0';
-        }
-
-        // --- SISTEMA DE NARRATIVA ---
-        let currentSlideIdx = 0;
-        function nextSlide(idx) {
-            const slides = document.querySelectorAll('.slide');
-            slides[currentSlideIdx].classList.remove('active');
-            
-            setTimeout(() => {
-                currentSlideIdx = idx;
-                slides[currentSlideIdx].classList.add('active');
-            }, 500);
-        }
-
-        // --- MOTOR DE CARGA ---
-        function engineStartLoading() {
-            transitionTo('view-loading');
-            let progress = 0;
-            const bar = document.getElementById('loading-fill');
-            const status = document.getElementById('load-status');
-            const tip = document.getElementById('load-tip');
-
-            // Guardar partida en disco (LocalStorage)
-            localStorage.setItem('narcos_prestige_save', JSON.stringify({
-                chapter: 1,
-                unlocked: true,
-                timestamp: Date.now()
+            localStorage.setItem('tiñi_games_save', JSON.stringify({
+                name: name,
+                cap: 2,
+                cash: 10000
             }));
 
-            const interval = setInterval(() => {
-                progress += Math.random() * 2.5;
-                bar.style.width = progress + '%';
-                
-                if(progress > 30) status.innerText = "AUTHENTICATING_USER...";
-                if(progress > 60) {
-                    status.innerText = "DECRYPTING_CHAPTER_DATA...";
-                    tip.innerText = EngineState.tips[Math.floor(Math.random() * EngineState.tips.length)];
-                }
-                
-                if(progress >= 100) {
-                    clearInterval(interval);
-                    transitionTo('view-chapter-intro');
-                    setTimeout(() => {
-                        // Aquí se iniciaría la lógica del Capítulo 1
-                        console.log("MOTOR DE JUEGO INICIADO: CAPÍTULO 1");
-                    }, 5000);
-                }
-            }, 60);
+            alert(`SISTEMA: Mafia "${name}" registrada con éxito.`);
+            location.reload();
         }
 
-        // --- INICIALIZACIÓN ---
         function initEngine() {
-            console.log("ENGINE_INIT: TIÑI GAMES v24.0");
-            const saved = localStorage.getItem('narcos_prestige_save');
-            if(saved) {
-                document.getElementById('btn-continue').disabled = false;
+            const save = localStorage.getItem('tiñi_games_save');
+            if(save) {
+                const data = JSON.parse(save);
+                const btn = document.getElementById('btn-continue');
+                btn.disabled = false;
+                btn.innerText = `CONTINUAR: ${data.name}`;
             }
         }
 
         function continueGame() {
-            alert("Cargando datos del disco... Volviendo al punto de control.");
-            engineStartLoading();
+            const data = JSON.parse(localStorage.getItem('tiñi_games_save'));
+            alert(`CARGANDO IMPERIO: ${data.name}\nUBICACIÓN: CAPÍTULO 2 - ABOGADOS`);
+            // Aquí disparas el mapa del Cap 2 directamente
         }
 
-        // Bloqueo de Fullscreen al primer click
-        document.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(e => console.log(e));
-            }
-        }, {once: true});
+        document.addEventListener('click', () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e=>{}); }, {once:true});
     </script>
 </body>
 </html>
+
 
