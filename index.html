@@ -3,36 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NARCOS: DISPATCH | THE HEISENBERG ENGINE v24.0</title>
+    <title>NARCOS: DISPATCH | PRESTIGE v24.0 FINAL EDITION</title>
     
     <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
-        /* --- CORE VARIABLES --- */
         :root {
             --accent: #d4ff00;
             --accent-glow: rgba(212, 255, 0, 0.4);
             --bg-deep: #020305;
             --bg-panel: rgba(5, 7, 10, 0.98);
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.4);
+            --border-ui: 1px solid rgba(255, 255, 255, 0.08);
             --transition-main: 1.2s cubic-bezier(0.8, 0, 0.2, 1);
             --blur-fx: blur(25px);
         }
 
-        * { box-sizing: border-box; outline: none; }
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--bg-deep); color: white;
+            background: var(--bg-deep); color: var(--text-main);
             font-family: 'Inter', sans-serif; overflow: hidden;
+            user-select: none;
         }
 
-        /* --- MOTOR DE POST-PROCESADO (VFX) --- */
-        #vfx-master { position: fixed; inset: 0; z-index: 99999; pointer-events: none; }
+        /* --- VFX LAYERS --- */
+        #vfx-master-container { position: fixed; inset: 0; z-index: 99999; pointer-events: none; }
         .vfx-vignette { position: absolute; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,1) 160%); }
         .vfx-grain { position: absolute; inset: 0; opacity: 0.04; background: url('https://giphy.com'); }
         .vfx-scanlines { position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%); background-size: 100% 4px; }
         #vfx-brightness { position: absolute; inset: 0; background: black; opacity: 0; transition: 0.3s; }
+        #vfx-blood-overlay { position: absolute; inset: 0; background: radial-gradient(circle, transparent 50%, rgba(150,0,0,0.4) 150%); opacity: 0; transition: 1s; }
 
-        /* --- SISTEMA DE CAPAS --- */
+        /* --- VIEW SYSTEM --- */
         .view-layer {
             position: absolute; inset: 0; display: none;
             opacity: 0; transform: scale(1.05); filter: var(--blur-fx);
@@ -41,244 +45,215 @@
         }
         .view-layer.active { display: flex; flex-direction: column; opacity: 1; transform: scale(1); filter: blur(0px); }
 
-        /* --- 1. INTRO --- */
-        #view-intro { background: #000; justify-content: center; align-items: center; cursor: pointer; }
+        /* --- INTRO & MENU --- */
+        #view-intro { background: #000; justify-content: center; align-items: center; text-align: center; cursor: pointer; }
         .intro-brand { font-family: 'Oswald'; font-size: 9vw; letter-spacing: 60px; text-transform: uppercase; animation: introReveal 6s infinite alternate; }
-        
-        /* --- 2. MENÚ PRINCIPAL --- */
         #view-main-menu { background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, transparent 80%); padding: 8% 10%; }
-        .menu-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.3; filter: grayscale(1); }
-        .brand-header h1 { font-family: 'Oswald'; font-size: 7rem; margin: 0; line-height: 0.8; }
-        .nav-container { display: flex; flex-direction: column; gap: 10px; margin-top: 40px; }
-        .nav-item {
-            background: none; border: none; color: rgba(255,255,255,0.4);
-            font-size: 2.2rem; font-weight: 900; text-align: left;
-            padding: 15px 0; cursor: pointer; transition: 0.4s;
-            text-transform: uppercase;
-        }
-        .nav-item:hover:not(:disabled) { color: white; transform: translateX(25px); }
-        .nav-item:disabled { opacity: 0.1; cursor: not-allowed; }
+        .nav-item { background: none; border: none; color: var(--text-dim); font-size: 2.2rem; font-weight: 900; text-align: left; padding: 10px 0; cursor: pointer; transition: 0.4s; text-transform: uppercase; }
+        .nav-item:hover { color: white; transform: translateX(25px); }
 
-        /* --- 3. AJUSTES (ESTILO TLOU) --- */
+        /* --- SETTINGS --- */
         #view-settings { background: var(--bg-panel); padding: 5% 10%; }
-        .settings-grid { display: grid; grid-template-columns: 350px 1fr; gap: 80px; margin-top: 40px; height: 60vh; }
-        .tab-btn { background: none; border: none; color: #444; padding: 20px; text-align: left; font-weight: 800; cursor: pointer; border-right: 2px solid transparent; }
-        .tab-btn.active { color: var(--accent); border-right: 4px solid var(--accent); }
-        .setting-row { display: flex; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid #111; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        /* --- 4. TUTORIAL & MAPA (NUEVO) --- */
-        #view-tutorial { position: relative; background: #000; overflow: hidden; }
-        #map-sat { 
+        /* --- TUTORIAL MAP ENGINE --- */
+        #view-tutorial { position: relative; background: #000; }
+        #map-container { 
             position: absolute; inset: 0; 
-            background: url('https://unsplash.com') center/cover;
-            opacity: 0.4; filter: grayscale(1) contrast(1.5);
-            transform: scale(1.2); transition: 10s linear;
+            background: url('https://imgur.com') center/cover;
+            filter: grayscale(1) brightness(0.4) sepia(0.2);
+            opacity: 0.8;
+            transition: 0.5s;
         }
-        #view-tutorial.active #map-sat { transform: scale(1); }
+        .map-zone { position: absolute; border: 2px solid transparent; transition: 0.5s; }
+        .zone-alert { background: rgba(255, 0, 0, 0.2); border-color: red !important; }
+        .zone-sale { background: rgba(212, 255, 0, 0.1); border-color: var(--accent) !important; }
 
-        /* INTERFAZ WALTER */
+        /* HUD TACTICAL */
+        #tutorial-timer { position: absolute; top: 40px; right: 40px; font-family: 'JetBrains Mono'; font-size: 2rem; color: var(--accent); z-index: 100; }
         #walter-comms {
             position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-            width: 85%; background: rgba(0,0,0,0.95); border-left: 8px solid var(--accent);
-            padding: 35px; display: flex; align-items: center; gap: 40px;
-            z-index: 100; box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            width: 85%; background: rgba(0,0,0,0.95); border-left: 10px solid var(--accent);
+            padding: 30px; display: flex; align-items: center; gap: 40px; z-index: 200;
         }
-        .walter-avatar { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent); background: url('https://imgur.com') center/cover; box-shadow: 0 0 20px var(--accent-glow); }
-        #walter-msg { font-family: 'JetBrains Mono'; font-size: 1.2rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .walter-avatar { width: 120px; height: 120px; border-radius: 10px; border: 2px solid var(--accent); background: url('https://imgur.com') center/cover; }
+        #walter-text { font-family: 'JetBrains Mono'; font-size: 1.1rem; line-height: 1.5; color: #fff; }
 
-        /* PINGS TÁCTICOS */
-        .tactical-ping {
-            position: absolute; width: 60px; height: 60px; border: 2px solid var(--accent);
-            border-radius: 50%; display: none; cursor: pointer; z-index: 50;
-            animation: pingRadar 1.5s infinite;
-        }
-        .tactical-ping::after { content: '!'; color: var(--accent); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; }
+        /* EMOJIS & PINGS */
+        .ping-emoji { position: absolute; font-size: 3rem; transform: translate(-50%, -50%); cursor: pointer; z-index: 150; animation: bounce 1s infinite; display: none; }
+        .police-icon { position: absolute; font-size: 2rem; transition: 5s linear; z-index: 140; display: none; }
 
-        /* BAUTIZO MAFIA */
-        #naming-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.98);
-            z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-        #mafia-input {
-            background: none; border: none; border-bottom: 3px solid var(--accent);
-            color: white; font-family: 'Oswald'; font-size: 5rem; text-align: center;
-            width: 70%; letter-spacing: 20px; margin: 50px 0; text-transform: uppercase;
-        }
+        /* NAMING */
+        #view-naming { position: absolute; inset: 0; z-index: 1000; background: #000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #mafia-input { background: none; border: none; border-bottom: 4px solid var(--accent); color: white; font-family: 'Oswald'; font-size: 5rem; text-align: center; letter-spacing: 20px; margin-bottom: 50px; text-transform: uppercase; }
 
-        /* --- LOADING SCREEN --- */
-        #view-loading { background: #000; justify-content: center; padding: 15%; }
-        .load-track { width: 100%; height: 2px; background: #111; position: relative; margin-top: 20px; }
-        #load-bar { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 30px var(--accent); }
-
-        /* ANIMACIONES */
         @keyframes introReveal { 0% { opacity: 0; letter-spacing: 100px; filter: blur(20px); } 100% { opacity: 0.4; letter-spacing: 40px; filter: blur(5px); } }
-        @keyframes pingRadar { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
-
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -55%) scale(1.2); } }
     </style>
 </head>
-<body onload="initEngine()">
+<body onload="initApp()">
 
-    <div id="vfx-master">
+    <div id="vfx-master-container">
         <div class="vfx-vignette"></div>
         <div class="vfx-grain"></div>
-        <div class="vfx-scanlines"></div>
         <div id="vfx-brightness"></div>
+        <div id="vfx-blood-overlay"></div>
     </div>
 
-    <!-- VISTA 1: INTRO -->
-    <section id="view-intro" class="view-layer active" onclick="navTo('view-main-menu')">
+    <!-- INTRO -->
+    <section id="view-intro" class="view-layer active" onclick="transitionTo('view-main-menu')">
         <div class="intro-brand">NARCOS</div>
-        <p style="position:absolute; bottom:10%; letter-spacing:15px; color:#333;">[ CONEXIÓN SATELITAL REQUERIDA ]</p>
+        <div class="intro-prompt">PRESIONA PARA INICIAR SISTEMA</div>
     </section>
 
-    <!-- VISTA 2: MENÚ PRINCIPAL -->
+    <!-- MENU PRINCIPAL -->
     <section id="view-main-menu" class="view-layer">
-        <video class="menu-bg-video" autoplay muted loop>
-            <source src="https://mixkit.co" type="video/mp4">
-        </video>
-        <header class="brand-header">
-            <span style="letter-spacing:10px; color:var(--accent)">UN JUEGO DE TIÑI GAMES</span>
+        <div class="brand-header">
+            <span>TIÑI GAMES PRESENTA</span>
             <h1>NARCOS</h1>
-            <p style="font-family:'JetBrains Mono'; opacity:0.3;">SYSTEM_ACCESS_v24.0_FINAL</p>
-        </header>
+            <span style="color:white; opacity: 0.3;">DISPATCH TACTICAL // FINAL PRESTIGE</span>
+        </div>
         <nav class="nav-container">
-            <button class="nav-item" onclick="startNewGame()">Nueva Operación</button>
-            <button id="btn-continue" class="nav-item" disabled onclick="continueGame()">Continuar</button>
-            <button class="nav-item" onclick="navTo('view-settings')">Ajustes</button>
-            <button class="nav-item" onclick="location.reload()" style="color:#ff4444">Desconectar</button>
+            <button class="nav-item" onclick="startTutorial()">Nueva Operación</button>
+            <button id="btn-continue" class="nav-item" disabled onclick="loadGame()">Continuar</button>
+            <button class="nav-item" onclick="transitionTo('view-settings')">Ajustes</button>
         </nav>
     </section>
 
-    <!-- VISTA 3: AJUSTES -->
+    <!-- AJUSTES -->
     <section id="view-settings" class="view-layer">
-        <h2 style="font-family:'Oswald'; font-size:4rem; letter-spacing:10px;">CONFIGURACIÓN</h2>
-        <div class="settings-grid">
-            <div style="display:flex; flex-direction:column; border-right:1px solid #111;">
-                <button class="tab-btn active">VIDEO</button>
-                <button class="tab-btn">AUDIO</button>
-                <button class="tab-btn">JUEGO</button>
-            </div>
-            <div style="overflow-y:auto; padding-right:40px;">
-                <div class="setting-row"><label>BRILLO GAMA</label><input type="range" oninput="setBr(this.value)"></div>
-                <div class="setting-row"><label>GRANO CINEMÁTICO</label><input type="checkbox" checked></div>
-                <div class="setting-row"><label>CENSURA DE SANGRE</label><input type="checkbox"></div>
-                <div class="setting-row"><label>RESOLUCIÓN TÁCTICA</label><select><option>4K ULTRA</option><option>1080P</option></select></div>
-            </div>
-        </div>
-        <button class="nav-item" style="font-size:1.2rem;" onclick="navTo('view-main-menu')">VOLVER</button>
+        <h2 style="font-family:'Oswald'; font-size:3rem;">CONFIGURACIÓN_SISTEMA</h2>
+        <div class="setting-row"><label>BRILLO GAMA</label><input type="range" oninput="document.getElementById('vfx-brightness').style.opacity = (100-this.value)/150"></div>
+        <div class="setting-row"><label>CENSURA DE SANGRE</label><input type="checkbox" onchange="document.getElementById('vfx-blood-overlay').style.opacity = this.checked ? 0 : 1"></div>
+        <button class="nav-item" style="font-size:1rem;" onclick="transitionTo('view-main-menu')">VOLVER</button>
     </section>
 
-    <!-- VISTA 4: CARGA -->
+    <!-- LOADING -->
     <section id="view-loading" class="view-layer">
-        <div id="load-status" style="font-family:'JetBrains Mono'; color:var(--accent);">SINCRONIZANDO VÍNCULO CON WALTER...</div>
-        <div class="load-track"><div id="load-bar"></div></div>
+        <div class="loading-meta">> SYNCING_WITH_HEISENBERG...</div>
+        <div style="width:100%; height:1px; background:rgba(255,255,255,0.1);"><div id="load-bar" style="height:100%; width:0%; background:var(--accent);"></div></div>
     </section>
 
-    <!-- VISTA 5: TUTORIAL TÁCTICO -->
+    <!-- TUTORIAL ENGINE -->
     <section id="view-tutorial" class="view-layer">
-        <div id="map-sat"></div>
+        <div id="map-container">
+            <div id="zone-alb" class="map-zone" style="top:45%; left:45%; width:200px; height:200px;"></div>
+        </div>
         
-        <!-- PINGS INTERACTIVOS -->
-        <div id="ping-lab" class="tactical-ping" style="top:35%; left:42%;" onclick="runTutorial(2)"></div>
-        <div id="ping-deal" class="tactical-ping" style="top:65%; left:58%;" onclick="runTutorial(3)"></div>
+        <div id="tutorial-timer">05:00</div>
+
+        <!-- EMOJIS TACTICOS -->
+        <div id="emoji-cook" class="ping-emoji" style="top:48%; left:48%;" onclick="tutorialLogic('cook')">💎</div>
+        <div id="emoji-sale" class="ping-emoji" style="top:60%; left:55%;" onclick="tutorialLogic('sell')">💰</div>
+        <div id="police-unit" class="police-icon">🚨</div>
 
         <div id="walter-comms">
             <div class="walter-avatar"></div>
-            <div id="walter-msg">ESPERANDO SEÑAL...</div>
-        </div>
-
-        <!-- BAUTIZO -->
-        <div id="naming-overlay">
-            <h2 style="font-family:'Oswald'; color:var(--accent); letter-spacing:15px;">ASIGNA UN NOMBRE A TU MAFIA</h2>
-            <input type="text" id="mafia-input" placeholder="INTRODUCE NOMBRE" maxlength="15">
-            <button class="nav-item" style="font-size:1.5rem;" onclick="finishTutorial()">CONFIRMAR IDENTIDAD</button>
+            <div id="walter-text">Walter: Bienvenido. No me hagas perder el tiempo. Haz clic en el diamante para empezar la cocinada.</div>
         </div>
     </section>
 
+    <!-- BAUTIZO MAFIA -->
+    <section id="view-naming" class="view-layer">
+        <h2 style="font-family:'Oswald'; color:var(--accent); letter-spacing:10px;">¿CÓMO SE LLAMA TU MAFIA?</h2>
+        <input type="text" id="mafia-input" placeholder="NOMBRE_AQUÍ">
+        <button class="nav-item" style="font-size:1.5rem;" onclick="finalizeMafia()">REGISTRAR EN DISCO DURO</button>
+    </section>
+
     <script>
-        const Engine = {
-            view: 'view-intro',
-            step: 1
+        let gameState = {
+            timer: 300,
+            step: 1,
+            mafiaName: "",
+            currentView: "view-intro"
         };
 
-        function navTo(id) {
-            const cur = document.getElementById(Engine.view);
-            const tar = document.getElementById(id);
-            cur.style.opacity = '0';
+        function transitionTo(id) {
+            document.getElementById(gameState.currentView).classList.remove('active');
             setTimeout(() => {
-                cur.classList.remove('active');
-                cur.style.display = 'none';
-                tar.style.display = tar.id === 'view-tutorial' ? 'block' : 'flex';
-                setTimeout(() => { tar.classList.add('active'); tar.style.opacity = '1'; Engine.view = id; }, 50);
+                document.getElementById(gameState.currentView).style.display = 'none';
+                const next = document.getElementById(id);
+                next.style.display = 'flex';
+                setTimeout(() => { next.classList.add('active'); gameState.currentView = id; }, 50);
             }, 1000);
         }
 
-        function setBr(v) { document.getElementById('vfx-brightness').style.opacity = (100-v)/150; }
-
-        function startNewGame() {
-            navTo('view-loading');
+        function startTutorial() {
+            transitionTo('view-loading');
             let p = 0;
-            const bar = document.getElementById('load-bar');
             const iv = setInterval(() => {
-                p += 1.5;
-                bar.style.width = p + '%';
-                if(p >= 100) { clearInterval(iv); navTo('view-tutorial'); setTimeout(() => runTutorial(1), 1500); }
-            }, 40);
+                p += 2;
+                document.getElementById('load-bar').style.width = p + '%';
+                if(p >= 100) {
+                    clearInterval(iv);
+                    transitionTo('view-tutorial');
+                    initTutorial();
+                }
+            }, 50);
         }
 
-        function runTutorial(s) {
-            const msg = document.getElementById('walter-msg');
-            const pLab = document.getElementById('ping-lab');
-            const pDeal = document.getElementById('ping-deal');
+        function initTutorial() {
+            document.getElementById('emoji-cook').style.display = 'block';
+            const timerIv = setInterval(() => {
+                gameState.timer--;
+                let m = Math.floor(gameState.timer / 60);
+                let s = gameState.timer % 60;
+                document.getElementById('tutorial-timer').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+                
+                if(gameState.timer <= 0) {
+                    clearInterval(timerIv);
+                    alert("Walter: Demasiado lento. Empecemos de nuevo.");
+                    location.reload();
+                }
+            }, 1000);
+        }
 
-            if(s === 1) {
-                msg.innerText = "Walter: Bienvenido al negocio. Localiza el laboratorio en el mapa y confírmame que Jesse está cocinando.";
-                pLab.style.display = 'block';
-            } else if(s === 2) {
-                pLab.style.display = 'none';
-                msg.innerText = "Walter: La pureza es del 99%. Ahora, tenemos un comprador en el sector sur. Despacha la mercancía ahora.";
-                pDeal.style.display = 'block';
-            } else if(s === 3) {
-                pDeal.style.display = 'none';
-                msg.innerText = "Walter: Bien hecho. Plata o plomo... ahora dime, ¿con qué nombre te conocerán en Albuquerque?";
-                setTimeout(() => document.getElementById('naming-overlay').style.display = 'flex', 2000);
+        function tutorialLogic(action) {
+            const txt = document.getElementById('walter-text');
+            const zone = document.getElementById('zone-alb');
+
+            if(action === 'cook' && gameState.step === 1) {
+                gameState.step = 2;
+                txt.innerText = "Walter: Pureza al 99%. Bien. Ahora la policía se mueve hacia ti. ¡Evádelos y vende el producto!";
+                document.getElementById('emoji-cook').style.display = 'none';
+                document.getElementById('emoji-sale').style.display = 'block';
+                document.getElementById('police-unit').style.display = 'block';
+                document.getElementById('police-unit').style.top = "40%";
+                document.getElementById('police-unit').style.left = "40%";
+                zone.classList.add('zone-alert');
+            } else if(action === 'sell' && gameState.step === 2) {
+                gameState.step = 3;
+                txt.innerText = "Walter: Dinero cobrado. Nada mal para un novato. Ahora dime... ¿con quién estoy tratando?";
+                document.getElementById('emoji-sale').style.display = 'none';
+                document.getElementById('police-unit').style.display = 'none';
+                zone.classList.remove('zone-alert');
+                setTimeout(() => { document.getElementById('view-naming').style.display = 'flex'; document.getElementById('view-naming').classList.add('active'); }, 2000);
             }
         }
 
-        function finishTutorial() {
+        function finalizeMafia() {
             const name = document.getElementById('mafia-input').value;
-            if(!name) return alert("WALTER: No me hagas perder el tiempo. Ponle un nombre.");
-            
-            localStorage.setItem('tiñi_games_save', JSON.stringify({
-                name: name,
-                cap: 2,
-                cash: 10000
-            }));
-
-            alert(`SISTEMA: Mafia "${name}" registrada con éxito.`);
+            if(!name) return alert("Pon un nombre.");
+            localStorage.setItem('tiñi_save', JSON.stringify({name: name, progress: 2}));
+            alert(`Mafia ${name} registrada. Volviendo al despacho.`);
             location.reload();
         }
 
-        function initEngine() {
-            const save = localStorage.getItem('tiñi_games_save');
+        function initApp() {
+            const save = localStorage.getItem('tiñi_save');
             if(save) {
                 const data = JSON.parse(save);
-                const btn = document.getElementById('btn-continue');
-                btn.disabled = false;
-                btn.innerText = `CONTINUAR: ${data.name}`;
+                document.getElementById('btn-continue').disabled = false;
+                document.getElementById('btn-continue').innerText = `CONTINUAR_CON_${data.name}`;
             }
         }
 
-        function continueGame() {
-            const data = JSON.parse(localStorage.getItem('tiñi_games_save'));
-            alert(`CARGANDO IMPERIO: ${data.name}\nUBICACIÓN: CAPÍTULO 2 - ABOGADOS`);
-            // Aquí disparas el mapa del Cap 2 directamente
+        function loadGame() {
+            const data = JSON.parse(localStorage.getItem('tiñi_save'));
+            transitionTo('view-tutorial');
+            document.getElementById('walter-text').innerText = `Walter: Bienvenido de nuevo, Jefe de ${data.name}. Albuquerque te espera.`;
+            document.getElementById('tutorial-timer').style.display = 'none';
         }
-
-        document.addEventListener('click', () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e=>{}); }, {once:true});
     </script>
 </body>
 </html>
-
-
