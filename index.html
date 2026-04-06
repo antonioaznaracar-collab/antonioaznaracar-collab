@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CineMatch 2027 | Final Fix</title>
+    <title>CineMatch 2027 | Phase 2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
@@ -11,6 +11,7 @@
             --bg: #050505;
             --accent: #ff003c;
             --glass: rgba(255, 255, 255, 0.08);
+            --text-sec: #00f2ff;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -21,99 +22,62 @@
             background-color: var(--bg);
             color: white;
             font-family: 'Inter', sans-serif;
+            overflow: hidden;
         }
 
-        /* --- 1. INTRO (RECUPERADA Y MEJORADA) --- */
+        /* --- 1. INTRO --- */
         #intro-screen {
-            position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: fixed; inset: 0; background: black; z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
             transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
         }
-
-        .logo-intro {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 15vw;
-            letter-spacing: 10px;
-            animation: pulse 1.5s infinite alternate;
-        }
-
+        .logo-intro { font-family: 'Bebas Neue', sans-serif; font-size: 15vw; letter-spacing: 10px; animation: pulse 1.5s infinite alternate; }
         @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- 2. APP PRINCIPAL --- */
-        #main-app {
-            min-height: 100vh;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* --- 2. ESTRUCTURA NAVEGACIÓN --- */
+        .page {
+            position: absolute; inset: 0; display: none;
             background: radial-gradient(circle at center, #151525 0%, #050505 100%);
-            padding: 40px 20px;
-            /* Permitimos scroll si el contenido es más alto que la pantalla */
-            overflow-y: auto; 
+            padding: 40px 20px; overflow-y: auto;
         }
+        .active-page { display: flex !important; flex-direction: column; align-items: center; }
 
-        .menu-container {
-            display: grid;
-            gap: 20px;
-            width: 100%;
-            max-width: 1200px;
+        /* CONFIGURACIÓN ADAPTABLE */
+        .menu-container { display: grid; gap: 20px; width: 100%; max-width: 1200px; margin: auto; }
+        
+        @media (orientation: portrait) { /* MÓVIL VERTICAL */
+            .menu-container { grid-template-columns: 1fr; padding-bottom: 60px; }
+            .card { min-height: 180px; }
         }
-
-        /* CONFIGURACIÓN MÓVIL (Vertical) */
-        @media (orientation: portrait) {
-            .menu-container {
-                grid-template-columns: 1fr;
-                padding-bottom: 40px; /* Espacio extra al final */
-            }
-            .card { min-height: 200px; } /* Altura fija para que no sean gigantes */
-            .icon { font-size: 3.5rem !important; }
-            .label { font-size: 1.2rem !important; }
-        }
-
-        /* CONFIGURACIÓN PC (Horizontal) */
-        @media (orientation: landscape) {
-            .menu-container {
-                grid-template-columns: repeat(3, 1fr);
-                height: 60vh;
-                align-items: center;
-            }
+        @media (orientation: landscape) { /* PC HORIZONTAL */
+            .menu-container { grid-template-columns: repeat(3, 1fr); height: 60vh; align-items: center; }
             .card { height: 100%; }
         }
 
-        /* --- TARJETAS --- */
+        /* --- 3. COMPONENTES --- */
         .card {
-            background: var(--glass);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            position: relative;
+            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 30px;
+            transition: 0.3s; backdrop-filter: blur(15px); position: relative;
         }
-
-        .card:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.15); }
-
+        .card:active { transform: scale(0.95); }
+        .card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+        
         .icon { font-size: clamp(3rem, 10vh, 5rem); margin-bottom: 10px; }
-        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(1rem, 2.5vh, 1.5rem); }
-        .subtitle { font-size: 0.75rem; color: #00f2ff; margin-top: 8px; font-weight: bold; }
+        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(1rem, 2vh, 1.4rem); }
+        .subtitle { font-size: 0.75rem; color: var(--text-sec); margin-top: 8px; font-weight: bold; }
 
-        .dot {
-            position: absolute; top: 20px; right: 20px;
-            width: 12px; height: 12px;
-            background: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 15px var(--accent);
+        /* SETTINGS */
+        .settings-card {
+            background: var(--glass); width: 100%; max-width: 600px;
+            padding: 20px; border-radius: 20px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
         }
+        .btn { background: var(--accent); border: none; color: white; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
+        select { background: #111; color: white; border: 1px solid var(--accent); padding: 5px; border-radius: 5px; }
+
+        #settings-btn { position: fixed; top: 20px; right: 20px; z-index: 100; font-size: 1.5rem; background: var(--glass); padding: 10px; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -123,42 +87,113 @@
         <div class="logo-intro">CINEMATCH</div>
     </div>
 
-    <!-- APP -->
-    <main id="main-app">
+    <div id="settings-btn" onclick="goTo('settings')">⚙️</div>
+
+    <!-- PÁGINA: HOME -->
+    <main id="page-home" class="page active-page">
         <div class="menu-container">
-            
             <div class="card" onclick="vibrate()">
                 <span class="icon">🍿</span>
-                <div class="label">Maratones</div>
-                <div class="subtitle">Sagas & Orden</div>
+                <div class="label" data-key="marathons">Maratones</div>
+                <div class="subtitle" data-key="sagas">Sagas & Orden</div>
             </div>
 
             <div class="card" onclick="vibrate()">
                 <span class="icon">📅</span>
-                <div class="label">Calendario</div>
-                <div class="subtitle">Estrenos 2027</div>
+                <div class="label" data-key="calendar">Calendario</div>
+                <div class="subtitle" data-key="hype">Estrenos 2027</div>
             </div>
 
-            <div class="card" style="position: relative;" onclick="vibrate()">
-                <div class="dot"></div>
+            <!-- Botón Social Dinámico -->
+            <div id="card-social" class="card locked" onclick="checkSocial()">
+                <div id="social-lock" style="position:absolute; top:10px; right:15px">🔒</div>
                 <span class="icon">👥</span>
-                <div class="label">Social</div>
-                <div class="subtitle">Club de 10</div>
+                <div class="label" data-key="social">Social</div>
+                <div class="subtitle" data-key="club">Club de 10</div>
             </div>
-
         </div>
     </main>
 
+    <!-- PÁGINA: AJUSTES -->
+    <div id="page-settings" class="page">
+        <button class="btn" style="margin-bottom:20px" onclick="goTo('home')">← <span data-key="back">Volver</span></button>
+        <h1 style="font-family:'Bebas Neue'; letter-spacing:4px" data-key="settings">Ajustes</h1>
+        
+        <div class="settings-card">
+            <div><b data-key="lang">Idioma</b></div>
+            <select onchange="changeLang(this.value)">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
+
+        <div class="settings-card">
+            <div>
+                <b data-key="user">Usuario</b>: <span id="username-display">???</span>
+            </div>
+            <button class="btn" style="padding:5px 10px; font-size:0.7rem" onclick="randomizeName()" data-key="change">Cambiar</button>
+        </div>
+
+        <div class="settings-card" id="login-section">
+            <div data-key="session">Sesión</div>
+            <button class="btn" onclick="login()">LOGIN (Google/Apple)</button>
+        </div>
+    </div>
+
     <script>
-        function vibrate() {
-            if (navigator.vibrate) navigator.vibrate(15);
-            console.log("Click!");
+        // 1. DICCIONARIO DE IDIOMAS
+        const langData = {
+            es: { marathons: "Maratones", sagas: "Sagas & Orden", calendar: "Calendario", hype: "Estrenos 2027", social: "Social", club: "Club de 10", settings: "Ajustes", back: "Volver", lang: "Idioma", user: "Usuario", session: "Sesión", change: "Cambiar", login_req: "¡Debes iniciar sesión para entrar a Social!" },
+            en: { marathons: "Marathons", sagas: "Sagas & Order", calendar: "Calendar", hype: "2027 Releases", social: "Social", club: "Club of 10", settings: "Settings", back: "Back", lang: "Language", user: "Username", session: "Session", change: "Change", login_req: "Login required for Social Hub!" },
+            fr: { marathons: "Marathons", sagas: "Sagas & Ordre", calendar: "Calendrier", hype: "Sorties 2027", social: "Social", club: "Club de 10", settings: "Réglages", back: "Retour", lang: "Langue", user: "Utilisateur", session: "Session", change: "Changer", login_req: "Connexion requise pour le Social!" }
+        };
+
+        let userLoggedIn = false;
+        let currentLang = 'es';
+
+        // 2. LÓGICA DE NAVEGACIÓN
+        function goTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById('page-' + pageId).classList.add('active-page');
+            vibrate();
         }
 
+        // 3. LÓGICA DE IDIOMAS
+        function changeLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                el.innerText = langData[lang][key];
+            });
+        }
+
+        // 4. LÓGICA DE USUARIO
+        function login() {
+            userLoggedIn = true;
+            document.getElementById('card-social').classList.remove('locked');
+            document.getElementById('social-lock').innerText = "🟢";
+            document.getElementById('login-section').style.display = 'none';
+            randomizeName();
+            alert("¡Bienvenido al Club!");
+            goTo('home');
+        }
+
+        function checkSocial() {
+            if(!userLoggedIn) alert(langData[currentLang].login_req);
+            else alert("Entrando a Social...");
+        }
+
+        function randomizeName() {
+            const names = ["Cinefilo", "MovieMaster", "Director_X", "PopcornKing", "Hollywood_Fan"];
+            const rand = names[Math.floor(Math.random() * names.length)] + "_" + Math.floor(Math.random() * 999);
+            document.getElementById('username-display').innerText = rand;
+        }
+
+        function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
+
         window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('intro-screen').style.transform = 'translateY(-100%)';
-            }, 2500);
+            setTimeout(() => { document.getElementById('intro-screen').style.transform = 'translateY(-100%)'; }, 2500);
         };
     </script>
 </body>
