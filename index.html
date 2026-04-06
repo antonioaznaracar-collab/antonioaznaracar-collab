@@ -6,14 +6,6 @@
 <title>CineMach</title>
 
 <style>
-:root {
-  --bg: #050507;
-  --card: rgba(255,255,255,0.06);
-  --accent: #e50914;
-  --text: #fff;
-  --muted: #aaa;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -22,16 +14,13 @@
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: #050507;
+  color: white;
   overflow: hidden;
 }
 
-/* ======================
-   INTRO CINEMATOGRÁFICA
-====================== */
-
-.cinema {
+/* INTRO */
+.intro {
   position: fixed;
   inset: 0;
   background: black;
@@ -39,134 +28,52 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 10;
+  transition: opacity 1.2s ease, transform 1.2s ease;
 }
 
-/* TELÓN */
-.cinema::before,
-.cinema::after {
-  content: "";
-  position: absolute;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(to right, #000, #1a1a1a);
-  transition: 1.8s cubic-bezier(0.77, 0, 0.175, 1);
+.intro h1 {
+  font-size: 50px;
+  letter-spacing: 2px;
 }
 
-.cinema::before { left: 0; }
-.cinema::after { right: 0; }
-
-.open::before { transform: translateX(-100%); }
-.open::after { transform: translateX(100%); }
-
-/* LOGO */
-.center {
-  text-align: center;
-  z-index: 2;
-}
-
-.logo {
-  font-size: 55px;
-  font-weight: bold;
+/* salida suave */
+.hide {
   opacity: 0;
-  animation: logoIn 1.5s ease forwards;
+  transform: scale(1.1);
 }
 
-.badge {
-  margin-top: 10px;
-  font-size: 20px;
-  opacity: 0;
-  animation: fadeIn 2s ease forwards;
-  animation-delay: 1s;
-}
-
-@keyframes logoIn {
-  0% { opacity: 0; transform: scale(1.3); filter: blur(8px); }
-  100% { opacity: 1; transform: scale(1); filter: blur(0); }
-}
-
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
-
-/* ======================
-   APP
-====================== */
-
+/* APP */
 .app {
   display: none;
   padding: 20px;
-  animation: fadeApp 1s ease;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 1s ease;
 }
 
-@keyframes fadeApp {
-  from { opacity: 0; transform: scale(1.05); }
-  to { opacity: 1; transform: scale(1); }
+/* entrada suave */
+.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-.header h1 {
-  font-size: 28px;
-}
-
-/* MENÚ MEJORADO */
+/* MENÚ */
 .menu {
   display: grid;
   gap: 15px;
 }
 
 .card {
-  position: relative;
-  padding: 25px;
-  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  padding: 20px;
+  border-radius: 16px;
   cursor: pointer;
-  overflow: hidden;
-  background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
-  transition: 0.4s;
-}
-
-/* efecto glow */
-.card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top left, rgba(229,9,20,0.3), transparent);
-  opacity: 0;
-  transition: 0.4s;
-}
-
-.card:hover::before {
-  opacity: 1;
+  transition: 0.3s;
 }
 
 .card:hover {
-  transform: translateY(-6px) scale(1.03);
-}
-
-/* ICONO GRANDE */
-.icon {
-  font-size: 30px;
-  margin-bottom: 10px;
-}
-
-/* TEXTO */
-.card h2 {
-  margin-bottom: 5px;
-}
-
-.card p {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* CONTENIDO */
-#content {
-  margin-top: 25px;
-  text-align: center;
-  color: var(--muted);
+  transform: translateY(-5px);
+  background: #e50914;
 }
 
 /* RESPONSIVE */
@@ -183,81 +90,53 @@ body {
 <body>
 
 <!-- INTRO -->
-<div class="cinema" id="cinema">
-  <div class="center">
-    <div class="logo">🎬 CineMach</div>
-    <div class="badge">El cine empieza aquí</div>
-  </div>
+<div class="intro" id="intro">
+  <h1>🎬 CineMach</h1>
 </div>
 
 <!-- APP -->
 <div class="app" id="app">
 
-  <div class="header">
-    <h1>🎬 CineMach</h1>
-  </div>
+  <h2 style="text-align:center; margin-bottom:20px;">CineMach</h2>
 
   <div class="menu">
 
-    <div class="card" onclick="openSection('calendario')">
-      <div class="icon">📅</div>
-      <h2>Calendario</h2>
-      <p>Organiza tus planes</p>
-    </div>
-
-    <div class="card" onclick="openSection('social')">
-      <div class="icon">👥</div>
-      <h2>Social</h2>
-      <p>Amigos y grupos</p>
-    </div>
-
-    <div class="card" onclick="openSection('explorar')">
-      <div class="icon">🎬</div>
-      <h2>Explorar</h2>
-      <p>Descubre películas</p>
-    </div>
+    <div class="card">📅 Calendario</div>
+    <div class="card">👥 Social</div>
+    <div class="card">🎬 Explorar</div>
 
   </div>
-
-  <div id="content"></div>
 
 </div>
 
 <script>
 
-/* INTRO CINEMÁTICA */
+/* CONTROL DE INTRO */
 window.onload = () => {
 
   setTimeout(() => {
+    
+    const intro = document.getElementById("intro");
+    const app = document.getElementById("app");
 
-    const cinema = document.getElementById("cinema");
-
-    cinema.classList.add("open");
+    // salida intro
+    intro.classList.add("hide");
 
     setTimeout(() => {
-      cinema.style.display = "none";
-      document.getElementById("app").style.display = "block";
-    }, 1800);
+      intro.style.display = "none";
 
-  }, 3500); // tiempo de “carga”
+      // mostrar app
+      app.style.display = "block";
+
+      // animación de entrada
+      setTimeout(() => {
+        app.classList.add("show");
+      }, 50);
+
+    }, 1200);
+
+  }, 2000); // tiempo de carga
 };
-
-/* SECCIONES */
-function openSection(sec) {
-  const c = document.getElementById("content");
-
-  if (sec === "calendario") {
-    c.innerHTML = "<h3>📅 Calendario</h3><p>Planes en desarrollo</p>";
-  }
-
-  if (sec === "social") {
-    c.innerHTML = "<h3>👥 Social</h3><p>Grupos de amigos próximamente</p>";
-  }
-
-  if (sec === "explorar") {
-    c.innerHTML = "<h3>🎬 Explorar</h3><p>Películas como Netflix próximamente</p>";
-  }
-}
 
 </script>
 
