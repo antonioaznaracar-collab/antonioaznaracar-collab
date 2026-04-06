@@ -40,28 +40,34 @@ body {
   transform: scale(1.1);
 }
 
-/* PANTALLAS */
-.screen {
+/* APP */
+.app {
   display: none;
   padding: 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 1s ease;
 }
 
-.active {
-  display: block;
+.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* HEADER */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 /* BOTÓN AJUSTES */
 .settings-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
   background: #e50914;
   border: none;
-  padding: 10px;
+  padding: 10px 14px;
   border-radius: 10px;
   color: white;
   cursor: pointer;
@@ -74,16 +80,16 @@ body {
   gap: 18px;
   max-width: 700px;
   margin: auto;
-  margin-top: 20px;
 }
 
 .card {
   position: relative;
   height: 170px;
   border-radius: 20px;
+  background-size: cover;
+  background-position: center;
   overflow: hidden;
   cursor: pointer;
-  background-size: cover;
 }
 
 .overlay {
@@ -98,12 +104,26 @@ body {
   left: 15px;
 }
 
+/* PANTALLAS */
+.screen {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+
 /* SETTINGS */
-.setting-box {
+.settings-box {
+  max-width: 600px;
+  margin: auto;
+}
+
+.setting {
   background: rgba(255,255,255,0.06);
   padding: 15px;
-  border-radius: 12px;
   margin-bottom: 10px;
+  border-radius: 12px;
 }
 
 .back-btn {
@@ -118,20 +138,22 @@ body {
 
 .google-btn {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
+  margin-top: 15px;
   border-radius: 10px;
   border: none;
+  cursor: pointer;
   background: white;
   color: black;
   font-weight: bold;
-  cursor: pointer;
 }
 
-/* LOCK SOCIAL */
+/* BLOQUEO */
 .locked {
   opacity: 0.4;
   pointer-events: none;
 }
+
 </style>
 </head>
 
@@ -142,57 +164,67 @@ body {
   <h1>🎬 CineMach</h1>
 </div>
 
-<!-- MENÚ -->
-<div class="screen active" id="menuScreen">
+<!-- APP -->
+<div class="app" id="app">
 
-  <div class="header">
-    <h2 id="userName"></h2>
+  <!-- MENÚ -->
+  <div class="screen active" id="menuScreen">
+
     <button class="settings-btn" onclick="openSettings()">⚙️</button>
-  </div>
 
-  <div class="menu">
-
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
-      <div class="overlay"></div>
-      <div class="content" id="calendarText">📅 Calendario</div>
+    <div class="header">
+      <h2 id="userName"></h2>
     </div>
 
-    <div class="card" id="socialCard" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
-      <div class="overlay"></div>
-      <div class="content" id="socialText">👥 Social</div>
+    <div class="menu">
+
+      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
+        <div class="overlay"></div>
+        <div class="content" id="calendarText">📅 Calendario</div>
+      </div>
+
+      <div class="card" id="socialCard" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
+        <div class="overlay"></div>
+        <div class="content" id="socialText">👥 Social</div>
+      </div>
+
+      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
+        <div class="overlay"></div>
+        <div class="content" id="exploreText">🎬 Explorar</div>
+      </div>
+
     </div>
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
-      <div class="overlay"></div>
-      <div class="content" id="exploreText">🎬 Explorar</div>
+  </div>
+
+  <!-- AJUSTES -->
+  <div class="screen" id="settingsScreen">
+
+    <div class="settings-box">
+
+      <button class="back-btn" onclick="goBack()">⬅ Volver</button>
+
+      <h2>⚙️ Ajustes</h2>
+
+      <div class="setting">
+        👤 Usuario: <span id="userDisplay"></span>
+      </div>
+
+      <div class="setting">
+        🌍 Idioma:
+        <select onchange="changeLang(this.value)">
+          <option value="es">Español</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="setting">
+        🔐 Sesión:
+        <button class="google-btn" onclick="loginGoogle()">🔵 Sign in with Google</button>
+      </div>
+
     </div>
 
-  </div>
-
-</div>
-
-<!-- AJUSTES -->
-<div class="screen" id="settingsScreen">
-
-  <button class="back-btn" onclick="goBack()">⬅</button>
-
-  <h2>⚙️ Ajustes</h2>
-
-  <div class="setting-box">
-    👤 Usuario: <span id="userDisplay"></span>
-  </div>
-
-  <div class="setting-box">
-    🌍 Idioma:
-    <select onchange="changeLang(this.value)">
-      <option value="es">Español</option>
-      <option value="en">English</option>
-    </select>
-  </div>
-
-  <div class="setting-box">
-    🔐 Login
-    <button class="google-btn" onclick="loginGoogle()">🔵 Sign in with Google</button>
   </div>
 
 </div>
@@ -205,13 +237,11 @@ const t = {
     calendar: "📅 Calendario",
     social: "👥 Social",
     explore: "🎬 Explorar",
-    settings: "⚙️ Ajustes",
   },
   en: {
     calendar: "📅 Calendar",
     social: "👥 Social",
     explore: "🎬 Explore",
-    settings: "⚙️ Settings",
   }
 };
 
@@ -235,24 +265,25 @@ window.onload = () => {
 
   setTimeout(() => {
     document.getElementById("intro").classList.add("hide");
+
     setTimeout(() => {
       document.getElementById("intro").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      document.getElementById("app").classList.add("show");
     }, 1200);
+
   }, 2000);
 };
 
 /* NAVEGACIÓN */
 function openSettings() {
-  switchScreen("settingsScreen");
+  document.getElementById("menuScreen").classList.remove("active");
+  document.getElementById("settingsScreen").classList.add("active");
 }
 
 function goBack() {
-  switchScreen("menuScreen");
-}
-
-function switchScreen(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  document.getElementById("settingsScreen").classList.remove("active");
+  document.getElementById("menuScreen").classList.add("active");
 }
 
 /* LOGIN */
