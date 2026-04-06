@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CineMatch 2027 | User Sync</title>
+    <title>CineMatch 2027 | Pro Auth</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <script src="https://google.com" async defer></script>
     
@@ -16,212 +16,142 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
-        }
-
-        /* --- 1. INTRO --- */
-        #intro-screen {
-            position: fixed; inset: 0; background: black; z-index: 2000;
-            display: flex; justify-content: center; align-items: center;
-            transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
-        }
+        /* --- INTRO --- */
+        #intro-screen { position: fixed; inset: 0; background: black; z-index: 2000; display: flex; justify-content: center; align-items: center; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); }
         .logo-intro { font-family: 'Bebas Neue', sans-serif; font-size: 15vw; letter-spacing: 10px; animation: pulse 1.5s infinite alternate; }
         @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- 2. NAVEGACIÓN --- */
-        .page {
-            position: absolute; inset: 0; display: none;
-            background: radial-gradient(circle at center, #151525 0%, #050505 100%);
-            padding: 40px 20px; overflow-y: auto;
-        }
+        /* --- PÁGINAS --- */
+        .page { position: absolute; inset: 0; display: none; background: radial-gradient(circle at center, #151525 0%, #050505 100%); padding: 40px 20px; overflow-y: auto; }
         .active-page { display: flex !important; flex-direction: column; align-items: center; }
 
         .menu-container { display: grid; gap: 20px; width: 100%; max-width: 1200px; margin: auto; }
-        
-        @media (orientation: portrait) { 
-            .menu-container { grid-template-columns: 1fr; padding-bottom: 60px; }
-            .card { min-height: 180px; }
-        }
-        @media (orientation: landscape) { 
-            .menu-container { grid-template-columns: repeat(3, 1fr); height: 60vh; align-items: center; }
-            .card { height: 100%; }
-        }
+        @media (orientation: portrait) { .menu-container { grid-template-columns: 1fr; padding-bottom: 60px; } .card { min-height: 180px; } }
+        @media (orientation: landscape) { .menu-container { grid-template-columns: repeat(3, 1fr); height: 60vh; align-items: center; } .card { height: 100%; } }
 
-        .card {
-            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; padding: 30px;
-            transition: 0.3s; backdrop-filter: blur(15px); position: relative;
-        }
-        .card:active { transform: scale(0.95); }
+        .card { background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; transition: 0.3s; backdrop-filter: blur(15px); position: relative; }
         .card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-        
-        .icon { font-size: clamp(3rem, 10vh, 5rem); margin-bottom: 10px; }
-        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(1rem, 2vh, 1.4rem); }
-        .subtitle { font-size: 0.75rem; color: var(--text-sec); margin-top: 8px; font-weight: bold; }
+
+        /* --- BOTÓN GOOGLE (ESTILO IMAGEN) --- */
+        .google-btn {
+            background-color: #131314; color: white; border: 1px solid #8e918f;
+            border-radius: 20px; padding: 10px 24px; display: flex; align-items: center;
+            justify-content: center; gap: 12px; cursor: pointer; font-weight: 500;
+            transition: background 0.3s; margin-top: 10px;
+        }
+        .google-btn:hover { background-color: #1e1e1f; }
+        .google-icon { width: 18px; height: 18px; }
 
         /* AJUSTES */
-        .settings-card {
-            background: var(--glass); width: 100%; max-width: 600px;
-            padding: 20px; border-radius: 20px; margin-bottom: 15px;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .settings-card { background: var(--glass); width: 100%; max-width: 600px; padding: 20px; border-radius: 20px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
         .btn { background: var(--accent); border: none; color: white; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
-        
-        /* Input de Usuario */
-        #user-input {
-            background: #111; color: var(--text-sec);
-            border: 1px solid var(--accent);
-            padding: 10px; border-radius: 10px;
-            font-weight: bold; width: 100%;
-            text-align: center; margin-top: 10px;
-            font-family: 'Inter', sans-serif;
-        }
-
+        #user-input { background: #111; color: var(--text-sec); border: 1px solid var(--accent); padding: 10px; border-radius: 10px; width: 100%; text-align: center; font-family: 'Inter', sans-serif; }
         #settings-btn { position: fixed; top: 20px; right: 20px; z-index: 100; font-size: 1.5rem; background: var(--glass); padding: 10px; border-radius: 50%; }
+        
+        .error-msg { color: var(--accent); font-size: 0.7rem; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="intro-screen">
-        <div class="logo-intro">CINEMATCH</div>
-    </div>
-
+    <div id="intro-screen"><div class="logo-intro">CINEMATCH</div></div>
     <div id="settings-btn" onclick="goTo('settings')">⚙️</div>
 
-    <!-- PÁGINA: HOME -->
     <main id="page-home" class="page active-page">
         <div class="menu-container">
-            <div class="card" onclick="vibrate()">
-                <span class="icon">🍿</span>
-                <div class="label" data-key="marathons">Maratones</div>
-                <div class="subtitle" data-key="sagas">Sagas & Orden</div>
-            </div>
-
-            <div class="card" onclick="vibrate()">
-                <span class="icon">📅</span>
-                <div class="label" data-key="calendar">Calendario</div>
-                <div class="subtitle" data-key="hype">Estrenos 2027</div>
-            </div>
-
+            <div class="card">🍿 <div style="font-weight:900" data-key="marathons">Maratones</div></div>
+            <div class="card">📅 <div style="font-weight:900" data-key="calendar">Calendario</div></div>
             <div id="card-social" class="card locked" onclick="checkSocial()">
                 <div id="social-lock" style="position:absolute; top:10px; right:15px">🔒</div>
-                <span class="icon">👥</span>
-                <div class="label" data-key="social">Social</div>
-                <div class="subtitle" data-key="club">Club de 10</div>
+                👥 <div style="font-weight:900" data-key="social">Social</div>
             </div>
         </div>
     </main>
 
-    <!-- PÁGINA: AJUSTES -->
     <div id="page-settings" class="page">
         <button class="btn" style="margin-bottom:20px" onclick="goTo('home')">← <span data-key="back">Volver</span></button>
-        <h1 style="font-family:'Bebas Neue'; letter-spacing:4px" data-key="settings">Ajustes</h1>
         
         <div class="settings-card">
-            <div class="setting-row">
-                <b data-key="lang">Idioma</b>
-                <select id="lang-select" onchange="changeLang(this.value)" style="background:#111; color:white; border:1px solid var(--accent); padding:5px; border-radius:5px;">
-                    <option value="es">Español</option>
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
+            <div style="display:flex; justify-content:space-between"><b data-key="lang">Idioma</b>
+                <select onchange="changeLang(this.value)" style="background:#111; color:white; border:1px solid var(--accent);">
+                    <option value="es">Español</option><option value="en">English</option><option value="fr">Français</option>
                 </select>
             </div>
         </div>
 
         <div class="settings-card">
-            <div class="setting-row">
-                <b data-key="user">Usuario</b>
-                <span id="login-status" style="font-size: 0.7rem; color: #888;">(Sin sesión)</span>
-            </div>
-            <input type="text" id="user-input" placeholder="Tu apodo..." oninput="saveName(this.value)">
-            <p style="font-size: 0.6rem; color: #555; text-align: center; margin: 0;">Se guarda automáticamente en tu dispositivo.</p>
+            <b data-key="user">Usuario</b>
+            <input type="text" id="user-input" placeholder="Apodo..." oninput="validateAndSave(this.value)">
+            <div id="name-error" class="error-msg">⚠️ Este nombre ya está en uso</div>
         </div>
 
         <div class="settings-card" id="login-section">
-            <div class="setting-row">
-                <div data-key="session">Sesión</div>
-                <div id="g_id_onload"
-                     data-client_id="TU_CLIENT_ID_://googleusercontent.com"
-                     data-callback="handleCredentialResponse">
-                </div>
-                <div class="g_id_signin" data-type="standard"></div>
+            <div data-key="session" style="text-align:center">Inicia sesión para Social Hub</div>
+            <div class="google-btn" onclick="fakeLogin()">
+                <img src="https://wikimedia.org" class="google-icon">
+                Sign in with Google
             </div>
         </div>
     </div>
 
     <script>
         const langData = {
-            es: { marathons: "Maratones", sagas: "Sagas & Orden", calendar: "Calendario", hype: "Estrenos 2027", social: "Social", club: "Club de 10", settings: "Ajustes", back: "Volver", lang: "Idioma", user: "Usuario", session: "Sesión", login_req: "¡Inicia sesión con Google para entrar!" },
-            en: { marathons: "Marathons", sagas: "Sagas & Order", calendar: "Calendar", hype: "2027 Releases", social: "Social", club: "Club of 10", settings: "Settings", back: "Back", lang: "Language", user: "Username", session: "Session", login_req: "Login with Google to enter!" },
-            fr: { marathons: "Marathons", sagas: "Sagas & Ordre", calendar: "Calendrier", hype: "Sorties 2027", social: "Social", club: "Club de 10", settings: "Réglages", back: "Retour", lang: "Langue", user: "Utilisateur", session: "Session", login_req: "Connexion Google requise !" }
+            es: { marathons: "Maratones", calendar: "Calendario", social: "Social", settings: "Ajustes", back: "Volver", lang: "Idioma", user: "Usuario", session: "Sesión", login_req: "¡Inicia sesión primero!" },
+            en: { marathons: "Marathons", calendar: "Calendar", social: "Social", settings: "Settings", back: "Back", lang: "Language", user: "Username", session: "Session", login_req: "Login required!" },
+            fr: { marathons: "Marathons", calendar: "Calendrier", social: "Social", settings: "Réglages", back: "Retour", lang: "Langue", user: "Utilisateur", session: "Session", login_req: "Connexion requise !" }
         };
 
+        // LISTA DE NOMBRES PROHIBIDOS (YA EXISTENTES)
+        const takenNames = ["Thanos_271", "IronMan", "Admin", "CineMatch_Owner"];
         let userLoggedIn = false;
         let currentLang = 'es';
 
-        // CARGAR DATOS AL INICIAR
         window.onload = () => {
-            // 1. Cargar nombre guardado
-            const savedName = localStorage.getItem('cineMatch_name');
-            if (savedName) {
-                document.getElementById('user-input').value = savedName;
-            }
-
-            // 2. Intro
+            const saved = localStorage.getItem('cineMatch_name');
+            if (saved) document.getElementById('user-input').value = saved;
             setTimeout(() => { document.getElementById('intro-screen').style.transform = 'translateY(-100%)'; }, 2500);
         };
 
-        function saveName(name) {
+        function validateAndSave(name) {
+            const errorEl = document.getElementById('name-error');
+            if (takenNames.includes(name)) {
+                errorEl.style.display = 'block';
+                return;
+            }
+            errorEl.style.display = 'none';
             localStorage.setItem('cineMatch_name', name);
         }
 
-        function handleCredentialResponse(response) {
-            const payload = JSON.parse(atob(response.credential.split('.')));
+        function fakeLogin() {
             userLoggedIn = true;
-            
-            // Si el usuario no tiene nombre guardado, le ponemos el de Google + random
-            const googleName = payload.given_name + "_" + Math.floor(Math.random() * 9999);
-            document.getElementById('user-input').value = googleName;
-            saveName(googleName);
-
-            document.getElementById('login-status').innerText = "✅ Google Sync";
+            const newName = "User_" + Math.floor(Math.random() * 888);
+            document.getElementById('user-input').value = newName;
+            localStorage.setItem('cineMatch_name', newName);
             document.getElementById('card-social').classList.remove('locked');
             document.getElementById('social-lock').innerText = "🟢";
             document.getElementById('login-section').style.display = 'none';
-            
-            alert("¡Hola " + payload.given_name + "! Ya puedes entrar al Club.");
+            alert("Login exitoso");
             goTo('home');
         }
 
-        function goTo(pageId) {
+        function goTo(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById('page-' + pageId).classList.add('active-page');
-            vibrate();
+            document.getElementById('page-' + id).classList.add('active-page');
+            if (navigator.vibrate) navigator.vibrate(10);
         }
 
         function changeLang(lang) {
             currentLang = lang;
             document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                el.innerText = langData[lang][key];
+                el.innerText = langData[lang][el.getAttribute('data-key')];
             });
         }
 
         function checkSocial() {
             if(!userLoggedIn) alert(langData[currentLang].login_req);
-            else alert("Entrando a Social...");
+            else alert("¡Entrando a Social!");
         }
-
-        function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
     </script>
 </body>
 </html>
