@@ -92,6 +92,63 @@ body {
   font-weight: bold;
 }
 
+/* =========================
+   📅 CALENDARIO
+========================= */
+
+.calendar {
+  display: none;
+  padding: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+}
+
+.calendar-days {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.day {
+  min-width: 120px;
+  height: 140px;
+  border-radius: 12px;
+  background: #222;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.day.past {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.day.today {
+  border: 2px solid #e50914;
+}
+
+.day h3 {
+  font-size: 16px;
+}
+
+.movies {
+  font-size: 12px;
+}
+
 /* AJUSTES */
 .settings {
   position: fixed;
@@ -127,7 +184,6 @@ body {
   transform: translateX(0);
 }
 
-/* HEADER */
 .settings-header {
   display: flex;
   gap: 10px;
@@ -152,7 +208,6 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  margin-bottom: 10px;
 }
 
 .avatar {
@@ -171,10 +226,8 @@ body {
   border-radius: 8px;
   border: none;
   text-align: center;
-  font-size: 16px;
 }
 
-/* BOTÓN GUARDAR */
 .profile-box button {
   width: 100%;
   padding: 12px;
@@ -182,17 +235,15 @@ body {
   border-radius: 8px;
   background: #e50914;
   color: white;
-  font-size: 16px;
 }
 
-/* CATEGORÍAS */
+/* AVATARES */
 .avatar-category {
   font-size: 20px;
   font-weight: bold;
   margin-top: 18px;
 }
 
-/* AVATARES (REDONDOS) */
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -205,15 +256,11 @@ body {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: 0.2s;
 }
 
 .avatar-grid img:hover {
   transform: scale(1.1);
-  border-color: white;
 }
-
 </style>
 </head>
 
@@ -227,9 +274,10 @@ body {
 
   <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
 
-  <div class="menu">
+  <!-- MENÚ -->
+  <div class="menu" id="menu">
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4')">
+    <div class="card" onclick="openCalendar()" style="background-image:url('https://images.unsplash.com/photo-1506784983877-45594efa4cbe')">
       <div class="overlay"></div>
       <div class="content">📅 Calendario</div>
     </div>
@@ -245,6 +293,19 @@ body {
     </div>
 
   </div>
+
+  <!-- CALENDARIO -->
+  <div id="calendar" class="calendar">
+
+    <div class="calendar-header">
+      <button onclick="closeCalendar()">←</button>
+      <h2>Calendario</h2>
+    </div>
+
+    <div id="calendarDays" class="calendar-days"></div>
+
+  </div>
+
 </div>
 
 <!-- AJUSTES -->
@@ -260,37 +321,6 @@ body {
       <div class="avatar" id="avatar"></div>
       <input id="usernameInput">
       <button onclick="saveProfile(event)">Guardar</button>
-    </div>
-
-    <!-- MARVEL -->
-    <div class="avatar-category">🟥 Marvel</div>
-    <div class="avatar-grid">
-      <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
-      <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
-    </div>
-
-    <!-- DC -->
-    <div class="avatar-category">🟦 DC</div>
-    <div class="avatar-grid">
-      <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
-    </div>
-
-    <!-- WARNER -->
-    <div class="avatar-category">🟨 Warner</div>
-    <div class="avatar-grid">
-      <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
-    </div>
-
-    <!-- DISNEY -->
-    <div class="avatar-category">🟪 Disney</div>
-    <div class="avatar-grid">
-      <img src="https://image.tmdb.org/t/p/w200/7G6j3Ck.jpg" onclick="setAvatar(this.src)">
-    </div>
-
-    <!-- UNIVERSAL -->
-    <div class="avatar-category">🟩 Universal</div>
-    <div class="avatar-grid">
-      <img src="https://image.tmdb.org/t/p/w200/2Y1.jpg" onclick="setAvatar(this.src)">
     </div>
 
   </div>
@@ -316,27 +346,64 @@ window.onload = () => {
 
   setTimeout(() => {
     intro.classList.add("hide");
-
     setTimeout(() => {
       intro.style.display = "none";
       document.querySelector(".settings-btn").style.display = "block";
     }, 1200);
-
   }, 1500);
 };
 
 function toggleSettings() {
   const s = document.getElementById("settings");
+  s.style.display = s.style.display === "block" ? "none" : "block";
+  setTimeout(() => s.classList.toggle("show"), 10);
+}
 
-  if (s.style.display === "block") {
-    s.style.display = "none";
-    s.classList.remove("show");
-  } else {
-    s.style.display = "block";
-    setTimeout(() => s.classList.add("show"), 10);
+/* CALENDARIO */
+function openCalendar() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("calendar").style.display = "block";
+  generateCalendar();
+}
+
+function closeCalendar() {
+  document.getElementById("menu").style.display = "flex";
+  document.getElementById("calendar").style.display = "none";
+}
+
+function generateCalendar() {
+  const container = document.getElementById("calendarDays");
+  container.innerHTML = "";
+
+  const today = new Date();
+  const start = new Date(today.getFullYear(), 0, 1);
+
+  for (let d = new Date(start); d <= new Date(today.getFullYear(), 11, 31); d.setDate(d.getDate() + 1)) {
+
+    const day = document.createElement("div");
+    day.className = "day";
+
+    if (d < new Date(today.toDateString())) day.classList.add("past");
+    if (d.toDateString() === today.toDateString()) day.classList.add("today");
+
+    let movies = [];
+
+    if (Math.random() > 0.85) {
+      movies.push("🎬 Peli 1");
+      if (Math.random() > 0.5) movies.push("VS");
+      movies.push("🎬 Peli 2");
+    }
+
+    day.innerHTML = `
+      <h3>${d.getDate()}/${d.getMonth()+1}</h3>
+      <div class="movies">${movies.join("<br>") || "—"}</div>
+    `;
+
+    container.appendChild(day);
   }
 }
 
+/* PERFIL */
 function saveProfile(e) {
   const name = document.getElementById("usernameInput").value.trim();
   if (!name) return;
@@ -350,13 +417,7 @@ function saveProfile(e) {
   setTimeout(() => e.target.textContent = "Guardar", 1500);
 }
 
-function setAvatar(src) {
-  localStorage.setItem("avatar", src);
-  document.getElementById("avatar").style.backgroundImage = `url(${src})`;
-}
-
 </script>
 
 </body>
 </html>
-
