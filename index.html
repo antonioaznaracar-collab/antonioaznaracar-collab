@@ -16,7 +16,7 @@
 body {
   background: #050507;
   color: white;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* INTRO */
@@ -42,17 +42,9 @@ body {
 .app {
   display: none;
   padding: 20px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: 1s ease;
 }
 
-.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* BOTÓN AJUSTES */
+/* BOTÓN */
 .settings-btn {
   position: fixed;
   top: 15px;
@@ -66,39 +58,53 @@ body {
   color: white;
 }
 
-/* MENÚ (MEJORADO) */
+/* MENÚ */
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-width: 700px;
+  gap: 16px;
+  max-width: 1000px;
   margin: auto;
 }
 
 .card {
-  height: 110px; /* MÁS PEQUEÑO */
-  border-radius: 14px;
+  height: 160px;
+  border-radius: 16px;
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  transition: transform 0.3s;
   position: relative;
+  transition: transform 0.3s;
 }
 
 .card:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
 
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.7), transparent);
+  background: linear-gradient(to right, rgba(0,0,0,0.8), transparent);
 }
 
 .content {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  bottom: 15px;
+  left: 15px;
+  font-size: 18px;
+}
+
+/* CARRUSEL (NUEVO) */
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.carousel .card {
+  min-width: 220px;
+  height: 130px;
 }
 
 /* AJUSTES */
@@ -175,7 +181,7 @@ body {
   text-align: center;
 }
 
-/* BOTÓN GUARDAR MEJORADO */
+/* BOTÓN GUARDAR */
 .profile-box button {
   width: 100%;
   padding: 10px;
@@ -183,15 +189,13 @@ body {
   border-radius: 6px;
   background: #e50914;
   color: white;
-  cursor: pointer;
-  transition: 0.3s;
 }
 
 /* CATEGORÍAS */
 .avatar-category {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 15px;
 }
 
 /* AVATARES */
@@ -208,49 +212,41 @@ body {
 }
 
 .avatar-grid img:hover {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
-@media(min-width: 768px) {
-  .menu {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .avatar-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
 <div class="intro" id="intro">
   <h1>🎬 CineMach</h1>
 </div>
 
-<!-- APP -->
 <div class="app" id="app">
 
   <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
 
   <div class="menu">
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
-      <div class="overlay"></div>
-      <div class="content">📅 Calendario</div>
+
+    <div class="carousel">
+      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4')">
+        <div class="overlay"></div>
+        <div class="content">📅 Calendario</div>
+      </div>
+
+      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f')">
+        <div class="overlay"></div>
+        <div class="content">👥 Social</div>
+      </div>
+
+      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba')">
+        <div class="overlay"></div>
+        <div class="content">🎬 Explorar</div>
+      </div>
     </div>
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
-      <div class="overlay"></div>
-      <div class="content">👥 Social</div>
-    </div>
-
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
-      <div class="overlay"></div>
-      <div class="content">🎬 Explorar</div>
-    </div>
   </div>
 </div>
 
@@ -267,22 +263,24 @@ body {
 
       <div class="profile-box">
         <div class="avatar" id="avatar"></div>
-
-        <input type="text" id="usernameInput">
-
+        <input id="usernameInput">
         <button onclick="saveProfile(event)">Guardar</button>
       </div>
 
       <div class="avatar-category">🎬 Películas</div>
       <div class="avatar-grid">
-        <img src="https://cdn.shopify.com/s/files/1/1943/7257/files/Harry-Potter_large_0dad831f-4b4a-4db5-b0eb-f96e70436102_large.jpg?v=1514443105" onclick="setAvatar(this.src)">
-        <img src="https://im.ziffdavisinternational.com/ign_es/screenshot/t/top-10-mejores-personajes-del-cine/top-10-mejores-personajes-del-cine_gfhw.jpg" onclick="setAvatar(this.src)">
+        <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
+        <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
       </div>
 
       <div class="avatar-category">🦸 Superhéroes</div>
       <div class="avatar-grid">
- <img src="https://media.vandal.net/m/10-2023/17/2023101721205459_2.jpg" onclick="setAvatar(this.src)">
- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCLZSLEzZHaYeZ-FTaWDXVncTephtnnjNE6w&s" onclick="setAvatar(this.src)">
+        <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
+      </div>
+
+      <div class="avatar-category">🎃 Terror</div>
+      <div class="avatar-grid">
+        <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
       </div>
 
     </div>
@@ -291,8 +289,8 @@ body {
 
 <script>
 
-/* INTRO */
 window.onload = () => {
+
   const intro = document.getElementById("intro");
   const app = document.getElementById("app");
 
@@ -303,38 +301,24 @@ window.onload = () => {
 
   document.getElementById("usernameInput").value = user;
 
-  if (avatar) {
-    document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
-  }
+  if (avatar) document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
 
   setTimeout(() => {
     intro.classList.add("hide");
-
     setTimeout(() => {
       intro.style.display = "none";
-      app.classList.add("show");
     }, 1200);
-
-  }, 2000);
+  }, 1500);
 };
 
-/* PANEL */
 function toggleSettings() {
   const s = document.getElementById("settings");
-
-  if (s.style.display === "block") {
-    s.style.display = "none";
-    s.classList.remove("show");
-  } else {
-    s.style.display = "block";
-    setTimeout(() => s.classList.add("show"), 10);
-  }
+  s.style.display = s.style.display === "block" ? "none" : "block";
+  setTimeout(() => s.classList.toggle("show"), 10);
 }
 
-/* GUARDAR (FIX TOTAL) */
 function saveProfile(e) {
   const name = document.getElementById("usernameInput").value.trim();
-
   if (!name) return;
 
   localStorage.setItem("user", name);
@@ -342,13 +326,10 @@ function saveProfile(e) {
   const avatar = document.getElementById("avatar").style.backgroundImage;
   if (avatar) localStorage.setItem("avatar", avatar);
 
-  // feedback real
-  const btn = e.target;
-  btn.textContent = "✔ Guardado";
-  setTimeout(() => btn.textContent = "Guardar", 1500);
+  e.target.textContent = "✔ Guardado";
+  setTimeout(() => e.target.textContent = "Guardar", 1500);
 }
 
-/* AVATAR */
 function setAvatar(src) {
   localStorage.setItem("avatar", src);
   document.getElementById("avatar").style.backgroundImage = `url(${src})`;
@@ -358,3 +339,4 @@ function setAvatar(src) {
 
 </body>
 </html>
+
