@@ -52,33 +52,29 @@ body {
   z-index: 999;
   background: #e50914;
   border: none;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 14px;
+  border-radius: 12px;
   cursor: pointer;
   color: white;
+  font-size: 18px;
 }
 
-/* MENÚ */
+/* MENÚ MOBILE VERTICAL */
 .menu {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 1000px;
+  max-width: 600px;
   margin: auto;
 }
 
 .card {
-  height: 160px;
-  border-radius: 16px;
+  height: 190px;
+  border-radius: 18px;
   background-size: cover;
   background-position: center;
   cursor: pointer;
   position: relative;
-  transition: transform 0.3s;
-}
-
-.card:hover {
-  transform: scale(1.05);
 }
 
 .overlay {
@@ -91,20 +87,8 @@ body {
   position: absolute;
   bottom: 15px;
   left: 15px;
-  font-size: 18px;
-}
-
-/* CARRUSEL (NUEVO) */
-.carousel {
-  display: flex;
-  overflow-x: auto;
-  gap: 12px;
-  padding: 10px 0;
-}
-
-.carousel .card {
-  min-width: 220px;
-  height: 130px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 /* AJUSTES */
@@ -126,7 +110,8 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  width: 340px;
+  width: 100%;
+  max-width: 420px;
   height: 100%;
   background: #141414;
   padding: 20px;
@@ -147,11 +132,15 @@ body {
   align-items: center;
 }
 
+.settings-header h2 {
+  font-size: 22px;
+}
+
 .settings-header button {
   background: none;
   border: none;
   color: white;
-  font-size: 22px;
+  font-size: 24px;
   cursor: pointer;
 }
 
@@ -160,12 +149,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .avatar {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: #333;
   background-size: cover;
@@ -175,40 +164,43 @@ body {
 
 #usernameInput {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
   text-align: center;
+  font-size: 16px;
 }
 
 /* BOTÓN GUARDAR */
 .profile-box button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #e50914;
   color: white;
+  font-size: 16px;
 }
 
-/* CATEGORÍAS */
+/* CATEGORÍAS GRANDES */
 .avatar-category {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  margin-top: 15px;
+  margin-top: 18px;
 }
 
 /* AVATARES */
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 
 .avatar-grid img {
   width: 100%;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .avatar-grid img:hover {
@@ -230,21 +222,19 @@ body {
 
   <div class="menu">
 
-    <div class="carousel">
-      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4')">
-        <div class="overlay"></div>
-        <div class="content">📅 Calendario</div>
-      </div>
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4')">
+      <div class="overlay"></div>
+      <div class="content">📅 Calendario</div>
+    </div>
 
-      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f')">
-        <div class="overlay"></div>
-        <div class="content">👥 Social</div>
-      </div>
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f')">
+      <div class="overlay"></div>
+      <div class="content">👥 Social</div>
+    </div>
 
-      <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba')">
-        <div class="overlay"></div>
-        <div class="content">🎬 Explorar</div>
-      </div>
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba')">
+      <div class="overlay"></div>
+      <div class="content">🎬 Explorar</div>
     </div>
 
   </div>
@@ -259,31 +249,43 @@ body {
       <h2>Perfil</h2>
     </div>
 
-    <div class="settings-body">
-
-      <div class="profile-box">
-        <div class="avatar" id="avatar"></div>
-        <input id="usernameInput">
-        <button onclick="saveProfile(event)">Guardar</button>
-      </div>
-
-      <div class="avatar-category">🎬 Películas</div>
-      <div class="avatar-grid">
-        <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
-        <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
-      </div>
-
-      <div class="avatar-category">🦸 Superhéroes</div>
-      <div class="avatar-grid">
-        <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
-      </div>
-
-      <div class="avatar-category">🎃 Terror</div>
-      <div class="avatar-grid">
-        <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
-      </div>
-
+    <div class="profile-box">
+      <div class="avatar" id="avatar"></div>
+      <input id="usernameInput">
+      <button onclick="saveProfile(event)">Guardar</button>
     </div>
+
+    <!-- MARVEL -->
+    <div class="avatar-category">🟥 Marvel</div>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
+      <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
+    </div>
+
+    <!-- DC -->
+    <div class="avatar-category">🟦 DC</div>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
+    </div>
+
+    <!-- WARNER -->
+    <div class="avatar-category">🟨 Warner</div>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
+    </div>
+
+    <!-- DISNEY -->
+    <div class="avatar-category">🟪 Disney</div>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/7G6j3Ck.jpg" onclick="setAvatar(this.src)">
+    </div>
+
+    <!-- UNIVERSAL -->
+    <div class="avatar-category">🟩 Universal</div>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/2Y1.jpg" onclick="setAvatar(this.src)">
+    </div>
+
   </div>
 </div>
 
@@ -301,13 +303,13 @@ window.onload = () => {
 
   document.getElementById("usernameInput").value = user;
 
-  if (avatar) document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
+  if (avatar) {
+    document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
+  }
 
   setTimeout(() => {
     intro.classList.add("hide");
-    setTimeout(() => {
-      intro.style.display = "none";
-    }, 1200);
+    setTimeout(() => intro.style.display = "none", 1200);
   }, 1500);
 };
 
