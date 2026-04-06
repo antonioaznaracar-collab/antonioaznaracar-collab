@@ -2,15 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineMatch 2027 | Evolution</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CineMatch 2027</title>
     <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
         :root {
             --bg: #050505;
             --accent: #ff003c;
-            --neon-blue: #00f2ff;
+            --glass: rgba(255, 255, 255, 0.08);
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* --- ESTILO NATIVO DE APP --- */
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; /* Quita el cuadro azul al tocar en Android */
+            user-select: none; /* No permite seleccionar texto, como una app real */
+            -webkit-user-select: none;
         }
 
         body, html {
@@ -20,154 +30,161 @@
             color: white;
             font-family: 'Inter', sans-serif;
             overflow: hidden;
+            touch-action: manipulation; /* Optimiza toques en móvil */
         }
 
-        /* --- INTRO "EL TÚNEL" --- */
+        /* --- INTRO NATIVA --- */
         #intro-screen {
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            inset: 0;
             background: black;
-            z-index: 999;
+            z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease-in-out;
-        }
-
-        /* Animación del Escáner Adaptable */
-        .scanner {
-            position: absolute;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            box-shadow: 0 0 30px var(--accent);
-            opacity: 0;
-            animation: moveScanner 2.5s infinite;
-        }
-
-        /* MÓVIL: HORIZONTAL */
-        @media (orientation: landscape) or (min-width: 800px) {
-            .scanner {
-                width: 5px; height: 100%;
-                left: -10%;
-                background: linear-gradient(to bottom, transparent, var(--accent), transparent);
-            }
-            @keyframes moveScanner {
-                0% { left: -10%; opacity: 0; }
-                50% { opacity: 1; }
-                100% { left: 110%; opacity: 0; }
-            }
-            .menu-grid { grid-template-columns: repeat(3, 1fr) !important; }
-        }
-
-        /* PC / MÓVIL VERTICAL: VERTICAL */
-        @media (orientation: portrait) and (max-width: 799px) {
-            .scanner {
-                width: 100%; height: 5px;
-                top: -10%;
-                background: linear-gradient(to right, transparent, var(--accent), transparent);
-            }
-            @keyframes moveScanner {
-                0% { top: -10%; opacity: 0; }
-                50% { opacity: 1; }
-                100% { top: 110%; opacity: 0; }
-            }
-            .menu-grid { grid-template-columns: 1fr !important; }
+            transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
         }
 
         .logo-intro {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(3rem, 10vw, 6rem);
-            letter-spacing: 15px;
-            z-index: 1000;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
-            animation: pulseLogo 2s infinite alternate;
+            font-size: 15vw;
+            letter-spacing: 12px;
+            background: linear-gradient(to bottom, #fff, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite alternate;
         }
 
-        @keyframes pulseLogo {
-            from { transform: scale(1); opacity: 0.7; }
-            to { transform: scale(1.05); opacity: 1; }
+        @keyframes pulse {
+            from { opacity: 0.4; transform: scale(0.9); filter: blur(5px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
         }
 
-        /* --- EL MENÚ (COMO TE GUSTÓ) --- */
+        /* --- MENU APP ADAPTABLE --- */
         #main-app {
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
-            opacity: 0;
-            transition: opacity 1.5s ease;
+            background: radial-gradient(circle at center, #151525 0%, #050505 100%);
+            padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
         }
 
-        .menu-grid {
-            display: grid;
-            gap: 25px;
-            width: 85%;
-            max-width: 1200px;
+        .menu-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1100px;
+            height: 100%;
+            max-height: 500px; /* Evita que se estiren infinito en PC */
         }
 
+        /* MÓVIL: HORIZONTAL (Landscape) */
+        @media (orientation: landscape) {
+            .menu-container { flex-direction: row; align-items: center; }
+            .card { height: 70%; }
+        }
+
+        /* PC / MÓVIL: VERTICAL (Portrait) */
+        @media (orientation: portrait) {
+            .menu-container { flex-direction: column; align-items: stretch; }
+            .card { flex: 1; }
+        }
+
+        /* --- TARJETAS ESTILO "PLATAFORMA" --- */
         .card {
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--glass);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 40px;
-            text-align: center;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             backdrop-filter: blur(20px);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+            -webkit-backdrop-filter: blur(20px);
         }
 
-        .card:hover {
-            transform: scale(1.08);
+        /* Feedback visual de toque */
+        .card:active {
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.15);
             border-color: var(--accent);
-            box-shadow: 0 0 40px rgba(255, 0, 60, 0.3);
         }
 
-        .icon { font-size: 4rem; display: block; margin-bottom: 15px; }
-        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 3px; font-size: 1.2rem; }
-        .subtitle { font-size: 0.8rem; color: var(--neon-blue); margin-top: 10px; font-weight: bold;}
+        .icon { font-size: clamp(2.5rem, 10vh, 4.5rem); margin-bottom: 10px; }
+        .label { 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-size: clamp(0.9rem, 2.5vh, 1.3rem);
+            letter-spacing: 2px;
+        }
+        .subtitle { 
+            font-size: 0.7rem; 
+            color: #00f2ff; 
+            margin-top: 8px; 
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .notification {
+            position: absolute; top: 20px; right: 20px;
+            width: 12px; height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent);
+        }
     </style>
 </head>
 <body>
 
-    <!-- INTRO ADAPTABLE -->
+    <!-- INTRO -->
     <div id="intro-screen">
-        <div class="scanner"></div>
         <div class="logo-intro">CINEMATCH</div>
     </div>
 
-    <!-- APP PRINCIPAL -->
+    <!-- APP -->
     <main id="main-app">
-        <div class="menu-grid">
-            <div class="card" onclick="alert('Maratones')">
+        <nav class="menu-container">
+            <div class="card" onclick="vibrate()">
                 <span class="icon">🍿</span>
                 <div class="label">Maratones</div>
-                <div class="subtitle">Orden Cronológico</div>
+                <div class="subtitle">Sagas & Orden</div>
             </div>
-            <div class="card" onclick="alert('Calendario')">
+
+            <div class="card" onclick="vibrate()">
                 <span class="icon">📅</span>
                 <div class="label">Calendario</div>
-                <div class="subtitle">Hype 2027</div>
+                <div class="subtitle">Estrenos 2027</div>
             </div>
-            <div class="card" style="position: relative;" onclick="alert('Social')">
-                <div style="position:absolute; top:25px; right:35px; width:12px; height:12px; background:var(--accent); border-radius:50%; box-shadow: 0 0 10px var(--accent);"></div>
+
+            <div class="card" onclick="vibrate()">
+                <div class="notification"></div>
                 <span class="icon">👥</span>
                 <div class="label">Social</div>
-                <div class="subtitle">Chat de 10</div>
+                <div class="subtitle">Club de 10</div>
             </div>
-        </div>
+        </nav>
     </main>
 
     <script>
-        // Lógica de transición
-        setTimeout(() => {
-            document.getElementById('intro-screen').style.opacity = '0';
-            document.getElementById('main-app').style.opacity = '1';
+        // Efecto de vibración para cuando sea app real
+        function vibrate() {
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(10); 
+            }
+            console.log("Haptic Feedback");
+        }
+
+        // Transición de Intro
+        window.onload = () => {
             setTimeout(() => {
-                document.getElementById('intro-screen').style.display = 'none';
-            }, 1000);
-        }, 3500); // 3.5 segundos para apreciar el efecto
+                const intro = document.getElementById('intro-screen');
+                intro.style.transform = 'translateY(-100%)'; // Sube como una persiana
+            }, 2500);
+        };
     </script>
 </body>
 </html>
