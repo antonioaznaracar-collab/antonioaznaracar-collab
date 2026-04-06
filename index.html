@@ -2,125 +2,130 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
-    <title>CineMatch 2027</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMatch Pro - Fase 1</title>
     <style>
         :root {
-            --bg-color: #0b0b0d;
-            --accent-color: #e50914; /* Rojo Netflix */
-            --glass: rgba(255, 255, 255, 0.05);
-            --neon-blue: #00d2ff;
+            --bg: #050505;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --accent: #ff003c; /* Rojo Eléctrico */
+            --neon-blue: #00f2ff;
         }
 
         body {
             margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
             color: white;
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0b0b0d 100%);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 20% 30%, #1a1a2e 0%, #050505 100%);
         }
 
-        /* Contenedor del Menú */
-        .menu-container {
-            display: flex;
+        /* --- CONTENEDOR INTELIGENTE --- */
+        .menu-grid {
+            display: grid;
             gap: 20px;
-            padding: 20px;
             width: 90%;
             max-width: 1200px;
-            /* CAMBIO AUTOMÁTICO: Vertical en PC / Horizontal en Móvil */
-            flex-direction: column; 
+            padding: 20px;
+            /* Por defecto: MÓVIL VERTICAL (1 columna) */
+            grid-template-columns: 1fr; 
         }
 
-        @media (min-aspect-ratio: 1/1) {
-            .menu-container { flex-direction: row; }
+        /* --- CAMBIO A PC HORIZONTAL (Pantallas anchas) --- */
+        @media (min-width: 768px) {
+            .menu-grid {
+                grid-template-columns: repeat(4, 1fr); /* 4 columnas en horizontal */
+            }
         }
 
-        /* Tarjetas de Botones */
-        .menu-item {
-            flex: 1;
-            background: var(--glass);
+        /* --- TARJETAS DE BOTONES --- */
+        .card {
+            background: var(--card-bg);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 24px;
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
         }
 
-        .menu-item:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+        .card:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.3);
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .icon {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 15px;
+            display: block;
         }
 
-        .title {
-            font-weight: bold;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
+        .label {
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.1rem;
         }
 
-        .badge {
-            background: var(--accent-color);
-            padding: 2px 10px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            margin-top: 5px;
-        }
-
-        /* Estilo para los textos de 2027 */
-        .hype-text {
+        .subtitle {
+            font-size: 0.75rem;
             color: var(--neon-blue);
-            font-size: 0.8rem;
-            margin-top: 10px;
+            margin-top: 8px;
+            opacity: 0.8;
         }
+
+        /* Decoración de "Cine" */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="menu-container">
-        <!-- BOTÓN MARATÓN -->
-        <div class="menu-item" onclick="alert('Abriendo Maratones...')">
-            <div class="icon">🍿</div>
-            <div class="title">Maratones</div>
-            <div class="badge">NUEVO</div>
+    <div class="menu-grid">
+        <!-- BOTÓN 1: MARATONES -->
+        <div class="card" onclick="alert('Generando Maratón Marvel...')">
+            <span class="icon">🍿</span>
+            <div class="label">Maratones</div>
+            <div class="subtitle">Orden Cronológico</div>
         </div>
 
-        <!-- BOTÓN CALENDARIO -->
-        <div class="menu-item" onclick="alert('Calendario 2026-2027')">
-            <div class="icon">📅</div>
-            <div class="title">Estrenos</div>
-            <div class="hype-text">Hype 2027</div>
+        <!-- BOTÓN 2: CALENDARIO -->
+        <div class="card" onclick="alert('Cargando Estrenos 2027...')">
+            <span class="icon">📅</span>
+            <div class="label">Calendario</div>
+            <div class="subtitle">Hype 2027</div>
         </div>
 
-        <!-- BOTÓN CINE-CHAT -->
-        <div class="menu-item" onclick="alert('Abriendo Chat de Amigos...')">
-            <div class="icon">💬</div>
-            <div class="title">Cine-Chat</div>
-            <div class="badge">10 Amigos</div>
+        <!-- BOTÓN 3: CHAT -->
+        <div class="card" onclick="alert('Abriendo Chat Grupal...')">
+            <span class="icon">💬</span>
+            <div class="label">Cine-Chat</div>
+            <div class="subtitle">10 Amigos Max</div>
         </div>
 
-        <!-- BOTÓN GRUPOS -->
-        <div class="menu-item" onclick="alert('Tus grupos de cine')">
-            <div class="icon">👥</div>
-            <div class="title">Mis Grupos</div>
+        <!-- BOTÓN 4: AMIGOS -->
+        <div class="card" onclick="alert('Gestionando Amigos...')">
+            <span class="icon">👥</span>
+            <div class="label">Mi Grupo</div>
+            <div class="subtitle">Social Hub</div>
         </div>
     </div>
 
