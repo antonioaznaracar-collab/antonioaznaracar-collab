@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CineMatch 2027 | Pro Version</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CineMatch 2027 | Final Fix</title>
     <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
@@ -13,7 +13,7 @@
             --glass: rgba(255, 255, 255, 0.08);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body, html {
             margin: 0; padding: 0;
@@ -21,121 +21,126 @@
             background-color: var(--bg);
             color: white;
             font-family: 'Inter', sans-serif;
-            overflow: hidden;
         }
 
-        /* --- FONDO DINÁMICO PARA PC --- */
-        #main-app {
-            height: 100vh;
-            width: 100vw;
+        /* --- 1. INTRO (RECUPERADA Y MEJORADA) --- */
+        #intro-screen {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Degradado más profundo para que no se vea plano en PC */
-            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
-            padding: 20px;
+            transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
         }
 
-        /* --- CONTENEDOR QUE SE ADAPTA DE VERDAD --- */
+        .logo-intro {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 15vw;
+            letter-spacing: 10px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- 2. APP PRINCIPAL --- */
+        #main-app {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #151525 0%, #050505 100%);
+            padding: 40px 20px;
+            /* Permitimos scroll si el contenido es más alto que la pantalla */
+            overflow-y: auto; 
+        }
+
         .menu-container {
             display: grid;
             gap: 20px;
             width: 100%;
-            /* En PC: Las tarjetas ocupan más espacio */
-            max-width: 1400px; 
-            height: auto;
+            max-width: 1200px;
         }
 
-        /* MÓVIL: VERTICAL (Portrait) */
+        /* CONFIGURACIÓN MÓVIL (Vertical) */
         @media (orientation: portrait) {
             .menu-container {
                 grid-template-columns: 1fr;
-                height: 85vh; /* Ocupa casi toda la altura */
+                padding-bottom: 40px; /* Espacio extra al final */
             }
+            .card { min-height: 200px; } /* Altura fija para que no sean gigantes */
+            .icon { font-size: 3.5rem !important; }
+            .label { font-size: 1.2rem !important; }
         }
 
-        /* PC / MÓVIL: HORIZONTAL (Landscape) */
+        /* CONFIGURACIÓN PC (Horizontal) */
         @media (orientation: landscape) {
             .menu-container {
-                grid-template-columns: repeat(3, 1fr); /* 3 columnas anchas */
-                height: 60vh; /* No tan alto para que no se vea estirado */
+                grid-template-columns: repeat(3, 1fr);
+                height: 60vh;
+                align-items: center;
             }
+            .card { height: 100%; }
         }
 
-        /* --- TARJETAS REFORZADAS --- */
+        /* --- TARJETAS --- */
         .card {
             background: var(--glass);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
+            border-radius: 25px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px 20px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            padding: 30px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             position: relative;
         }
 
-        /* Efecto PC: Brillo al pasar el ratón */
-        @media (hover: hover) {
-            .card:hover {
-                transform: translateY(-15px) scale(1.02);
-                border-color: var(--accent);
-                background: rgba(255, 255, 255, 0.12);
-                box-shadow: 0 20px 50px rgba(255, 0, 60, 0.3);
-            }
-        }
+        .card:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.15); }
 
-        /* Efecto Móvil: Vibración visual al tocar */
-        .card:active { transform: scale(0.95); }
+        .icon { font-size: clamp(3rem, 10vh, 5rem); margin-bottom: 10px; }
+        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(1rem, 2.5vh, 1.5rem); }
+        .subtitle { font-size: 0.75rem; color: #00f2ff; margin-top: 8px; font-weight: bold; }
 
-        /* Iconos y textos proporcionales */
-        .icon { font-size: clamp(3rem, 12vh, 6rem); margin-bottom: 15px; }
-        .label { 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            font-size: clamp(1rem, 3vh, 1.8rem); /* Texto más grande en PC */
-            letter-spacing: 2px;
-        }
-        .subtitle { 
-            font-size: clamp(0.7rem, 1.5vh, 1rem); 
-            color: #00f2ff; 
-            margin-top: 10px; 
-            font-weight: bold;
-            opacity: 0.8;
-        }
-
-        .notification {
-            position: absolute; top: 25px; right: 25px;
-            width: clamp(10px, 2vh, 15px); 
-            height: clamp(10px, 2vh, 15px);
+        .dot {
+            position: absolute; top: 20px; right: 20px;
+            width: 12px; height: 12px;
             background: var(--accent);
             border-radius: 50%;
-            box-shadow: 0 0 20px var(--accent);
+            box-shadow: 0 0 15px var(--accent);
         }
     </style>
 </head>
 <body>
 
+    <!-- INTRO -->
+    <div id="intro-screen">
+        <div class="logo-intro">CINEMATCH</div>
+    </div>
+
+    <!-- APP -->
     <main id="main-app">
         <div class="menu-container">
             
-            <div class="card" onclick="console.log('Maratones')">
+            <div class="card" onclick="vibrate()">
                 <span class="icon">🍿</span>
                 <div class="label">Maratones</div>
                 <div class="subtitle">Sagas & Orden</div>
             </div>
 
-            <div class="card" onclick="console.log('Calendario')">
+            <div class="card" onclick="vibrate()">
                 <span class="icon">📅</span>
                 <div class="label">Calendario</div>
                 <div class="subtitle">Estrenos 2027</div>
             </div>
 
-            <div class="card" onclick="console.log('Social')">
-                <div class="notification"></div>
+            <div class="card" style="position: relative;" onclick="vibrate()">
+                <div class="dot"></div>
                 <span class="icon">👥</span>
                 <div class="label">Social</div>
                 <div class="subtitle">Club de 10</div>
@@ -144,5 +149,17 @@
         </div>
     </main>
 
+    <script>
+        function vibrate() {
+            if (navigator.vibrate) navigator.vibrate(15);
+            console.log("Click!");
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.transform = 'translateY(-100%)';
+            }, 2500);
+        };
+    </script>
 </body>
 </html>
