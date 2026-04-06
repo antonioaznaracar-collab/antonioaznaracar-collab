@@ -3,211 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineMatch 2027 | Club de los 10</title>
-    <!-- Importamos una fuente moderna y cinematográfica -->
+    <title>CineMatch 2027 | Evolution</title>
     <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
         :root {
             --bg: #050505;
             --accent: #ff003c;
-            --glass: rgba(255, 255, 255, 0.08);
             --neon-blue: #00f2ff;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             background-color: var(--bg);
             color: white;
             font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Evita scroll durante la intro */
+            overflow: hidden;
         }
 
-        /* --- 1. INTRO "PROYECTOR" --- */
+        /* --- INTRO "EL TÚNEL" --- */
         #intro-screen {
             position: fixed;
             top: 0; left: 0;
-            width: 100%; height: 100%;
+            width: 100vw; height: 100vh;
             background: black;
+            z-index: 999;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 100;
-            transition: opacity 1.5s ease-out;
+            transition: opacity 1s ease-in-out;
         }
 
-        .countdown {
-            font-size: 8rem;
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 0 30px white;
-            animation: pulse 1s infinite;
-        }
-
-        /* Haz de luz del proyector */
-        .beam {
+        /* Animación del Escáner Adaptable */
+        .scanner {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            box-shadow: 0 0 30px var(--accent);
             opacity: 0;
-            animation: beamFade 3s forwards;
+            animation: moveScanner 2.5s infinite;
         }
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        @keyframes beamFade { 0% { opacity: 0; } 50% { opacity: 0.5; } 100% { opacity: 0; } }
+        /* MÓVIL: HORIZONTAL */
+        @media (orientation: landscape) or (min-width: 800px) {
+            .scanner {
+                width: 5px; height: 100%;
+                left: -10%;
+                background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+            }
+            @keyframes moveScanner {
+                0% { left: -10%; opacity: 0; }
+                50% { opacity: 1; }
+                100% { left: 110%; opacity: 0; }
+            }
+            .menu-grid { grid-template-columns: repeat(3, 1fr) !important; }
+        }
 
-        /* --- 2. CONTENEDOR DEL MENÚ --- */
-        #main-menu {
+        /* PC / MÓVIL VERTICAL: VERTICAL */
+        @media (orientation: portrait) and (max-width: 799px) {
+            .scanner {
+                width: 100%; height: 5px;
+                top: -10%;
+                background: linear-gradient(to right, transparent, var(--accent), transparent);
+            }
+            @keyframes moveScanner {
+                0% { top: -10%; opacity: 0; }
+                50% { opacity: 1; }
+                100% { top: 110%; opacity: 0; }
+            }
+            .menu-grid { grid-template-columns: 1fr !important; }
+        }
+
+        .logo-intro {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 10vw, 6rem);
+            letter-spacing: 15px;
+            z-index: 1000;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            animation: pulseLogo 2s infinite alternate;
+        }
+
+        @keyframes pulseLogo {
+            from { transform: scale(1); opacity: 0.7; }
+            to { transform: scale(1.05); opacity: 1; }
+        }
+
+        /* --- EL MENÚ (COMO TE GUSTÓ) --- */
+        #main-app {
             height: 100vh;
+            width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
             background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
-            opacity: 0; /* Oculto al inicio */
-            transition: opacity 2s ease-in;
+            opacity: 0;
+            transition: opacity 1.5s ease;
         }
 
         .menu-grid {
             display: grid;
             gap: 25px;
-            width: 90%;
-            max-width: 1300px;
-            /* MÓVIL VERTICAL (Por defecto) */
-            grid-template-columns: 1fr;
-            padding: 20px;
+            width: 85%;
+            max-width: 1200px;
         }
 
-        /* PC HORIZONTAL (Pantallas anchas) */
-        @media (min-width: 900px) {
-            .menu-grid {
-                grid-template-columns: repeat(3, 1fr); /* 3 Secciones maestras */
-            }
-        }
-
-        /* --- 3. TARJETAS MEJORADAS --- */
         .card {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 30px;
-            padding: 40px 20px;
+            padding: 40px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             backdrop-filter: blur(20px);
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
         }
 
         .card:hover {
-            transform: translateY(-15px);
+            transform: scale(1.08);
             border-color: var(--accent);
-            box-shadow: 0 0 40px rgba(255, 0, 60, 0.4);
-            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 40px rgba(255, 0, 60, 0.3);
         }
 
-        /* Glow dinámico de cada tarjeta */
-        .card.maraton:hover { box-shadow: 0 0 40px rgba(255, 215, 0, 0.3); border-color: gold; }
-        .card.social:hover { box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); border-color: var(--neon-blue); }
-
-        .icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            display: block;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
-        }
-
-        .label {
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 0.8rem;
-            color: var(--neon-blue);
-            font-weight: bold;
-            opacity: 0.7;
-        }
-
-        /* Notificación roja en Social */
-        .notif {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            width: 12px;
-            height: 12px;
-            background: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent);
-        }
+        .icon { font-size: 4rem; display: block; margin-bottom: 15px; }
+        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 3px; font-size: 1.2rem; }
+        .subtitle { font-size: 0.8rem; color: var(--neon-blue); margin-top: 10px; font-weight: bold;}
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE INTRO -->
+    <!-- INTRO ADAPTABLE -->
     <div id="intro-screen">
-        <div class="beam"></div>
-        <div id="counter" class="countdown">3</div>
+        <div class="scanner"></div>
+        <div class="logo-intro">CINEMATCH</div>
     </div>
 
-    <!-- MENÚ PRINCIPAL -->
-    <main id="main-menu">
+    <!-- APP PRINCIPAL -->
+    <main id="main-app">
         <div class="menu-grid">
-            
-            <!-- SECCIÓN 1: MARATONES -->
-            <div class="card maraton" onclick="alert('Cargando listas...')">
+            <div class="card" onclick="alert('Maratones')">
                 <span class="icon">🍿</span>
                 <div class="label">Maratones</div>
-                <div class="subtitle">Orden Cronológico & Sagas</div>
+                <div class="subtitle">Orden Cronológico</div>
             </div>
-
-            <!-- SECCIÓN 2: CALENDARIO -->
-            <div class="card" onclick="alert('Mirando al futuro...')">
+            <div class="card" onclick="alert('Calendario')">
                 <span class="icon">📅</span>
                 <div class="label">Calendario</div>
-                <div class="subtitle">Hype 2026 - 2027</div>
+                <div class="subtitle">Hype 2027</div>
             </div>
-
-            <!-- SECCIÓN 3: SOCIAL (Chat incluido aquí) -->
-            <div class="card social" onclick="alert('Abriendo Social Hub...')">
-                <div class="notif"></div>
+            <div class="card" style="position: relative;" onclick="alert('Social')">
+                <div style="position:absolute; top:25px; right:35px; width:12px; height:12px; background:var(--accent); border-radius:50%; box-shadow: 0 0 10px var(--accent);"></div>
                 <span class="icon">👥</span>
                 <div class="label">Social</div>
-                <div class="subtitle">Chat de Amigos (10)</div>
+                <div class="subtitle">Chat de 10</div>
             </div>
-
         </div>
     </main>
 
     <script>
-        // LÓGICA DE LA INTRO (3, 2, 1... Cine!)
-        const counterElement = document.getElementById('counter');
-        const introScreen = document.getElementById('intro-screen');
-        const mainMenu = document.getElementById('main-menu');
-        let count = 3;
-
-        const timer = setInterval(() => {
-            count--;
-            if (count > 0) {
-                counterElement.innerText = count;
-            } else {
-                clearInterval(timer);
-                counterElement.innerText = "ACCION!";
-                
-                // Transición al menú
-                setTimeout(() => {
-                    introScreen.style.opacity = '0';
-                    mainMenu.style.opacity = '1';
-                    document.body.style.overflow = 'auto';
-                    setTimeout(() => { introScreen.style.display = 'none'; }, 1500);
-                }, 500);
-            }
-        }, 1000);
+        // Lógica de transición
+        setTimeout(() => {
+            document.getElementById('intro-screen').style.opacity = '0';
+            document.getElementById('main-app').style.opacity = '1';
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.display = 'none';
+            }, 1000);
+        }, 3500); // 3.5 segundos para apreciar el efecto
     </script>
 </body>
 </html>
