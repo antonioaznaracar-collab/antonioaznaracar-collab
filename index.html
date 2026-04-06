@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CineMatch 2027 | Phase 2</title>
+    <title>CineMatch 2027 | User Sync</title>
     <link href="https://googleapis.com" rel="stylesheet">
+    <script src="https://google.com" async defer></script>
     
     <style>
         :root {
@@ -34,7 +35,7 @@
         .logo-intro { font-family: 'Bebas Neue', sans-serif; font-size: 15vw; letter-spacing: 10px; animation: pulse 1.5s infinite alternate; }
         @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- 2. ESTRUCTURA NAVEGACIÓN --- */
+        /* --- 2. NAVEGACIÓN --- */
         .page {
             position: absolute; inset: 0; display: none;
             background: radial-gradient(circle at center, #151525 0%, #050505 100%);
@@ -42,19 +43,17 @@
         }
         .active-page { display: flex !important; flex-direction: column; align-items: center; }
 
-        /* CONFIGURACIÓN ADAPTABLE */
         .menu-container { display: grid; gap: 20px; width: 100%; max-width: 1200px; margin: auto; }
         
-        @media (orientation: portrait) { /* MÓVIL VERTICAL */
+        @media (orientation: portrait) { 
             .menu-container { grid-template-columns: 1fr; padding-bottom: 60px; }
             .card { min-height: 180px; }
         }
-        @media (orientation: landscape) { /* PC HORIZONTAL */
+        @media (orientation: landscape) { 
             .menu-container { grid-template-columns: repeat(3, 1fr); height: 60vh; align-items: center; }
             .card { height: 100%; }
         }
 
-        /* --- 3. COMPONENTES --- */
         .card {
             background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 25px; display: flex; flex-direction: column;
@@ -68,21 +67,30 @@
         .label { font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(1rem, 2vh, 1.4rem); }
         .subtitle { font-size: 0.75rem; color: var(--text-sec); margin-top: 8px; font-weight: bold; }
 
-        /* SETTINGS */
+        /* AJUSTES */
         .settings-card {
             background: var(--glass); width: 100%; max-width: 600px;
             padding: 20px; border-radius: 20px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; flex-direction: column; gap: 10px;
         }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .btn { background: var(--accent); border: none; color: white; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
-        select { background: #111; color: white; border: 1px solid var(--accent); padding: 5px; border-radius: 5px; }
+        
+        /* Input de Usuario */
+        #user-input {
+            background: #111; color: var(--text-sec);
+            border: 1px solid var(--accent);
+            padding: 10px; border-radius: 10px;
+            font-weight: bold; width: 100%;
+            text-align: center; margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+        }
 
         #settings-btn { position: fixed; top: 20px; right: 20px; z-index: 100; font-size: 1.5rem; background: var(--glass); padding: 10px; border-radius: 50%; }
     </style>
 </head>
 <body>
 
-    <!-- INTRO -->
     <div id="intro-screen">
         <div class="logo-intro">CINEMATCH</div>
     </div>
@@ -104,7 +112,6 @@
                 <div class="subtitle" data-key="hype">Estrenos 2027</div>
             </div>
 
-            <!-- Botón Social Dinámico -->
             <div id="card-social" class="card locked" onclick="checkSocial()">
                 <div id="social-lock" style="position:absolute; top:10px; right:15px">🔒</div>
                 <span class="icon">👥</span>
@@ -120,46 +127,87 @@
         <h1 style="font-family:'Bebas Neue'; letter-spacing:4px" data-key="settings">Ajustes</h1>
         
         <div class="settings-card">
-            <div><b data-key="lang">Idioma</b></div>
-            <select onchange="changeLang(this.value)">
-                <option value="es">Español</option>
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-            </select>
+            <div class="setting-row">
+                <b data-key="lang">Idioma</b>
+                <select id="lang-select" onchange="changeLang(this.value)" style="background:#111; color:white; border:1px solid var(--accent); padding:5px; border-radius:5px;">
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
+            </div>
         </div>
 
         <div class="settings-card">
-            <div>
-                <b data-key="user">Usuario</b>: <span id="username-display">???</span>
+            <div class="setting-row">
+                <b data-key="user">Usuario</b>
+                <span id="login-status" style="font-size: 0.7rem; color: #888;">(Sin sesión)</span>
             </div>
-            <button class="btn" style="padding:5px 10px; font-size:0.7rem" onclick="randomizeName()" data-key="change">Cambiar</button>
+            <input type="text" id="user-input" placeholder="Tu apodo..." oninput="saveName(this.value)">
+            <p style="font-size: 0.6rem; color: #555; text-align: center; margin: 0;">Se guarda automáticamente en tu dispositivo.</p>
         </div>
 
         <div class="settings-card" id="login-section">
-            <div data-key="session">Sesión</div>
-            <button class="btn" onclick="login()">LOGIN (Google/Apple)</button>
+            <div class="setting-row">
+                <div data-key="session">Sesión</div>
+                <div id="g_id_onload"
+                     data-client_id="TU_CLIENT_ID_://googleusercontent.com"
+                     data-callback="handleCredentialResponse">
+                </div>
+                <div class="g_id_signin" data-type="standard"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // 1. DICCIONARIO DE IDIOMAS
         const langData = {
-            es: { marathons: "Maratones", sagas: "Sagas & Orden", calendar: "Calendario", hype: "Estrenos 2027", social: "Social", club: "Club de 10", settings: "Ajustes", back: "Volver", lang: "Idioma", user: "Usuario", session: "Sesión", change: "Cambiar", login_req: "¡Debes iniciar sesión para entrar a Social!" },
-            en: { marathons: "Marathons", sagas: "Sagas & Order", calendar: "Calendar", hype: "2027 Releases", social: "Social", club: "Club of 10", settings: "Settings", back: "Back", lang: "Language", user: "Username", session: "Session", change: "Change", login_req: "Login required for Social Hub!" },
-            fr: { marathons: "Marathons", sagas: "Sagas & Ordre", calendar: "Calendrier", hype: "Sorties 2027", social: "Social", club: "Club de 10", settings: "Réglages", back: "Retour", lang: "Langue", user: "Utilisateur", session: "Session", change: "Changer", login_req: "Connexion requise pour le Social!" }
+            es: { marathons: "Maratones", sagas: "Sagas & Orden", calendar: "Calendario", hype: "Estrenos 2027", social: "Social", club: "Club de 10", settings: "Ajustes", back: "Volver", lang: "Idioma", user: "Usuario", session: "Sesión", login_req: "¡Inicia sesión con Google para entrar!" },
+            en: { marathons: "Marathons", sagas: "Sagas & Order", calendar: "Calendar", hype: "2027 Releases", social: "Social", club: "Club of 10", settings: "Settings", back: "Back", lang: "Language", user: "Username", session: "Session", login_req: "Login with Google to enter!" },
+            fr: { marathons: "Marathons", sagas: "Sagas & Ordre", calendar: "Calendrier", hype: "Sorties 2027", social: "Social", club: "Club de 10", settings: "Réglages", back: "Retour", lang: "Langue", user: "Utilisateur", session: "Session", login_req: "Connexion Google requise !" }
         };
 
         let userLoggedIn = false;
         let currentLang = 'es';
 
-        // 2. LÓGICA DE NAVEGACIÓN
+        // CARGAR DATOS AL INICIAR
+        window.onload = () => {
+            // 1. Cargar nombre guardado
+            const savedName = localStorage.getItem('cineMatch_name');
+            if (savedName) {
+                document.getElementById('user-input').value = savedName;
+            }
+
+            // 2. Intro
+            setTimeout(() => { document.getElementById('intro-screen').style.transform = 'translateY(-100%)'; }, 2500);
+        };
+
+        function saveName(name) {
+            localStorage.setItem('cineMatch_name', name);
+        }
+
+        function handleCredentialResponse(response) {
+            const payload = JSON.parse(atob(response.credential.split('.')));
+            userLoggedIn = true;
+            
+            // Si el usuario no tiene nombre guardado, le ponemos el de Google + random
+            const googleName = payload.given_name + "_" + Math.floor(Math.random() * 9999);
+            document.getElementById('user-input').value = googleName;
+            saveName(googleName);
+
+            document.getElementById('login-status').innerText = "✅ Google Sync";
+            document.getElementById('card-social').classList.remove('locked');
+            document.getElementById('social-lock').innerText = "🟢";
+            document.getElementById('login-section').style.display = 'none';
+            
+            alert("¡Hola " + payload.given_name + "! Ya puedes entrar al Club.");
+            goTo('home');
+        }
+
         function goTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById('page-' + pageId).classList.add('active-page');
             vibrate();
         }
 
-        // 3. LÓGICA DE IDIOMAS
         function changeLang(lang) {
             currentLang = lang;
             document.querySelectorAll('[data-key]').forEach(el => {
@@ -168,33 +216,12 @@
             });
         }
 
-        // 4. LÓGICA DE USUARIO
-        function login() {
-            userLoggedIn = true;
-            document.getElementById('card-social').classList.remove('locked');
-            document.getElementById('social-lock').innerText = "🟢";
-            document.getElementById('login-section').style.display = 'none';
-            randomizeName();
-            alert("¡Bienvenido al Club!");
-            goTo('home');
-        }
-
         function checkSocial() {
             if(!userLoggedIn) alert(langData[currentLang].login_req);
             else alert("Entrando a Social...");
         }
 
-        function randomizeName() {
-            const names = ["Cinefilo", "MovieMaster", "Director_X", "PopcornKing", "Hollywood_Fan"];
-            const rand = names[Math.floor(Math.random() * names.length)] + "_" + Math.floor(Math.random() * 999);
-            document.getElementById('username-display').innerText = rand;
-        }
-
         function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
-
-        window.onload = () => {
-            setTimeout(() => { document.getElementById('intro-screen').style.transform = 'translateY(-100%)'; }, 2500);
-        };
     </script>
 </body>
 </html>
