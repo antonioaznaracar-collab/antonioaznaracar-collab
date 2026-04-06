@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CineMatch 2027 | Pro Fix</title>
+    <title>CineMatch 2027 | Definitive Edition</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <script src="https://google.com" async defer></script>
     
@@ -13,6 +13,7 @@
             --accent: #ff003c;
             --glass: rgba(255, 255, 255, 0.08);
             --text-sec: #00f2ff;
+            --month-color: #00f2ff; 
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -23,72 +24,42 @@
         .logo-intro { font-family: 'Bebas Neue', sans-serif; font-size: 15vw; letter-spacing: 10px; animation: pulse 1.5s infinite alternate; }
         @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- PÁGINAS --- */
+        /* --- NAVEGACIÓN --- */
         .page { position: absolute; inset: 0; display: none; background: radial-gradient(circle at center, #151525 0%, #050505 100%); padding: 20px; overflow-y: auto; }
         .active-page { display: flex !important; flex-direction: column; align-items: center; justify-content: center; }
 
+        /* --- MENÚ PRINCIPAL (RECUPERADO) --- */
         .menu-container { display: grid; gap: 30px; width: 95%; max-width: 1400px; margin: auto; }
-        
-        /* MÓVIL VERTICAL */
-        @media (orientation: portrait) { 
-            .menu-container { grid-template-columns: 1fr; padding-top: 40px; padding-bottom: 80px; } 
-            .card { height: 25vh; } 
-        }
-        
-        /* PC HORIZONTAL */
-        @media (orientation: landscape) { 
-            .menu-container { grid-template-columns: repeat(3, 1fr); height: 75vh; } 
-            .card { height: 100%; }
-        }
+        @media (orientation: portrait) { .menu-container { grid-template-columns: 1fr; padding-top: 40px; } .card { height: 25vh; } }
+        @media (orientation: landscape) { .menu-container { grid-template-columns: repeat(3, 1fr); height: 75vh; } .card { height: 100%; } }
 
-        /* --- TARJETAS GRANDES Y CON HOVER --- */
         .card { 
-            background: var(--glass); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 35px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 40px; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            backdrop-filter: blur(20px); 
-            position: relative; 
-            cursor: pointer;
+            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            padding: 40px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            backdrop-filter: blur(20px); position: relative; cursor: pointer;
         }
-
-        /* EL EFECTO ROJO QUE FALTABA */
-        .card:hover {
-            border-color: var(--accent);
-            transform: translateY(-15px) scale(1.03);
-            background: rgba(255, 0, 60, 0.05);
-            box-shadow: 0 20px 60px rgba(255, 0, 60, 0.3);
-        }
-
+        .card:hover { border-color: var(--accent); transform: translateY(-15px) scale(1.03); background: rgba(255, 0, 60, 0.05); box-shadow: 0 20px 60px rgba(255, 0, 60, 0.3); }
         .card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-        .card.locked:hover { transform: none; border-color: rgba(255,255,255,0.1); box-shadow: none; }
+        .card.locked:hover { transform: none; box-shadow: none; border-color: rgba(255,255,255,0.1); }
 
         .icon { font-size: clamp(3.5rem, 12vh, 6rem); margin-bottom: 20px; }
         .label { font-weight: 900; text-transform: uppercase; letter-spacing: 3px; font-size: clamp(1.2rem, 3vh, 2rem); }
-        .subtitle { font-size: 0.8rem; color: var(--text-sec); margin-top: 10px; font-weight: bold; }
 
-        /* --- BOTÓN GOOGLE --- */
-        .google-btn {
-            background-color: #131314; color: white; border: 1px solid #8e918f;
-            border-radius: 20px; padding: 12px 28px; display: flex; align-items: center;
-            justify-content: center; gap: 12px; cursor: pointer; font-weight: 500;
-            transition: background 0.3s; margin-top: 20px;
-        }
-        .google-btn:hover { background-color: #1e1e1f; }
+        /* --- CALENDARIO (FASE 3) --- */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; width: 100%; max-width: 800px; background: var(--glass); padding: 20px; border-radius: 25px; border: 2px solid var(--month-color); }
+        .day { aspect-ratio: 1; display: flex; justify-content: center; align-items: center; border-radius: 12px; background: rgba(255,255,255,0.03); font-weight: bold; transition: 0.3s; }
+        .day.past { text-decoration: line-through; opacity: 0.3; color: var(--accent); }
+        .day.today { border: 2px solid var(--month-color); box-shadow: 0 0 15px var(--month-color); }
+
+        /* --- BOTÓN GOOGLE (RECUPERADO) --- */
+        .google-btn { background-color: #131314; color: white; border: 1px solid #8e918f; border-radius: 20px; padding: 12px 28px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-top: 20px; }
         .google-icon { width: 20px; height: 20px; }
 
         /* AJUSTES */
-        .settings-card { background: var(--glass); width: 100%; max-width: 600px; padding: 25px; border-radius: 25px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .btn { background: var(--accent); border: none; color: white; padding: 15px 30px; border-radius: 18px; font-weight: 900; cursor: pointer; }
-        #user-input { background: #111; color: var(--text-sec); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; width: 100%; text-align: center; font-family: 'Inter', sans-serif; font-size: 1.1rem; }
-        #settings-btn { position: fixed; top: 25px; right: 25px; z-index: 100; font-size: 1.8rem; background: var(--glass); padding: 12px; border-radius: 50%; cursor: pointer; transition: transform 0.3s; }
-        #settings-btn:hover { transform: rotate(90deg); }
-        
+        .settings-card { background: var(--glass); width: 100%; max-width: 600px; padding: 25px; border-radius: 25px; display: flex; flex-direction: column; gap: 15px; }
+        #settings-btn { position: fixed; top: 25px; right: 25px; z-index: 100; font-size: 1.8rem; background: var(--glass); padding: 12px; border-radius: 50%; cursor: pointer; }
+        .btn { background: var(--accent); border: none; color: white; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
         .error-msg { color: var(--accent); font-size: 0.8rem; display: none; text-align: center; font-weight: bold; }
     </style>
 </head>
@@ -97,48 +68,35 @@
     <div id="intro-screen"><div class="logo-intro">CINEMATCH</div></div>
     <div id="settings-btn" onclick="goTo('settings')">⚙️</div>
 
-    <!-- PÁGINA: HOME -->
     <main id="page-home" class="page active-page">
         <div class="menu-container">
-            <div class="card" onclick="vibrate()">
-                <span class="icon">🍿</span>
-                <div class="label" data-key="marathons">Maratones</div>
-                <div class="subtitle">Orden Cronológico</div>
-            </div>
-            <div class="card" onclick="vibrate()">
-                <span class="icon">📅</span>
-                <div class="label" data-key="calendar">Calendario</div>
-                <div class="subtitle">Hype 2027</div>
-            </div>
+            <div class="card" onclick="vibrate()">🍿 <div class="label">Maratones</div></div>
+            <div class="card" onclick="goTo('calendar')">📅 <div class="label">Calendario</div></div>
             <div id="card-social" class="card locked" onclick="checkSocial()">
-                <div id="social-lock" style="position:absolute; top:20px; right:25px; font-size: 1.5rem;">🔒</div>
-                <span class="icon">👥</span>
-                <div class="label" data-key="social">Social</div>
-                <div class="subtitle">Club de 10</div>
+                <div id="social-lock" style="position:absolute; top:20px; right:25px">🔒</div>
+                👥 <div class="label">Social</div>
             </div>
         </div>
     </main>
 
-    <!-- PÁGINA: AJUSTES -->
+    <div id="page-calendar" class="page">
+        <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px">
+            <button class="btn" onclick="prevMonth()">◀</button>
+            <h1 id="month-name" style="font-family:'Bebas Neue'; letter-spacing:4px">ABRIL 2026</h1>
+            <button class="btn" onclick="nextMonth()">▶</button>
+        </div>
+        <div id="calendar-body" class="calendar-grid"></div>
+        <button class="btn" style="margin-top:20px" onclick="goTo('home')">VOLVER</button>
+    </div>
+
     <div id="page-settings" class="page">
         <div class="settings-card">
-            <button class="btn" onclick="goTo('home')">← <span data-key="back">Volver</span></button>
-            <h1 style="font-family:'Bebas Neue'; letter-spacing:4px; margin: 10px 0;" data-key="settings">Ajustes</h1>
+            <button class="btn" onclick="goTo('home')">VOLVER</button>
+            <b data-key="user">Usuario</b>
+            <input type="text" id="user-input" placeholder="Tu apodo..." oninput="validateAndSave(this.value)" style="width:100%; padding:12px; background:#111; color:var(--text-sec); border:1px solid var(--accent); border-radius:12px;">
+            <div id="name-error" class="error-msg">⚠️ Este nombre ya está en uso</div>
             
-            <div style="display:flex; justify-content:space-between; align-items: center;"><b data-key="lang">Idioma</b>
-                <select onchange="changeLang(this.value)" style="background:#111; color:white; border:1px solid var(--accent); padding: 10px; border-radius: 10px;">
-                    <option value="es">Español</option><option value="en">English</option><option value="fr">Français</option>
-                </select>
-            </div>
-
-            <div style="margin-top: 20px;">
-                <b data-key="user">Usuario</b>
-                <input type="text" id="user-input" placeholder="Tu apodo..." oninput="validateAndSave(this.value)">
-                <div id="name-error" class="error-msg">⚠️ Este nombre ya está en uso</div>
-            </div>
-
-            <div id="login-section" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                <div data-key="session" style="text-align:center; font-size: 0.9rem; margin-bottom: 10px;">Inicia sesión para Social Hub</div>
+            <div id="login-section" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:10px;">
                 <div class="google-btn" onclick="fakeLogin()">
                     <img src="https://wikimedia.org" class="google-icon">
                     Sign in with Google
@@ -148,62 +106,49 @@
     </div>
 
     <script>
-        const langData = {
-            es: { marathons: "Maratones", calendar: "Calendario", social: "Social", settings: "Ajustes", back: "Volver", lang: "Idioma", user: "Usuario", session: "Sesión", login_req: "¡Inicia sesión primero!" },
-            en: { marathons: "Marathons", calendar: "Calendar", social: "Social", settings: "Settings", back: "Back", lang: "Language", user: "Username", session: "Session", login_req: "Login required!" },
-            fr: { marathons: "Marathons", calendar: "Calendrier", social: "Social", settings: "Réglages", back: "Retour", lang: "Langue", user: "Utilisateur", session: "Session", login_req: "Connexion requise !" }
-        };
-
-        const takenNames = ["Thanos_271", "IronMan", "Admin"];
         let userLoggedIn = false;
-        let currentLang = 'es';
+        let viewDate = new Date(2026, 3, 1);
+        const today = new Date(2026, 3, 6);
+        const takenNames = ["Thanos_271", "IronMan", "Admin"];
 
         window.onload = () => {
             const saved = localStorage.getItem('cineMatch_name');
             if (saved) document.getElementById('user-input').value = saved;
+            renderCalendar();
             setTimeout(() => { document.getElementById('intro-screen').style.transform = 'translateY(-100%)'; }, 2500);
         };
 
         function validateAndSave(name) {
             const errorEl = document.getElementById('name-error');
-            if (takenNames.includes(name)) {
-                errorEl.style.display = 'block';
-                return;
-            }
+            if (takenNames.includes(name)) { errorEl.style.display = 'block'; return; }
             errorEl.style.display = 'none';
             localStorage.setItem('cineMatch_name', name);
         }
 
-        function fakeLogin() {
-            userLoggedIn = true;
-            const newName = "User_" + Math.floor(Math.random() * 888);
-            document.getElementById('user-input').value = newName;
-            localStorage.setItem('cineMatch_name', newName);
-            document.getElementById('card-social').classList.remove('locked');
-            document.getElementById('social-lock').innerText = "🟢";
-            document.getElementById('login-section').style.display = 'none';
-            alert("¡Login Exitoso!");
-            goTo('home');
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-body');
+            const m = viewDate.getMonth(); const y = viewDate.getFullYear();
+            const colors = ["#00d2ff", "#ff00d2", "#d2ff00", "#00ff7f", "#ff7f00", "#7f00ff", "#ff003c", "#00f2ff", "#ffaa00", "#aaff00", "#00aaff", "#aa00ff"];
+            const names = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            
+            document.documentElement.style.setProperty('--month-color', colors[m]);
+            document.getElementById('month-name').innerText = `${names[m]} ${y}`;
+            grid.innerHTML = "";
+            const daysInMonth = new Date(y, m + 1, 0).getDate();
+            for(let d=1; d <= daysInMonth; d++) {
+                const cur = new Date(y, m, d);
+                let cls = "day";
+                if (cur < today) cls += " past";
+                if (cur.getTime() === today.getTime()) cls += " today";
+                grid.innerHTML += `<div class="${cls}">${d}</div>`;
+            }
         }
 
-        function goTo(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById('page-' + id).classList.add('active-page');
-            vibrate();
-        }
-
-        function changeLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('[data-key]').forEach(el => {
-                el.innerText = langData[lang][el.getAttribute('data-key')];
-            });
-        }
-
-        function checkSocial() {
-            if(!userLoggedIn) alert(langData[currentLang].login_req);
-            else alert("¡Entrando a Social!");
-        }
-
+        function nextMonth() { viewDate.setMonth(viewDate.getMonth() + 1); renderCalendar(); }
+        function prevMonth() { viewDate.setMonth(viewDate.getMonth() - 1); renderCalendar(); }
+        function goTo(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById('page-' + id).classList.add('active-page'); }
+        function fakeLogin() { userLoggedIn = true; document.getElementById('card-social').classList.remove('locked'); document.getElementById('social-lock').innerText = "🟢"; goTo('home'); }
+        function checkSocial() { if(!userLoggedIn) alert("¡Login Google primero!"); else alert("Entrando a Social..."); }
         function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
     </script>
 </body>
