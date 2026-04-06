@@ -38,7 +38,6 @@ body {
   letter-spacing: 2px;
 }
 
-/* salida suave */
 .hide {
   opacity: 0;
   transform: scale(1.1);
@@ -55,15 +54,31 @@ body {
   transition: 1s ease;
 }
 
-/* entrada suave */
 .show {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* =====================
-   MENÚ NETFLIX STYLE
-===================== */
+/* HEADER */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* BOTÓN AJUSTES */
+.settings-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #e50914;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+/* MENÚ */
 .menu {
   display: flex;
   flex-direction: column;
@@ -72,7 +87,7 @@ body {
   margin: auto;
 }
 
-/* tarjetas tipo Netflix */
+/* CARD */
 .card {
   position: relative;
   height: 170px;
@@ -84,12 +99,11 @@ body {
   transition: transform 0.35s ease;
 }
 
-/* hover */
 .card:hover {
   transform: scale(1.03);
 }
 
-/* overlay oscuro */
+/* overlay */
 .overlay {
   position: absolute;
   inset: 0;
@@ -101,23 +115,39 @@ body {
   position: absolute;
   bottom: 15px;
   left: 15px;
-  z-index: 2;
 }
 
-.content h2 {
-  font-size: 22px;
-  margin-bottom: 5px;
+/* AJUSTES PANEL */
+.settings {
+  display: none;
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
 }
 
-.content p {
-  font-size: 13px;
-  color: #ccc;
+.setting {
+  background: rgba(255,255,255,0.08);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
 }
 
-/* header */
-.header {
-  text-align: center;
-  margin-bottom: 20px;
+/* BOTÓN GOOGLE */
+.google {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* SOCIAL BLOQUEADO */
+.locked {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* escritorio */
@@ -127,12 +157,7 @@ body {
     grid-template-columns: repeat(3, 1fr);
     max-width: 1000px;
   }
-
-  .card {
-    height: 220px;
-  }
 }
-
 </style>
 </head>
 
@@ -146,35 +171,56 @@ body {
 <!-- APP -->
 <div class="app" id="app">
 
+  <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+
   <div class="header">
-    <h1>CineMach</h1>
+    <h1 id="title">CineMach</h1>
   </div>
 
-  <div class="menu">
+  <!-- MENÚ -->
+  <div class="menu" id="menu">
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
+    <div class="card" onclick="alert('Calendario')" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
       <div class="overlay"></div>
       <div class="content">
-        <h2>📅 Calendario</h2>
-        <p>Organiza tus maratones</p>
+        <h2>📅 <span class="txt">Calendario</span></h2>
       </div>
     </div>
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
+    <div class="card" id="socialCard" onclick="alert('Social')" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
       <div class="overlay"></div>
       <div class="content">
         <h2>👥 Social</h2>
-        <p>Decide con amigos</p>
       </div>
     </div>
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
+    <div class="card" onclick="alert('Explorar')" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
       <div class="overlay"></div>
       <div class="content">
-        <h2>🎬 Explorar</h2>
-        <p>Descubre películas</p>
+        <h2>🎬 <span class="txt">Explorar</span></h2>
       </div>
     </div>
+
+  </div>
+
+  <!-- AJUSTES -->
+  <div class="settings" id="settings">
+
+    <h2>⚙️ Ajustes</h2>
+
+    <div class="setting">
+      👤 Usuario: <span id="user"></span>
+    </div>
+
+    <div class="setting">
+      🌍 Idioma:
+      <select onchange="setLang(this.value)">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <button class="google" onclick="login()">🔵 Sign in with Google</button>
 
   </div>
 
@@ -182,30 +228,73 @@ body {
 
 <script>
 
-/* 🔥 INTRO ARREGLADA (NO TOCAR LO DEMÁS) */
+/* INTRO */
 window.onload = () => {
 
   const intro = document.getElementById("intro");
   const app = document.getElementById("app");
 
-  // 👇 IMPORTANTE: asegurar que la app puede mostrarse
+  // usuario
+  let user = localStorage.getItem("user");
+  if (!user) {
+    user = "CineUser" + Math.floor(Math.random()*9999);
+    localStorage.setItem("user", user);
+  }
+
+  document.getElementById("user").innerText = user;
+
+  checkLogin();
+
   app.style.display = "block";
 
   setTimeout(() => {
-
     intro.classList.add("hide");
 
     setTimeout(() => {
       intro.style.display = "none";
-
-      // mostrar app con animación
       app.classList.add("show");
-
     }, 1200);
 
   }, 2000);
-
 };
+
+/* AJUSTES */
+function toggleSettings() {
+  const s = document.getElementById("settings");
+  s.style.display = s.style.display === "block" ? "none" : "block";
+}
+
+/* LOGIN SIMULADO */
+function login() {
+  localStorage.setItem("login", "true");
+  checkLogin();
+}
+
+/* BLOQUEO SOCIAL */
+function checkLogin() {
+  const logged = localStorage.getItem("login");
+
+  if (!logged) {
+    document.getElementById("socialCard").classList.add("locked");
+  } else {
+    document.getElementById("socialCard").classList.remove("locked");
+  }
+}
+
+/* IDIOMA (simple) */
+function setLang(lang) {
+
+  localStorage.setItem("lang", lang);
+
+  const texts = document.querySelectorAll(".txt");
+
+  if (lang === "en") {
+    texts.forEach(t => t.innerText = t.innerText === "Calendario" ? "Calendar" : "Explore");
+    document.getElementById("title").innerText = "CineMach";
+  } else {
+    location.reload();
+  }
+}
 
 </script>
 
