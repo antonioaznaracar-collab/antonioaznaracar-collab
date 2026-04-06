@@ -35,7 +35,6 @@ body {
 
 .intro h1 {
   font-size: 50px;
-  letter-spacing: 2px;
 }
 
 .hide {
@@ -73,7 +72,7 @@ body {
 }
 
 /* =====================
-   MENÚ NETFLIX STYLE
+   MENÚ
 ===================== */
 .menu {
   display: flex;
@@ -91,119 +90,133 @@ body {
   background-position: center;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.35s ease;
+  transition: transform 0.3s;
 }
 
 .card:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
 
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.75), transparent);
+  background: linear-gradient(to right, rgba(0,0,0,0.7), transparent);
 }
 
 .content {
   position: absolute;
   bottom: 15px;
   left: 15px;
-  z-index: 2;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-/* =========================
-   🔥 AJUSTES PRO
-========================= */
+/* =====================
+   AJUSTES (NETFLIX STYLE REAL)
+===================== */
 .settings {
   position: fixed;
   inset: 0;
-  background: #0b0b0f;
   display: none;
-  flex-direction: column;
-  z-index: 20;
+  z-index: 50;
 }
 
-/* HEADER */
+/* fondo */
+.settings::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+}
+
+/* panel lateral */
+.settings-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 340px;
+  height: 100%;
+  background: #141414;
+  padding: 20px;
+  transform: translateX(-100%);
+  transition: 0.4s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+/* abrir panel */
+.settings.show .settings-panel {
+  transform: translateX(0);
+}
+
+/* header */
 .settings-header {
   display: flex;
+  gap: 10px;
   align-items: center;
-  gap: 15px;
-  padding: 20px;
 }
 
 .settings-header button {
-  background: transparent;
+  background: none;
   border: none;
   color: white;
-  font-size: 28px;
+  font-size: 22px;
   cursor: pointer;
 }
 
-/* CONTENIDO */
-.settings-content {
-  padding: 30px;
+/* contenido */
+.settings-body {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 25px;
 }
 
-/* PERFIL */
-.profile {
+/* perfil */
+.profile-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  background: rgba(255,255,255,0.05);
-  padding: 30px;
-  border-radius: 20px;
 }
 
-/* AVATAR */
 .avatar {
-  width: 140px;
-  height: 140px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: #222;
+  background: #333;
   background-size: cover;
   background-position: center;
-  border: 3px solid white;
+  border: 2px solid white;
 }
 
-/* INPUT */
 #usernameInput {
-  padding: 12px;
-  border-radius: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
   border: none;
   text-align: center;
 }
 
-/* BOTÓN GUARDAR */
-.save-btn {
-  padding: 12px;
+.profile-box button {
+  padding: 10px;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   background: #e50914;
   color: white;
   cursor: pointer;
 }
 
-/* GRID AVATARES */
+/* avatares */
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .avatar-grid img {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: 0.2s;
 }
 
 .avatar-grid img:hover {
@@ -214,7 +227,6 @@ body {
   .menu {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    max-width: 1000px;
   }
 
   .avatar-grid {
@@ -236,57 +248,53 @@ body {
 
   <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
 
-  <div class="header">
-    <h1>CineMach</h1>
-  </div>
-
   <div class="menu">
-
     <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
       <div class="overlay"></div>
-      <div class="content"><h2>📅 Calendario</h2></div>
+      <div class="content">📅 Calendario</div>
     </div>
 
     <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
       <div class="overlay"></div>
-      <div class="content"><h2>👥 Social</h2></div>
+      <div class="content">👥 Social</div>
     </div>
 
     <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
       <div class="overlay"></div>
-      <div class="content"><h2>🎬 Explorar</h2></div>
+      <div class="content">🎬 Explorar</div>
     </div>
-
   </div>
 </div>
 
 <!-- AJUSTES -->
 <div class="settings" id="settings">
+  <div class="settings-panel">
 
-  <div class="settings-header">
-    <button onclick="toggleSettings()">←</button>
-    <h2>⚙️ Ajustes</h2>
-  </div>
-
-  <div class="settings-content">
-
-    <div class="profile">
-      <div class="avatar" id="avatar"></div>
-
-      <input type="text" id="usernameInput" placeholder="Tu nombre">
-
-      <button class="save-btn" onclick="saveProfile()">💾 Guardar</button>
+    <div class="settings-header">
+      <button onclick="toggleSettings()">←</button>
+      <h2>Perfil</h2>
     </div>
 
-    <h3>🎭 Elegir personaje</h3>
+    <div class="settings-body">
 
-    <div class="avatar-grid">
-      <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
-      <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
-      <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
-      <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
+      <div class="profile-box">
+        <div class="avatar" id="avatar"></div>
+
+        <input type="text" id="usernameInput">
+
+        <button onclick="saveProfile()">Guardar</button>
+      </div>
+
+      <h3>Personajes</h3>
+
+      <div class="avatar-grid">
+        <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
+        <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
+        <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
+        <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
+      </div>
+
     </div>
-
   </div>
 </div>
 
@@ -298,16 +306,13 @@ window.onload = () => {
   const intro = document.getElementById("intro");
   const app = document.getElementById("app");
 
-  let user = localStorage.getItem("user");
-  if (!user) {
-    user = "CineUser" + Math.floor(Math.random()*9999);
-    localStorage.setItem("user", user);
-  }
+  app.style.display = "block";
+
+  let user = localStorage.getItem("user") || "CineUser";
+  let avatar = localStorage.getItem("avatar") || "";
 
   document.getElementById("usernameInput").value = user;
-  document.getElementById("avatar").style.backgroundImage = `url(${localStorage.getItem("avatar") || ''})`;
-
-  app.style.display = "block";
+  document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
 
   setTimeout(() => {
     intro.classList.add("hide");
@@ -320,19 +325,22 @@ window.onload = () => {
   }, 2000);
 };
 
-/* AJUSTES */
+/* PANEL */
 function toggleSettings() {
   const s = document.getElementById("settings");
-  s.style.display = s.style.display === "flex" ? "none" : "flex";
+
+  if (s.style.display === "block") {
+    s.style.display = "none";
+    s.classList.remove("show");
+  } else {
+    s.style.display = "block";
+    setTimeout(() => s.classList.add("show"), 10);
+  }
 }
 
-/* GUARDAR PERFIL */
+/* GUARDAR */
 function saveProfile() {
-  const name = document.getElementById("usernameInput").value;
-
-  if (name) {
-    localStorage.setItem("user", name);
-  }
+  localStorage.setItem("user", document.getElementById("usernameInput").value);
 }
 
 /* AVATAR */
@@ -345,4 +353,5 @@ function setAvatar(src) {
 
 </body>
 </html>
+
 
