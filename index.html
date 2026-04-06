@@ -27,7 +27,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 9999;
   transition: opacity 1.2s ease, transform 1.2s ease;
 }
 
@@ -44,7 +44,7 @@ body {
   padding: 20px;
 }
 
-/* BOTÓN */
+/* BOTÓN AJUSTES */
 .settings-btn {
   position: fixed;
   top: 15px;
@@ -57,9 +57,10 @@ body {
   cursor: pointer;
   color: white;
   font-size: 18px;
+  display: none;
 }
 
-/* MENÚ MOBILE VERTICAL */
+/* MENÚ */
 .menu {
   display: flex;
   flex-direction: column;
@@ -119,6 +120,7 @@ body {
   transition: 0.4s ease;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .settings.show .settings-panel {
@@ -150,6 +152,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 14px;
+  margin-bottom: 10px;
 }
 
 .avatar {
@@ -182,14 +185,14 @@ body {
   font-size: 16px;
 }
 
-/* CATEGORÍAS GRANDES */
+/* CATEGORÍAS */
 .avatar-category {
   font-size: 20px;
   font-weight: bold;
   margin-top: 18px;
 }
 
-/* AVATARES */
+/* AVATARES (REDONDOS) */
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -198,13 +201,17 @@ body {
 
 .avatar-grid img {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
   cursor: pointer;
+  border: 2px solid transparent;
   transition: 0.2s;
 }
 
 .avatar-grid img:hover {
   transform: scale(1.1);
+  border-color: white;
 }
 
 </style>
@@ -309,14 +316,25 @@ window.onload = () => {
 
   setTimeout(() => {
     intro.classList.add("hide");
-    setTimeout(() => intro.style.display = "none", 1200);
+
+    setTimeout(() => {
+      intro.style.display = "none";
+      document.querySelector(".settings-btn").style.display = "block";
+    }, 1200);
+
   }, 1500);
 };
 
 function toggleSettings() {
   const s = document.getElementById("settings");
-  s.style.display = s.style.display === "block" ? "none" : "block";
-  setTimeout(() => s.classList.toggle("show"), 10);
+
+  if (s.style.display === "block") {
+    s.style.display = "none";
+    s.classList.remove("show");
+  } else {
+    s.style.display = "block";
+    setTimeout(() => s.classList.add("show"), 10);
+  }
 }
 
 function saveProfile(e) {
