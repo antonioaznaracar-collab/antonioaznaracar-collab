@@ -1,166 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CineMatch 2027 | Final Pro</title>
-    <link href="https://googleapis.com" rel="stylesheet">
-    <script src="https://google.com" async defer></script>
-    
-    <style>
-        :root {
-            --bg: #050505;
-            --accent: #ff003c;
-            --glass: rgba(255, 255, 255, 0.08);
-            --neon: #00f2ff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineMach</title>
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
 
-        /* --- INTRO --- */
-        #intro-screen { position: fixed; inset: 0; background: black; z-index: 2000; display: flex; justify-content: center; align-items: center; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); }
-        .logo-intro { font-family: 'Bebas Neue', sans-serif; font-size: 15vw; letter-spacing: 10px; animation: pulse 1.5s infinite alternate; }
-        @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    body {
+      background: #0d0d0d;
+      color: white;
+    }
 
-        /* --- NAVEGACIÓN --- */
-        .page { position: absolute; inset: 0; display: none; background: radial-gradient(circle at center, #151525 0%, #050505 100%); padding: 40px 20px; overflow-y: auto; }
-        .active-page { display: flex !important; flex-direction: column; align-items: center; }
+    /* CONTENEDOR MÓVIL */
+    .app {
+      max-width: 420px;
+      margin: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        /* --- MENÚ GIGANTE --- */
-        .menu-container { display: grid; gap: 30px; width: 95%; max-width: 1400px; margin: auto; height: 75vh; }
-        @media (orientation: portrait) { .menu-container { grid-template-columns: 1fr; padding-top: 60px; } .card { height: 22vh; } }
-        @media (orientation: landscape) { .menu-container { grid-template-columns: repeat(3, 1fr); align-items: center; } .card { height: 100%; } }
+    /* INTRO */
+    #intro {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
 
-        .card { 
-            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(20px); cursor: pointer; position: relative;
-        }
-        .card:hover { border-color: var(--accent); transform: translateY(-20px) scale(1.05); box-shadow: 0 30px 60px rgba(255, 0, 60, 0.4); background: rgba(255, 0, 60, 0.05); }
-        .card.locked { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
-        .card.locked:hover { transform: none; box-shadow: none; border-color: rgba(255,255,255,0.1); }
+    #intro h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
 
-        .icon { font-size: 6rem; margin-bottom: 15px; }
-        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 5px; font-size: 2rem; }
+    #intro p {
+      color: #aaa;
+      margin-bottom: 30px;
+    }
 
-        /* --- CALENDARIO DE PELÍCULAS --- */
-        .timeline { display: flex; gap: 30px; padding: 20px; overflow-x: auto; width: 100%; scroll-snap-type: x mandatory; }
-        .movie-card { 
-            flex: 0 0 300px; background: var(--glass); border-radius: 25px; padding: 20px; 
-            text-align: center; border: 1px solid rgba(255,255,255,0.1); position: relative; scroll-snap-align: center;
-        }
-        .movie-card.past { opacity: 0.4; filter: grayscale(1); }
-        .movie-card.past::after { content: '❌ STRENADA'; position: absolute; top: 40%; left: 0; width: 100%; background: var(--accent); color: white; font-weight: 900; transform: rotate(-20deg); padding: 10px; }
-        .movie-date { color: var(--neon); font-weight: 900; margin-bottom: 10px; }
-        .movie-title { font-family: 'Bebas Neue'; font-size: 1.8rem; }
+    #intro button {
+      background: #e50914;
+      border: none;
+      padding: 15px 40px;
+      font-size: 18px;
+      color: white;
+      border-radius: 25px;
+      cursor: pointer;
+    }
 
-        /* AJUSTES */
-        .settings-card { background: var(--glass); padding: 30px; border-radius: 30px; width: 100%; max-width: 600px; margin-top: 50px; }
-        #settings-btn { position: fixed; top: 25px; right: 25px; font-size: 2.5rem; z-index: 1000; cursor: pointer; }
-        
-        .google-btn { 
-            background: #131314; border: 1px solid #8e918f; color: white; padding: 15px; 
-            border-radius: 20px; display: flex; align-items: center; justify-content: center; 
-            gap: 15px; cursor: pointer; margin-top: 20px; width: 100%;
-        }
-    </style>
+    /* MENÚ */
+    #menu {
+      display: none;
+      padding: 20px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* CARDS */
+    .card {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      background: #e50914;
+    }
+
+    .icon {
+      font-size: 30px;
+    }
+
+    .card-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-text h2 {
+      font-size: 18px;
+    }
+
+    .card-text p {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* CONTENIDO */
+    #contenido {
+      margin-top: 20px;
+      text-align: center;
+      color: #ccc;
+    }
+  </style>
 </head>
+
 <body>
 
-    <div id="intro-screen"><div class="logo-intro">CINEMATCH</div></div>
-    <div id="settings-btn" onclick="goTo('settings')">⚙️</div>
+<div class="app">
 
-    <!-- HOME -->
-    <main id="page-home" class="page active-page">
-        <div class="menu-container">
-            <div class="card" onclick="vibrate()">🍿 <div class="label">Maratones</div></div>
-            <div class="card" onclick="goTo('calendar')">📅 <div class="label">Calendario</div></div>
-            <div id="card-social" class="card locked" onclick="checkSocial()">
-                <div id="social-lock" style="position:absolute; top:20px; right:30px; font-size: 2rem;">🔒</div>
-                👥 <div class="label">Social</div>
-            </div>
-        </div>
-    </main>
+  <!-- INTRO -->
+  <div id="intro">
+    <h1>🎬 CineMach</h1>
+    <p>Organiza, descubre y disfruta películas con tus amigos</p>
+    <button onclick="entrar()">Comenzar</button>
+  </div>
 
-    <!-- CALENDARIO -->
-    <div id="page-calendar" class="page">
-        <button onclick="goTo('home')" style="background:var(--accent); border:none; color:white; padding:15px 30px; border-radius:15px; font-weight:900; margin-bottom:30px; cursor:pointer;">← VOLVER</button>
-        <h1 style="font-family:'Bebas Neue'; font-size: 3rem; letter-spacing: 5px;">ESTRENOS 2026/27</h1>
-        <div class="timeline" id="movie-list"></div>
+  <!-- MENÚ -->
+  <div id="menu">
+    <div class="title">
+      <h1>🎬 CineMach</h1>
     </div>
 
-    <!-- AJUSTES -->
-    <div id="page-settings" class="page">
-        <div class="settings-card">
-            <button onclick="goTo('home')" style="background:var(--accent); border:none; color:white; padding:10px 20px; border-radius:10px; font-weight:900; cursor:pointer;">← VOLVER</button>
-            <h2 style="font-family:'Bebas Neue'; letter-spacing:3px; margin-top:20px;">AJUSTES DE USUARIO</h2>
-            <input type="text" id="user-input" placeholder="Tu apodo..." oninput="validateName(this.value)" style="width:100%; padding:15px; background:#111; color:var(--neon); border:1px solid var(--accent); border-radius:15px; font-size:1.2rem; text-align:center;">
-            <div id="name-error" style="color:var(--accent); font-size:0.8rem; display:none; margin-top:5px;">⚠️ Nombre ya en uso</div>
-            
-            <div id="login-box" style="margin-top:30px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
-                <div class="google-btn" onclick="fakeLogin()">
-                    <img src="https://wikimedia.org" width="20">
-                    SIGN IN WITH GOOGLE
-                </div>
-            </div>
-        </div>
+    <div class="card" onclick="abrir('calendario')">
+      <div class="icon">📅</div>
+      <div class="card-text">
+        <h2>Calendario</h2>
+        <p>Organiza y busca películas</p>
+      </div>
     </div>
 
-    <script>
-        let loggedIn = false;
-        const today = new Date(2026, 3, 6); // 6 Abril 2026
-        const forbidden = ["Thanos_271", "Admin"];
+    <div class="card" onclick="abrir('social')">
+      <div class="icon">👥</div>
+      <div class="card-text">
+        <h2>Social</h2>
+        <p>Crea grupos con amigos</p>
+      </div>
+    </div>
 
-        const movies = [
-            { t: "AVATAR 3", d: new Date(2025, 11, 19) },
-            { t: "AVENGERS: DOOMSDAY", d: new Date(2026, 4, 1) },
-            { t: "SUPERMAN", d: new Date(2025, 6, 11) },
-            { t: "SPIDER-MAN 4", d: new Date(2026, 6, 24) },
-            { t: "SECRET WARS", d: new Date(2027, 4, 7) }
-        ];
+    <div class="card" onclick="abrir('explorar')">
+      <div class="icon">🎬</div>
+      <div class="card-text">
+        <h2>Explorar</h2>
+        <p>Descubre nuevas películas</p>
+      </div>
+    </div>
 
-        window.onload = () => {
-            const saved = localStorage.getItem('cineMatch_user');
-            if (saved) document.getElementById('user-input').value = saved;
-            
-            const list = document.getElementById('movie-list');
-            movies.sort((a,b) => a.d - b.d).forEach(m => {
-                const isPast = m.d < today;
-                list.innerHTML += `<div class="movie-card ${isPast ? 'past' : ''}">
-                    <div class="movie-date">${m.d.toLocaleDateString()}</div>
-                    <div class="movie-title">${m.t}</div>
-                    <div style="color:gold; margin-top:10px;">RT: 90% | IMDb: 8.2</div>
-                </div>`;
-            });
+    <div id="contenido"></div>
+  </div>
 
-            setTimeout(() => { document.getElementById('intro-screen').style.transform = 'translateY(-100%)'; }, 2500);
-        };
+</div>
 
-        function validateName(n) {
-            const err = document.getElementById('name-error');
-            if (forbidden.includes(n)) { err.style.display = 'block'; return; }
-            err.style.display = 'none';
-            localStorage.setItem('cineMatch_user', n);
-        }
+<script>
+  function entrar() {
+    document.getElementById("intro").style.display = "none";
+    document.getElementById("menu").style.display = "block";
+  }
 
-        function fakeLogin() {
-            loggedIn = true;
-            document.getElementById('card-social').classList.remove('locked');
-            document.getElementById('social-lock').innerText = "🟢";
-            document.getElementById('login-box').style.display = 'none';
-            alert("¡Login Correcto!");
-            goTo('home');
-        }
+  function abrir(seccion) {
+    const cont = document.getElementById("contenido");
 
-        function goTo(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById('page-' + id).classList.add('active-page');
-            vibrate();
-        }
+    if (seccion === "calendario") {
+      cont.innerHTML = "📅 Próximamente: calendario de películas";
+    }
 
-        function checkSocial() { if(!loggedIn) alert("¡Inicia sesión primero!"); else alert("Entrando a Social..."); }
-        function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
-    </script>
+    if (seccion === "social") {
+      cont.innerHTML = "👥 Próximamente: grupos de amigos";
+    }
+
+    if (seccion === "explorar") {
+      cont.innerHTML = "🎬 Próximamente: buscador de películas";
+    }
+  }
+</script>
+
 </body>
 </html>
