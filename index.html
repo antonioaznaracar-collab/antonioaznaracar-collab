@@ -58,14 +58,15 @@ body {
   transform: translateY(0);
 }
 
-/* BOTÓN AJUSTES */
+/* BOTÓN AJUSTES (FIX MÓVIL) */
 .settings-btn {
-  position: absolute;
+  position: fixed;
   top: 15px;
   right: 15px;
+  z-index: 999;
   background: #e50914;
   border: none;
-  padding: 10px 12px;
+  padding: 12px;
   border-radius: 10px;
   cursor: pointer;
   color: white;
@@ -110,7 +111,7 @@ body {
 }
 
 /* =====================
-   AJUSTES (NETFLIX STYLE REAL)
+   AJUSTES (NETFLIX STYLE)
 ===================== */
 .settings {
   position: fixed;
@@ -119,7 +120,6 @@ body {
   z-index: 50;
 }
 
-/* fondo */
 .settings::before {
   content: "";
   position: absolute;
@@ -127,7 +127,6 @@ body {
   background: rgba(0,0,0,0.7);
 }
 
-/* panel lateral */
 .settings-panel {
   position: absolute;
   left: 0;
@@ -142,12 +141,11 @@ body {
   flex-direction: column;
 }
 
-/* abrir panel */
 .settings.show .settings-panel {
   transform: translateX(0);
 }
 
-/* header */
+/* HEADER */
 .settings-header {
   display: flex;
   gap: 10px;
@@ -162,15 +160,15 @@ body {
   cursor: pointer;
 }
 
-/* contenido */
+/* CONTENIDO */
 .settings-body {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
 }
 
-/* perfil */
+/* PERFIL */
 .profile-box {
   display: flex;
   flex-direction: column;
@@ -197,6 +195,7 @@ body {
 }
 
 .profile-box button {
+  width: 100%;
   padding: 10px;
   border: none;
   border-radius: 6px;
@@ -205,7 +204,14 @@ body {
   cursor: pointer;
 }
 
-/* avatares */
+/* CATEGORÍAS */
+.avatar-category {
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 10px;
+}
+
+/* AVATARES */
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -285,11 +291,14 @@ body {
         <button onclick="saveProfile()">Guardar</button>
       </div>
 
-      <h3>Personajes</h3>
-
+      <div class="avatar-category">🎬 Películas</div>
       <div class="avatar-grid">
         <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
         <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
+      </div>
+
+      <div class="avatar-category">🦸 Superhéroes</div>
+      <div class="avatar-grid">
         <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
         <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
       </div>
@@ -340,7 +349,11 @@ function toggleSettings() {
 
 /* GUARDAR */
 function saveProfile() {
-  localStorage.setItem("user", document.getElementById("usernameInput").value);
+  const name = document.getElementById("usernameInput").value;
+  if (name) {
+    localStorage.setItem("user", name);
+    alert("✅ Guardado");
+  }
 }
 
 /* AVATAR */
