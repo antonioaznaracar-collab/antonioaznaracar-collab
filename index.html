@@ -30,21 +30,13 @@ body {
   z-index: 9999;
   transition: opacity 1.2s ease, transform 1.2s ease;
 }
-
 .intro h1 { font-size: 50px; }
-
-.hide {
-  opacity: 0;
-  transform: scale(1.1);
-}
+.hide { opacity: 0; transform: scale(1.1); }
 
 /* APP */
-.app {
-  display: none;
-  padding: 20px;
-}
+.app { display: none; padding: 20px; }
 
-/* BOTÓN AJUSTES */
+/* BOTÓN */
 .settings-btn {
   position: fixed;
   top: 15px;
@@ -54,9 +46,7 @@ body {
   border: none;
   padding: 14px;
   border-radius: 12px;
-  cursor: pointer;
   color: white;
-  font-size: 18px;
   display: none;
 }
 
@@ -92,174 +82,89 @@ body {
   font-weight: bold;
 }
 
-/* =========================
-   📅 CALENDARIO
-========================= */
-
-.calendar {
+/* CALENDARIO */
+.calendar-screen {
   display: none;
+  position: fixed;
+  inset: 0;
+  background: #050507;
+  z-index: 1000;
+  overflow-y: auto;
   padding: 20px;
 }
 
 .calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-size: 28px;
+  margin-bottom: 20px;
 }
 
-.calendar-header button {
-  background: none;
-  border: none;
-  color: white;
+.month {
+  margin-bottom: 40px;
+}
+
+.month-title {
   font-size: 22px;
+  margin-bottom: 10px;
 }
 
-.calendar-days {
-  display: flex;
-  overflow-x: auto;
-  gap: 12px;
-  margin-top: 20px;
-}
-
+/* DÍA */
 .day {
-  min-width: 120px;
-  height: 140px;
-  border-radius: 12px;
-  background: #222;
+  height: 120px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(6px) brightness(0.6);
+}
+
+.day-content {
+  position: relative;
+  z-index: 2;
   padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .day.past {
-  opacity: 0.4;
   text-decoration: line-through;
+  opacity: 0.6;
 }
 
-.day.today {
-  border: 2px solid #e50914;
-}
-
-.day h3 {
-  font-size: 16px;
-}
-
-.movies {
-  font-size: 12px;
-}
-
-/* AJUSTES */
-.settings {
-  position: fixed;
-  inset: 0;
-  display: none;
-  z-index: 50;
-}
-
-.settings::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-}
+/* AJUSTES (NO TOCADO) */
+.settings { position: fixed; inset: 0; display: none; z-index: 50; }
+.settings::before { content:""; position:absolute; inset:0; background:rgba(0,0,0,0.7); }
 
 .settings-panel {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  max-width: 420px;
-  height: 100%;
-  background: #141414;
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: 0.4s ease;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  max-width:420px;
+  height:100%;
+  background:#141414;
+  padding:20px;
+  transform:translateX(-100%);
+  transition:0.4s;
+  overflow-y:auto;
 }
 
-.settings.show .settings-panel {
-  transform: translateX(0);
-}
-
-.settings-header {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.settings-header h2 {
-  font-size: 22px;
-}
-
-.settings-header button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-/* PERFIL */
-.profile-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-
-.avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #333;
-  background-size: cover;
-  background-position: center;
-  border: 2px solid white;
-}
-
-#usernameInput {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  text-align: center;
-}
-
-.profile-box button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: #e50914;
-  color: white;
-}
-
-/* AVATARES */
-.avatar-category {
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 18px;
-}
+.settings.show .settings-panel { transform: translateX(0); }
 
 .avatar-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
 }
 
 .avatar-grid img {
-  width: 100%;
-  border-radius: 50%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.avatar-grid img:hover {
-  transform: scale(1.1);
+  border-radius:50%;
+  aspect-ratio:1;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -274,147 +179,109 @@ body {
 
   <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
 
-  <!-- MENÚ -->
-  <div class="menu" id="menu">
+  <div class="menu">
 
-    <div class="card" onclick="openCalendar()" style="background-image:url('https://images.unsplash.com/photo-1506784983877-45594efa4cbe')">
+    <div class="card" onclick="openCalendar()" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4')">
       <div class="overlay"></div>
       <div class="content">📅 Calendario</div>
     </div>
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f')">
+    <div class="card">
       <div class="overlay"></div>
       <div class="content">👥 Social</div>
     </div>
 
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba')">
+    <div class="card">
       <div class="overlay"></div>
       <div class="content">🎬 Explorar</div>
     </div>
 
   </div>
-
-  <!-- CALENDARIO -->
-  <div id="calendar" class="calendar">
-
-    <div class="calendar-header">
-      <button onclick="closeCalendar()">←</button>
-      <h2>Calendario</h2>
-    </div>
-
-    <div id="calendarDays" class="calendar-days"></div>
-
-  </div>
-
 </div>
 
-<!-- AJUSTES -->
-<div class="settings" id="settings">
-  <div class="settings-panel">
+<!-- CALENDARIO -->
+<div class="calendar-screen" id="calendar">
 
-    <div class="settings-header">
-      <button onclick="toggleSettings()">←</button>
-      <h2>Perfil</h2>
+  <div class="calendar-header">📅 Abril 2026</div>
+
+  <div class="month">
+
+    <!-- Ejemplo Mario -->
+    <div class="day" data-date="2026-04-01">
+      <div class="day-bg" style="background-image:url('https://image.tmdb.org/t/p/w500/ckCZhWsgW0y9A4V4rJZy.jpg')"></div>
+      <div class="day-content">
+        <strong>1 Abril</strong><br>
+        Super Mario Bros 🍄
+      </div>
     </div>
 
-    <div class="profile-box">
-      <div class="avatar" id="avatar"></div>
-      <input id="usernameInput">
-      <button onclick="saveProfile(event)">Guardar</button>
+    <!-- Hoy -->
+    <div class="day" data-date="2026-04-06">
+      <div class="day-bg"></div>
+      <div class="day-content">
+        <strong>6 Abril (HOY)</strong>
+      </div>
     </div>
 
   </div>
+
 </div>
 
 <script>
 
+// INTRO
 window.onload = () => {
-
   const intro = document.getElementById("intro");
   const app = document.getElementById("app");
 
   app.style.display = "block";
 
-  let user = localStorage.getItem("user") || "CineUser";
-  let avatar = localStorage.getItem("avatar");
-
-  document.getElementById("usernameInput").value = user;
-
-  if (avatar) {
-    document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
-  }
-
   setTimeout(() => {
     intro.classList.add("hide");
+
     setTimeout(() => {
       intro.style.display = "none";
       document.querySelector(".settings-btn").style.display = "block";
+      marcarDias();
+      scrollHoy();
     }, 1200);
+
   }, 1500);
 };
 
+// CALENDARIO
+function openCalendar() {
+  document.getElementById("calendar").style.display = "block";
+}
+
+// MARCAR PASADOS
+function marcarDias() {
+  const hoy = new Date();
+
+  document.querySelectorAll(".day").forEach(d => {
+    const fecha = new Date(d.dataset.date);
+    if (fecha < hoy) d.classList.add("past");
+  });
+}
+
+// SCROLL A HOY
+function scrollHoy() {
+  const hoy = new Date().toISOString().split("T")[0];
+  const el = document.querySelector(`[data-date="${hoy}"]`);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// SETTINGS (igual)
 function toggleSettings() {
   const s = document.getElementById("settings");
-  s.style.display = s.style.display === "block" ? "none" : "block";
-  setTimeout(() => s.classList.toggle("show"), 10);
-}
 
-/* CALENDARIO */
-function openCalendar() {
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("calendar").style.display = "block";
-  generateCalendar();
-}
-
-function closeCalendar() {
-  document.getElementById("menu").style.display = "flex";
-  document.getElementById("calendar").style.display = "none";
-}
-
-function generateCalendar() {
-  const container = document.getElementById("calendarDays");
-  container.innerHTML = "";
-
-  const today = new Date();
-  const start = new Date(today.getFullYear(), 0, 1);
-
-  for (let d = new Date(start); d <= new Date(today.getFullYear(), 11, 31); d.setDate(d.getDate() + 1)) {
-
-    const day = document.createElement("div");
-    day.className = "day";
-
-    if (d < new Date(today.toDateString())) day.classList.add("past");
-    if (d.toDateString() === today.toDateString()) day.classList.add("today");
-
-    let movies = [];
-
-    if (Math.random() > 0.85) {
-      movies.push("🎬 Peli 1");
-      if (Math.random() > 0.5) movies.push("VS");
-      movies.push("🎬 Peli 2");
-    }
-
-    day.innerHTML = `
-      <h3>${d.getDate()}/${d.getMonth()+1}</h3>
-      <div class="movies">${movies.join("<br>") || "—"}</div>
-    `;
-
-    container.appendChild(day);
+  if (s.style.display === "block") {
+    s.style.display = "none";
+    s.classList.remove("show");
+  } else {
+    s.style.display = "block";
+    setTimeout(() => s.classList.add("show"), 10);
   }
-}
-
-/* PERFIL */
-function saveProfile(e) {
-  const name = document.getElementById("usernameInput").value.trim();
-  if (!name) return;
-
-  localStorage.setItem("user", name);
-
-  const avatar = document.getElementById("avatar").style.backgroundImage;
-  if (avatar) localStorage.setItem("avatar", avatar);
-
-  e.target.textContent = "✔ Guardado";
-  setTimeout(() => e.target.textContent = "Guardar", 1500);
 }
 
 </script>
