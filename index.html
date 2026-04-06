@@ -93,7 +93,7 @@ body {
 }
 
 /* ========================= */
-/* CALENDARIO NUEVO 🔥 */
+/* CALENDARIO 🔥 MEJORADO */
 /* ========================= */
 
 .calendar-screen {
@@ -118,43 +118,34 @@ body {
   border: none;
   color: white;
   font-size: 24px;
-  cursor: pointer;
 }
 
 .month {
   margin-bottom: 40px;
-  padding: 20px;
+  padding: 25px;
   border-radius: 20px;
 }
 
 .month-title {
-  font-size: 24px;
-  margin-bottom: 10px;
+  font-size: 28px;
+  margin-bottom: 15px;
   font-weight: bold;
-}
-
-.week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 5px;
-  text-align: center;
-  opacity: 0.6;
 }
 
 .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 
 .day {
-  height: 45px;
+  height: 90px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 8px;
+  border-radius: 12px;
   background: rgba(255,255,255,0.05);
-  font-size: 14px;
 }
 
 .past {
@@ -165,10 +156,11 @@ body {
 .today {
   background: #e50914;
   font-weight: bold;
-  box-shadow: 0 0 15px #e50914;
+  box-shadow: 0 0 20px #e50914;
+  border: 2px solid white;
 }
 
-/* COLORES MESES */
+/* COLORES */
 .jan { background: linear-gradient(135deg,#ff4e50,#f9d423); }
 .feb { background: linear-gradient(135deg,#ff6a88,#ff99ac); }
 .mar { background: linear-gradient(135deg,#ff9966,#ff5e62); }
@@ -176,7 +168,7 @@ body {
 .may { background: linear-gradient(135deg,#f857a6,#ff5858); }
 
 /* ========================= */
-/* AJUSTES (NO TOCADO) */
+/* AJUSTES MEJORADOS */
 /* ========================= */
 
 .settings {
@@ -184,6 +176,7 @@ body {
   inset: 0;
   display: none;
   z-index: 50;
+  overflow-y: auto; /* 🔥 FIX */
 }
 
 .settings::before {
@@ -229,7 +222,6 @@ body {
   border: none;
   color: white;
   font-size: 24px;
-  cursor: pointer;
 }
 
 /* PERFIL */
@@ -238,7 +230,6 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  margin-bottom: 10px;
 }
 
 .avatar {
@@ -255,23 +246,21 @@ body {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
-  border: none;
   text-align: center;
-  font-size: 16px;
 }
 
 .profile-box button {
   width: 100%;
   padding: 12px;
-  border: none;
   border-radius: 8px;
   background: #e50914;
   color: white;
 }
 
+/* AVATARES */
 .avatar-category {
   font-size: 20px;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 
 .avatar-grid {
@@ -283,6 +272,7 @@ body {
 .avatar-grid img {
   width: 100%;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 </style>
@@ -300,20 +290,9 @@ body {
 
   <div class="menu">
 
-    <!-- ABRE CALENDARIO -->
     <div class="card" onclick="openCalendar()" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4')">
       <div class="overlay"></div>
       <div class="content">📅 Calendario</div>
-    </div>
-
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f')">
-      <div class="overlay"></div>
-      <div class="content">👥 Social</div>
-    </div>
-
-    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba')">
-      <div class="overlay"></div>
-      <div class="content">🎬 Explorar</div>
     </div>
 
   </div>
@@ -331,9 +310,10 @@ body {
 
 </div>
 
-<!-- AJUSTES (SIN TOCAR) -->
+<!-- AJUSTES -->
 <div class="settings" id="settings">
   <div class="settings-panel">
+
     <div class="settings-header">
       <button onclick="toggleSettings()">←</button>
       <h2>Perfil</h2>
@@ -357,24 +337,22 @@ body {
 
 /* INTRO */
 window.onload = () => {
-
-  const intro = document.getElementById("intro");
-  const app = document.getElementById("app");
-
-  app.style.display = "block";
+  document.getElementById("app").style.display = "block";
 
   setTimeout(() => {
-    intro.classList.add("hide");
+    document.getElementById("intro").classList.add("hide");
+
     setTimeout(() => {
-      intro.style.display = "none";
+      document.getElementById("intro").style.display = "none";
       document.querySelector(".settings-btn").style.display = "block";
     }, 1200);
+
   }, 1500);
 
   generateCalendar();
 };
 
-/* CALENDARIO LOGICA */
+/* CALENDARIO */
 function openCalendar() {
   document.getElementById("calendar").style.display = "block";
 }
@@ -390,6 +368,7 @@ function generateCalendar() {
   const months = ["Enero","Febrero","Marzo","Abril","Mayo"];
 
   months.forEach((m, i) => {
+
     let monthDiv = document.createElement("div");
     monthDiv.className = "month " + ["jan","feb","mar","apr","may"][i];
 
@@ -403,13 +382,13 @@ function generateCalendar() {
     for(let d=1; d<=30; d++){
       let day = document.createElement("div");
       day.className = "day";
-      day.textContent = d;
 
       let date = new Date(2026, i, d);
 
       if(date < today) day.classList.add("past");
       if(date.toDateString() === today.toDateString()) day.classList.add("today");
 
+      day.textContent = d;
       daysDiv.appendChild(day);
     }
 
@@ -422,7 +401,14 @@ function generateCalendar() {
 /* AJUSTES */
 function toggleSettings() {
   const s = document.getElementById("settings");
-  s.style.display = s.style.display === "block" ? "none" : "block";
+
+  if (s.style.display === "block") {
+    s.style.display = "none";
+    s.classList.remove("show");
+  } else {
+    s.style.display = "block";
+    setTimeout(() => s.classList.add("show"), 10);
+  }
 }
 
 </script>
