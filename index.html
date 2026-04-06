@@ -3,131 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineMatch Pro - Fase 1</title>
+    <title>CineMatch 2027 | Club de los 10</title>
+    <!-- Importamos una fuente moderna y cinematográfica -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    
     <style>
         :root {
             --bg: #050505;
-            --card-bg: rgba(255, 255, 255, 0.07);
-            --accent: #ff003c; /* Rojo Eléctrico */
+            --accent: #ff003c;
+            --glass: rgba(255, 255, 255, 0.08);
             --neon-blue: #00f2ff;
         }
 
-        body {
+        body, html {
             margin: 0;
+            padding: 0;
+            height: 100%;
             background-color: var(--bg);
             color: white;
             font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Evita scroll durante la intro */
+        }
+
+        /* --- 1. INTRO "PROYECTOR" --- */
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: black;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 20% 30%, #1a1a2e 0%, #050505 100%);
+            z-index: 100;
+            transition: opacity 1.5s ease-out;
         }
 
-        /* --- CONTENEDOR INTELIGENTE --- */
+        .countdown {
+            font-size: 8rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 30px white;
+            animation: pulse 1s infinite;
+        }
+
+        /* Haz de luz del proyector */
+        .beam {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            opacity: 0;
+            animation: beamFade 3s forwards;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes beamFade { 0% { opacity: 0; } 50% { opacity: 0.5; } 100% { opacity: 0; } }
+
+        /* --- 2. CONTENEDOR DEL MENÚ --- */
+        #main-menu {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
+            opacity: 0; /* Oculto al inicio */
+            transition: opacity 2s ease-in;
+        }
+
         .menu-grid {
             display: grid;
-            gap: 20px;
+            gap: 25px;
             width: 90%;
-            max-width: 1200px;
+            max-width: 1300px;
+            /* MÓVIL VERTICAL (Por defecto) */
+            grid-template-columns: 1fr;
             padding: 20px;
-            /* Por defecto: MÓVIL VERTICAL (1 columna) */
-            grid-template-columns: 1fr; 
         }
 
-        /* --- CAMBIO A PC HORIZONTAL (Pantallas anchas) --- */
-        @media (min-width: 768px) {
+        /* PC HORIZONTAL (Pantallas anchas) */
+        @media (min-width: 900px) {
             .menu-grid {
-                grid-template-columns: repeat(4, 1fr); /* 4 columnas en horizontal */
+                grid-template-columns: repeat(3, 1fr); /* 3 Secciones maestras */
             }
         }
 
-        /* --- TARJETAS DE BOTONES --- */
+        /* --- 3. TARJETAS MEJORADAS --- */
         .card {
-            background: var(--card-bg);
+            background: var(--glass);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
+            border-radius: 30px;
             padding: 40px 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .card:hover {
-            transform: scale(1.05);
+            transform: translateY(-15px);
             border-color: var(--accent);
-            box-shadow: 0 0 30px rgba(255, 0, 60, 0.3);
+            box-shadow: 0 0 40px rgba(255, 0, 60, 0.4);
             background: rgba(255, 255, 255, 0.12);
         }
 
+        /* Glow dinámico de cada tarjeta */
+        .card.maraton:hover { box-shadow: 0 0 40px rgba(255, 215, 0, 0.3); border-color: gold; }
+        .card.social:hover { box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); border-color: var(--neon-blue); }
+
         .icon {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
+            font-size: 4rem;
+            margin-bottom: 20px;
             display: block;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
         }
 
         .label {
-            font-weight: 800;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 1.1rem;
+            letter-spacing: 3px;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
         }
 
         .subtitle {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--neon-blue);
-            margin-top: 8px;
-            opacity: 0.8;
+            font-weight: bold;
+            opacity: 0.7;
         }
 
-        /* Decoración de "Cine" */
-        .card::before {
-            content: '';
+        /* Notificación roja en Social */
+        .notif {
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-            pointer-events: none;
+            top: 20px;
+            right: 30px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
         }
-
     </style>
 </head>
 <body>
 
-    <div class="menu-grid">
-        <!-- BOTÓN 1: MARATONES -->
-        <div class="card" onclick="alert('Generando Maratón Marvel...')">
-            <span class="icon">🍿</span>
-            <div class="label">Maratones</div>
-            <div class="subtitle">Orden Cronológico</div>
-        </div>
-
-        <!-- BOTÓN 2: CALENDARIO -->
-        <div class="card" onclick="alert('Cargando Estrenos 2027...')">
-            <span class="icon">📅</span>
-            <div class="label">Calendario</div>
-            <div class="subtitle">Hype 2027</div>
-        </div>
-
-        <!-- BOTÓN 3: CHAT -->
-        <div class="card" onclick="alert('Abriendo Chat Grupal...')">
-            <span class="icon">💬</span>
-            <div class="label">Cine-Chat</div>
-            <div class="subtitle">10 Amigos Max</div>
-        </div>
-
-        <!-- BOTÓN 4: AMIGOS -->
-        <div class="card" onclick="alert('Gestionando Amigos...')">
-            <span class="icon">👥</span>
-            <div class="label">Mi Grupo</div>
-            <div class="subtitle">Social Hub</div>
-        </div>
+    <!-- PANTALLA DE INTRO -->
+    <div id="intro-screen">
+        <div class="beam"></div>
+        <div id="counter" class="countdown">3</div>
     </div>
 
+    <!-- MENÚ PRINCIPAL -->
+    <main id="main-menu">
+        <div class="menu-grid">
+            
+            <!-- SECCIÓN 1: MARATONES -->
+            <div class="card maraton" onclick="alert('Cargando listas...')">
+                <span class="icon">🍿</span>
+                <div class="label">Maratones</div>
+                <div class="subtitle">Orden Cronológico & Sagas</div>
+            </div>
+
+            <!-- SECCIÓN 2: CALENDARIO -->
+            <div class="card" onclick="alert('Mirando al futuro...')">
+                <span class="icon">📅</span>
+                <div class="label">Calendario</div>
+                <div class="subtitle">Hype 2026 - 2027</div>
+            </div>
+
+            <!-- SECCIÓN 3: SOCIAL (Chat incluido aquí) -->
+            <div class="card social" onclick="alert('Abriendo Social Hub...')">
+                <div class="notif"></div>
+                <span class="icon">👥</span>
+                <div class="label">Social</div>
+                <div class="subtitle">Chat de Amigos (10)</div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // LÓGICA DE LA INTRO (3, 2, 1... Cine!)
+        const counterElement = document.getElementById('counter');
+        const introScreen = document.getElementById('intro-screen');
+        const mainMenu = document.getElementById('main-menu');
+        let count = 3;
+
+        const timer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                counterElement.innerText = count;
+            } else {
+                clearInterval(timer);
+                counterElement.innerText = "ACCION!";
+                
+                // Transición al menú
+                setTimeout(() => {
+                    introScreen.style.opacity = '0';
+                    mainMenu.style.opacity = '1';
+                    document.body.style.overflow = 'auto';
+                    setTimeout(() => { introScreen.style.display = 'none'; }, 1500);
+                }, 500);
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
