@@ -19,7 +19,9 @@ body {
   overflow: hidden;
 }
 
-/* INTRO */
+/* =====================
+   INTRO
+===================== */
 .intro {
   position: fixed;
   inset: 0;
@@ -33,6 +35,7 @@ body {
 
 .intro h1 {
   font-size: 50px;
+  letter-spacing: 2px;
 }
 
 .hide {
@@ -40,7 +43,9 @@ body {
   transform: scale(1.1);
 }
 
-/* APP */
+/* =====================
+   APP
+===================== */
 .app {
   display: none;
   padding: 20px;
@@ -52,12 +57,6 @@ body {
 .show {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* HEADER */
-.header {
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 /* BOTÓN AJUSTES */
@@ -73,7 +72,9 @@ body {
   color: white;
 }
 
-/* MENÚ */
+/* =====================
+   MENÚ NETFLIX STYLE
+===================== */
 .menu {
   display: flex;
   flex-direction: column;
@@ -107,16 +108,16 @@ body {
   position: absolute;
   bottom: 15px;
   left: 15px;
+  z-index: 2;
 }
 
-/* SOCIAL BLOQUEADO */
-.locked {
-  opacity: 0.4;
-  pointer-events: none;
+.header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 /* =========================
-   🔥 PANEL AJUSTES PRO
+   🔥 AJUSTES PRO
 ========================= */
 .settings {
   position: fixed;
@@ -127,74 +128,97 @@ body {
   z-index: 20;
 }
 
-/* HEADER AJUSTES */
+/* HEADER */
 .settings-header {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 20px;
 }
 
 .settings-header button {
   background: transparent;
   border: none;
   color: white;
-  font-size: 22px;
+  font-size: 28px;
   cursor: pointer;
 }
 
 /* CONTENIDO */
 .settings-content {
-  padding: 20px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
+  gap: 30px;
+}
+
+/* PERFIL */
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 15px;
+  background: rgba(255,255,255,0.05);
+  padding: 30px;
+  border-radius: 20px;
 }
 
-/* TARJETAS */
-.settings-card {
-  background: rgba(255,255,255,0.06);
-  padding: 18px;
-  border-radius: 16px;
+/* AVATAR */
+.avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #222;
+  background-size: cover;
+  background-position: center;
+  border: 3px solid white;
 }
 
-.settings-card button {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-/* BOTÓN GOOGLE */
-.google {
-  width: 100%;
+/* INPUT */
+#usernameInput {
   padding: 12px;
   border-radius: 10px;
   border: none;
-  background: white;
-  color: black;
-  font-weight: bold;
+  text-align: center;
+}
+
+/* BOTÓN GUARDAR */
+.save-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #e50914;
+  color: white;
   cursor: pointer;
 }
 
-/* IDIOMA */
-.lang-buttons {
-  display: flex;
-  gap: 10px;
+/* GRID AVATARES */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
-.lang-buttons button {
-  flex: 1;
+.avatar-grid img {
+  width: 100%;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-/* escritorio */
+.avatar-grid img:hover {
+  transform: scale(1.1);
+}
+
 @media(min-width: 768px) {
   .menu {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     max-width: 1000px;
+  }
+
+  .avatar-grid {
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 </style>
@@ -213,38 +237,30 @@ body {
   <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
 
   <div class="header">
-    <h1 id="title">CineMach</h1>
+    <h1>CineMach</h1>
   </div>
 
-  <!-- MENÚ -->
   <div class="menu">
 
-    <div class="card" onclick="alert('Calendario')" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
       <div class="overlay"></div>
-      <div class="content">
-        <h2>📅 Calendario</h2>
-      </div>
+      <div class="content"><h2>📅 Calendario</h2></div>
     </div>
 
-    <div class="card" id="socialCard" onclick="alert('Social')" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
       <div class="overlay"></div>
-      <div class="content">
-        <h2>👥 Social</h2>
-      </div>
+      <div class="content"><h2>👥 Social</h2></div>
     </div>
 
-    <div class="card" onclick="alert('Explorar')" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
       <div class="overlay"></div>
-      <div class="content">
-        <h2>🎬 Explorar</h2>
-      </div>
+      <div class="content"><h2>🎬 Explorar</h2></div>
     </div>
 
   </div>
-
 </div>
 
-<!-- AJUSTES PRO -->
+<!-- AJUSTES -->
 <div class="settings" id="settings">
 
   <div class="settings-header">
@@ -254,28 +270,24 @@ body {
 
   <div class="settings-content">
 
-    <div class="settings-card">
-      👤 Usuario:
-      <p id="user"></p>
-      <button onclick="changeUser()">✏️ Cambiar nombre</button>
+    <div class="profile">
+      <div class="avatar" id="avatar"></div>
+
+      <input type="text" id="usernameInput" placeholder="Tu nombre">
+
+      <button class="save-btn" onclick="saveProfile()">💾 Guardar</button>
     </div>
 
-    <div class="settings-card">
-      🌍 Idioma
-      <div class="lang-buttons">
-        <button onclick="setLang('es')">Español</button>
-        <button onclick="setLang('en')">English</button>
-      </div>
-    </div>
+    <h3>🎭 Elegir personaje</h3>
 
-    <div class="settings-card">
-      🔐 Sesión
-      <p id="loginStatus">No has iniciado sesión</p>
-      <button class="google" onclick="login()">🔵 Sign in with Google</button>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/5Kg76ldv7V1q7v9Zp1R6.jpg" onclick="setAvatar(this.src)">
+      <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
+      <img src="https://image.tmdb.org/t/p/w200/9G2hQnVZ9y8Q7lY7R8r5v7Z.jpg" onclick="setAvatar(this.src)">
+      <img src="https://image.tmdb.org/t/p/w200/4U9G4Yk5Xh9.jpg" onclick="setAvatar(this.src)">
     </div>
 
   </div>
-
 </div>
 
 <script>
@@ -292,9 +304,8 @@ window.onload = () => {
     localStorage.setItem("user", user);
   }
 
-  document.getElementById("user").innerText = user;
-
-  checkLogin();
+  document.getElementById("usernameInput").value = user;
+  document.getElementById("avatar").style.backgroundImage = `url(${localStorage.getItem("avatar") || ''})`;
 
   app.style.display = "block";
 
@@ -315,46 +326,23 @@ function toggleSettings() {
   s.style.display = s.style.display === "flex" ? "none" : "flex";
 }
 
-/* CAMBIAR USUARIO */
-function changeUser() {
-  const newName = prompt("Nuevo nombre:");
-  if (newName) {
-    localStorage.setItem("user", newName);
-    document.getElementById("user").innerText = newName;
+/* GUARDAR PERFIL */
+function saveProfile() {
+  const name = document.getElementById("usernameInput").value;
+
+  if (name) {
+    localStorage.setItem("user", name);
   }
 }
 
-/* LOGIN */
-function login() {
-  localStorage.setItem("login", "true");
-  checkLogin();
-}
-
-/* BLOQUEO SOCIAL */
-function checkLogin() {
-  const logged = localStorage.getItem("login");
-
-  if (!logged) {
-    document.getElementById("socialCard").classList.add("locked");
-    document.getElementById("loginStatus").innerText = "No has iniciado sesión";
-  } else {
-    document.getElementById("socialCard").classList.remove("locked");
-    document.getElementById("loginStatus").innerText = "Sesión iniciada";
-  }
-}
-
-/* IDIOMA */
-function setLang(lang) {
-  localStorage.setItem("lang", lang);
-
-  if (lang === "en") {
-    document.getElementById("title").innerText = "CineMach";
-  } else {
-    location.reload();
-  }
+/* AVATAR */
+function setAvatar(src) {
+  localStorage.setItem("avatar", src);
+  document.getElementById("avatar").style.backgroundImage = `url(${src})`;
 }
 
 </script>
 
 </body>
 </html>
+
