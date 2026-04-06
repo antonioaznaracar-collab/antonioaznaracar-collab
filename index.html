@@ -19,9 +19,7 @@ body {
   overflow: hidden;
 }
 
-/* =====================
-   INTRO
-===================== */
+/* INTRO */
 .intro {
   position: fixed;
   inset: 0;
@@ -35,7 +33,6 @@ body {
 
 .intro h1 {
   font-size: 50px;
-  letter-spacing: 2px;
 }
 
 .hide {
@@ -43,9 +40,7 @@ body {
   transform: scale(1.1);
 }
 
-/* =====================
-   APP
-===================== */
+/* APP */
 .app {
   display: none;
   padding: 20px;
@@ -87,7 +82,6 @@ body {
   margin: auto;
 }
 
-/* CARD */
 .card {
   position: relative;
   height: 170px;
@@ -103,33 +97,74 @@ body {
   transform: scale(1.03);
 }
 
-/* overlay */
 .overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(to right, rgba(0,0,0,0.75), transparent);
 }
 
-/* contenido */
 .content {
   position: absolute;
   bottom: 15px;
   left: 15px;
 }
 
-/* AJUSTES PANEL */
-.settings {
-  display: none;
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
+/* SOCIAL BLOQUEADO */
+.locked {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
-.setting {
-  background: rgba(255,255,255,0.08);
+/* =========================
+   🔥 PANEL AJUSTES PRO
+========================= */
+.settings {
+  position: fixed;
+  inset: 0;
+  background: #0b0b0f;
+  display: none;
+  flex-direction: column;
+  z-index: 20;
+}
+
+/* HEADER AJUSTES */
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
   padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.settings-header button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* CONTENIDO */
+.settings-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* TARJETAS */
+.settings-card {
+  background: rgba(255,255,255,0.06);
+  padding: 18px;
+  border-radius: 16px;
+}
+
+.settings-card button {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
 }
 
 /* BOTÓN GOOGLE */
@@ -144,10 +179,14 @@ body {
   cursor: pointer;
 }
 
-/* SOCIAL BLOQUEADO */
-.locked {
-  opacity: 0.4;
-  pointer-events: none;
+/* IDIOMA */
+.lang-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.lang-buttons button {
+  flex: 1;
 }
 
 /* escritorio */
@@ -178,12 +217,12 @@ body {
   </div>
 
   <!-- MENÚ -->
-  <div class="menu" id="menu">
+  <div class="menu">
 
     <div class="card" onclick="alert('Calendario')" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
       <div class="overlay"></div>
       <div class="content">
-        <h2>📅 <span class="txt">Calendario</span></h2>
+        <h2>📅 Calendario</h2>
       </div>
     </div>
 
@@ -197,30 +236,43 @@ body {
     <div class="card" onclick="alert('Explorar')" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
       <div class="overlay"></div>
       <div class="content">
-        <h2>🎬 <span class="txt">Explorar</span></h2>
+        <h2>🎬 Explorar</h2>
       </div>
     </div>
 
   </div>
 
-  <!-- AJUSTES -->
-  <div class="settings" id="settings">
+</div>
 
+<!-- AJUSTES PRO -->
+<div class="settings" id="settings">
+
+  <div class="settings-header">
+    <button onclick="toggleSettings()">←</button>
     <h2>⚙️ Ajustes</h2>
+  </div>
 
-    <div class="setting">
-      👤 Usuario: <span id="user"></span>
+  <div class="settings-content">
+
+    <div class="settings-card">
+      👤 Usuario:
+      <p id="user"></p>
+      <button onclick="changeUser()">✏️ Cambiar nombre</button>
     </div>
 
-    <div class="setting">
-      🌍 Idioma:
-      <select onchange="setLang(this.value)">
-        <option value="es">Español</option>
-        <option value="en">English</option>
-      </select>
+    <div class="settings-card">
+      🌍 Idioma
+      <div class="lang-buttons">
+        <button onclick="setLang('es')">Español</button>
+        <button onclick="setLang('en')">English</button>
+      </div>
     </div>
 
-    <button class="google" onclick="login()">🔵 Sign in with Google</button>
+    <div class="settings-card">
+      🔐 Sesión
+      <p id="loginStatus">No has iniciado sesión</p>
+      <button class="google" onclick="login()">🔵 Sign in with Google</button>
+    </div>
 
   </div>
 
@@ -234,7 +286,6 @@ window.onload = () => {
   const intro = document.getElementById("intro");
   const app = document.getElementById("app");
 
-  // usuario
   let user = localStorage.getItem("user");
   if (!user) {
     user = "CineUser" + Math.floor(Math.random()*9999);
@@ -261,10 +312,19 @@ window.onload = () => {
 /* AJUSTES */
 function toggleSettings() {
   const s = document.getElementById("settings");
-  s.style.display = s.style.display === "block" ? "none" : "block";
+  s.style.display = s.style.display === "flex" ? "none" : "flex";
 }
 
-/* LOGIN SIMULADO */
+/* CAMBIAR USUARIO */
+function changeUser() {
+  const newName = prompt("Nuevo nombre:");
+  if (newName) {
+    localStorage.setItem("user", newName);
+    document.getElementById("user").innerText = newName;
+  }
+}
+
+/* LOGIN */
 function login() {
   localStorage.setItem("login", "true");
   checkLogin();
@@ -276,20 +336,18 @@ function checkLogin() {
 
   if (!logged) {
     document.getElementById("socialCard").classList.add("locked");
+    document.getElementById("loginStatus").innerText = "No has iniciado sesión";
   } else {
     document.getElementById("socialCard").classList.remove("locked");
+    document.getElementById("loginStatus").innerText = "Sesión iniciada";
   }
 }
 
-/* IDIOMA (simple) */
+/* IDIOMA */
 function setLang(lang) {
-
   localStorage.setItem("lang", lang);
 
-  const texts = document.querySelectorAll(".txt");
-
   if (lang === "en") {
-    texts.forEach(t => t.innerText = t.innerText === "Calendario" ? "Calendar" : "Explore");
     document.getElementById("title").innerText = "CineMach";
   } else {
     location.reload();
