@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CineMatch 2027 | Pro Auth</title>
+    <title>CineMatch 2027 | Pro Fix</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <script src="https://google.com" async defer></script>
     
@@ -24,33 +24,72 @@
         @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         /* --- PÁGINAS --- */
-        .page { position: absolute; inset: 0; display: none; background: radial-gradient(circle at center, #151525 0%, #050505 100%); padding: 40px 20px; overflow-y: auto; }
-        .active-page { display: flex !important; flex-direction: column; align-items: center; }
+        .page { position: absolute; inset: 0; display: none; background: radial-gradient(circle at center, #151525 0%, #050505 100%); padding: 20px; overflow-y: auto; }
+        .active-page { display: flex !important; flex-direction: column; align-items: center; justify-content: center; }
 
-        .menu-container { display: grid; gap: 20px; width: 100%; max-width: 1200px; margin: auto; }
-        @media (orientation: portrait) { .menu-container { grid-template-columns: 1fr; padding-bottom: 60px; } .card { min-height: 180px; } }
-        @media (orientation: landscape) { .menu-container { grid-template-columns: repeat(3, 1fr); height: 60vh; align-items: center; } .card { height: 100%; } }
+        .menu-container { display: grid; gap: 30px; width: 95%; max-width: 1400px; margin: auto; }
+        
+        /* MÓVIL VERTICAL */
+        @media (orientation: portrait) { 
+            .menu-container { grid-template-columns: 1fr; padding-top: 40px; padding-bottom: 80px; } 
+            .card { height: 25vh; } 
+        }
+        
+        /* PC HORIZONTAL */
+        @media (orientation: landscape) { 
+            .menu-container { grid-template-columns: repeat(3, 1fr); height: 75vh; } 
+            .card { height: 100%; }
+        }
 
-        .card { background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; transition: 0.3s; backdrop-filter: blur(15px); position: relative; }
+        /* --- TARJETAS GRANDES Y CON HOVER --- */
+        .card { 
+            background: var(--glass); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 35px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 40px; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            backdrop-filter: blur(20px); 
+            position: relative; 
+            cursor: pointer;
+        }
+
+        /* EL EFECTO ROJO QUE FALTABA */
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-15px) scale(1.03);
+            background: rgba(255, 0, 60, 0.05);
+            box-shadow: 0 20px 60px rgba(255, 0, 60, 0.3);
+        }
+
         .card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+        .card.locked:hover { transform: none; border-color: rgba(255,255,255,0.1); box-shadow: none; }
 
-        /* --- BOTÓN GOOGLE (ESTILO IMAGEN) --- */
+        .icon { font-size: clamp(3.5rem, 12vh, 6rem); margin-bottom: 20px; }
+        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 3px; font-size: clamp(1.2rem, 3vh, 2rem); }
+        .subtitle { font-size: 0.8rem; color: var(--text-sec); margin-top: 10px; font-weight: bold; }
+
+        /* --- BOTÓN GOOGLE --- */
         .google-btn {
             background-color: #131314; color: white; border: 1px solid #8e918f;
-            border-radius: 20px; padding: 10px 24px; display: flex; align-items: center;
+            border-radius: 20px; padding: 12px 28px; display: flex; align-items: center;
             justify-content: center; gap: 12px; cursor: pointer; font-weight: 500;
-            transition: background 0.3s; margin-top: 10px;
+            transition: background 0.3s; margin-top: 20px;
         }
         .google-btn:hover { background-color: #1e1e1f; }
-        .google-icon { width: 18px; height: 18px; }
+        .google-icon { width: 20px; height: 20px; }
 
         /* AJUSTES */
-        .settings-card { background: var(--glass); width: 100%; max-width: 600px; padding: 20px; border-radius: 20px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .btn { background: var(--accent); border: none; color: white; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
-        #user-input { background: #111; color: var(--text-sec); border: 1px solid var(--accent); padding: 10px; border-radius: 10px; width: 100%; text-align: center; font-family: 'Inter', sans-serif; }
-        #settings-btn { position: fixed; top: 20px; right: 20px; z-index: 100; font-size: 1.5rem; background: var(--glass); padding: 10px; border-radius: 50%; }
+        .settings-card { background: var(--glass); width: 100%; max-width: 600px; padding: 25px; border-radius: 25px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .btn { background: var(--accent); border: none; color: white; padding: 15px 30px; border-radius: 18px; font-weight: 900; cursor: pointer; }
+        #user-input { background: #111; color: var(--text-sec); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; width: 100%; text-align: center; font-family: 'Inter', sans-serif; font-size: 1.1rem; }
+        #settings-btn { position: fixed; top: 25px; right: 25px; z-index: 100; font-size: 1.8rem; background: var(--glass); padding: 12px; border-radius: 50%; cursor: pointer; transition: transform 0.3s; }
+        #settings-btn:hover { transform: rotate(90deg); }
         
-        .error-msg { color: var(--accent); font-size: 0.7rem; display: none; text-align: center; }
+        .error-msg { color: var(--accent); font-size: 0.8rem; display: none; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -58,39 +97,52 @@
     <div id="intro-screen"><div class="logo-intro">CINEMATCH</div></div>
     <div id="settings-btn" onclick="goTo('settings')">⚙️</div>
 
+    <!-- PÁGINA: HOME -->
     <main id="page-home" class="page active-page">
         <div class="menu-container">
-            <div class="card">🍿 <div style="font-weight:900" data-key="marathons">Maratones</div></div>
-            <div class="card">📅 <div style="font-weight:900" data-key="calendar">Calendario</div></div>
+            <div class="card" onclick="vibrate()">
+                <span class="icon">🍿</span>
+                <div class="label" data-key="marathons">Maratones</div>
+                <div class="subtitle">Orden Cronológico</div>
+            </div>
+            <div class="card" onclick="vibrate()">
+                <span class="icon">📅</span>
+                <div class="label" data-key="calendar">Calendario</div>
+                <div class="subtitle">Hype 2027</div>
+            </div>
             <div id="card-social" class="card locked" onclick="checkSocial()">
-                <div id="social-lock" style="position:absolute; top:10px; right:15px">🔒</div>
-                👥 <div style="font-weight:900" data-key="social">Social</div>
+                <div id="social-lock" style="position:absolute; top:20px; right:25px; font-size: 1.5rem;">🔒</div>
+                <span class="icon">👥</span>
+                <div class="label" data-key="social">Social</div>
+                <div class="subtitle">Club de 10</div>
             </div>
         </div>
     </main>
 
+    <!-- PÁGINA: AJUSTES -->
     <div id="page-settings" class="page">
-        <button class="btn" style="margin-bottom:20px" onclick="goTo('home')">← <span data-key="back">Volver</span></button>
-        
         <div class="settings-card">
-            <div style="display:flex; justify-content:space-between"><b data-key="lang">Idioma</b>
-                <select onchange="changeLang(this.value)" style="background:#111; color:white; border:1px solid var(--accent);">
+            <button class="btn" onclick="goTo('home')">← <span data-key="back">Volver</span></button>
+            <h1 style="font-family:'Bebas Neue'; letter-spacing:4px; margin: 10px 0;" data-key="settings">Ajustes</h1>
+            
+            <div style="display:flex; justify-content:space-between; align-items: center;"><b data-key="lang">Idioma</b>
+                <select onchange="changeLang(this.value)" style="background:#111; color:white; border:1px solid var(--accent); padding: 10px; border-radius: 10px;">
                     <option value="es">Español</option><option value="en">English</option><option value="fr">Français</option>
                 </select>
             </div>
-        </div>
 
-        <div class="settings-card">
-            <b data-key="user">Usuario</b>
-            <input type="text" id="user-input" placeholder="Apodo..." oninput="validateAndSave(this.value)">
-            <div id="name-error" class="error-msg">⚠️ Este nombre ya está en uso</div>
-        </div>
+            <div style="margin-top: 20px;">
+                <b data-key="user">Usuario</b>
+                <input type="text" id="user-input" placeholder="Tu apodo..." oninput="validateAndSave(this.value)">
+                <div id="name-error" class="error-msg">⚠️ Este nombre ya está en uso</div>
+            </div>
 
-        <div class="settings-card" id="login-section">
-            <div data-key="session" style="text-align:center">Inicia sesión para Social Hub</div>
-            <div class="google-btn" onclick="fakeLogin()">
-                <img src="https://wikimedia.org" class="google-icon">
-                Sign in with Google
+            <div id="login-section" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <div data-key="session" style="text-align:center; font-size: 0.9rem; margin-bottom: 10px;">Inicia sesión para Social Hub</div>
+                <div class="google-btn" onclick="fakeLogin()">
+                    <img src="https://wikimedia.org" class="google-icon">
+                    Sign in with Google
+                </div>
             </div>
         </div>
     </div>
@@ -102,8 +154,7 @@
             fr: { marathons: "Marathons", calendar: "Calendrier", social: "Social", settings: "Réglages", back: "Retour", lang: "Langue", user: "Utilisateur", session: "Session", login_req: "Connexion requise !" }
         };
 
-        // LISTA DE NOMBRES PROHIBIDOS (YA EXISTENTES)
-        const takenNames = ["Thanos_271", "IronMan", "Admin", "CineMatch_Owner"];
+        const takenNames = ["Thanos_271", "IronMan", "Admin"];
         let userLoggedIn = false;
         let currentLang = 'es';
 
@@ -131,14 +182,14 @@
             document.getElementById('card-social').classList.remove('locked');
             document.getElementById('social-lock').innerText = "🟢";
             document.getElementById('login-section').style.display = 'none';
-            alert("Login exitoso");
+            alert("¡Login Exitoso!");
             goTo('home');
         }
 
         function goTo(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById('page-' + id).classList.add('active-page');
-            if (navigator.vibrate) navigator.vibrate(10);
+            vibrate();
         }
 
         function changeLang(lang) {
@@ -152,6 +203,8 @@
             if(!userLoggedIn) alert(langData[currentLang].login_req);
             else alert("¡Entrando a Social!");
         }
+
+        function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
     </script>
 </body>
 </html>
