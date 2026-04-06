@@ -6,7 +6,6 @@
 <title>CineMach</title>
 
 <style>
-/* TODO TU CSS ORIGINAL (NO TOCADO) */
 * {
   margin: 0;
   padding: 0;
@@ -93,9 +92,106 @@ body {
   font-weight: bold;
 }
 
+/* ========================= */
+/* CALENDARIO NUEVO 🔥 */
+/* ========================= */
+
+.calendar-screen {
+  position: fixed;
+  inset: 0;
+  background: #050507;
+  display: none;
+  z-index: 100;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.month {
+  margin-bottom: 40px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.month-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 5px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day {
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  font-size: 14px;
+}
+
+.past {
+  text-decoration: line-through;
+  opacity: 0.4;
+}
+
+.today {
+  background: #e50914;
+  font-weight: bold;
+  box-shadow: 0 0 15px #e50914;
+}
+
+/* COLORES MESES */
+.jan { background: linear-gradient(135deg,#ff4e50,#f9d423); }
+.feb { background: linear-gradient(135deg,#ff6a88,#ff99ac); }
+.mar { background: linear-gradient(135deg,#ff9966,#ff5e62); }
+.apr { background: linear-gradient(135deg,#f7971e,#ffd200); }
+.may { background: linear-gradient(135deg,#f857a6,#ff5858); }
+
+/* ========================= */
 /* AJUSTES (NO TOCADO) */
-.settings { position: fixed; inset: 0; display: none; z-index: 50; }
-.settings::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.7); }
+/* ========================= */
+
+.settings {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 50;
+}
+
+.settings::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+}
 
 .settings-panel {
   position: absolute;
@@ -113,7 +209,28 @@ body {
   overflow-y: auto;
 }
 
-.settings.show .settings-panel { transform: translateX(0); }
+.settings.show .settings-panel {
+  transform: translateX(0);
+}
+
+/* HEADER */
+.settings-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.settings-header h2 {
+  font-size: 22px;
+}
+
+.settings-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
 
 /* PERFIL */
 .profile-box {
@@ -164,60 +281,10 @@ body {
 }
 
 .avatar-grid img {
+  width: 100%;
   border-radius: 50%;
-  aspect-ratio: 1;
 }
 
-/* 🔥 CALENDARIO AÑADIDO */
-.calendar-screen {
-  position: fixed;
-  inset: 0;
-  background: #050507;
-  z-index: 2000;
-  display: none;
-  overflow-x: auto;
-  white-space: nowrap;
-  padding: 20px;
-}
-
-.calendar-month {
-  display: inline-block;
-  vertical-align: top;
-  width: 300px;
-  margin-right: 20px;
-  border-radius: 16px;
-  padding: 10px;
-}
-
-.calendar-title {
-  font-size: 18px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-}
-
-.calendar-day {
-  padding: 8px;
-  text-align: center;
-  border-radius: 6px;
-  background: rgba(0,0,0,0.3);
-  font-size: 13px;
-}
-
-.calendar-day.past {
-  text-decoration: line-through;
-  opacity: 0.4;
-}
-
-.calendar-day.today {
-  background: #e50914;
-  font-weight: bold;
-}
 </style>
 </head>
 
@@ -233,7 +300,7 @@ body {
 
   <div class="menu">
 
-    <!-- SOLO AÑADIDO onclick -->
+    <!-- ABRE CALENDARIO -->
     <div class="card" onclick="openCalendar()" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4')">
       <div class="overlay"></div>
       <div class="content">📅 Calendario</div>
@@ -252,20 +319,43 @@ body {
   </div>
 </div>
 
-<!-- 🔥 CALENDARIO -->
-<div class="calendar-screen" id="calendar"></div>
+<!-- CALENDARIO -->
+<div class="calendar-screen" id="calendar">
 
-<!-- AJUSTES (INTACTO) -->
+  <div class="calendar-header">
+    <button onclick="closeCalendar()">←</button>
+    <h2>Calendario 2026</h2>
+  </div>
+
+  <div id="calendarContainer"></div>
+
+</div>
+
+<!-- AJUSTES (SIN TOCAR) -->
 <div class="settings" id="settings">
   <div class="settings-panel">
-    <!-- TODO IGUAL -->
+    <div class="settings-header">
+      <button onclick="toggleSettings()">←</button>
+      <h2>Perfil</h2>
+    </div>
+
+    <div class="profile-box">
+      <div class="avatar" id="avatar"></div>
+      <input id="usernameInput">
+      <button onclick="saveProfile(event)">Guardar</button>
+    </div>
+
+    <div class="avatar-category">🟥 Marvel</div>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
+    </div>
+
   </div>
 </div>
 
 <script>
 
-/* TODO TU JS ORIGINAL (NO TOCADO) */
-
+/* INTRO */
 window.onload = () => {
 
   const intro = document.getElementById("intro");
@@ -275,86 +365,64 @@ window.onload = () => {
 
   setTimeout(() => {
     intro.classList.add("hide");
-
     setTimeout(() => {
       intro.style.display = "none";
       document.querySelector(".settings-btn").style.display = "block";
     }, 1200);
-
   }, 1500);
+
+  generateCalendar();
 };
 
-/* 🔥 CALENDARIO JS */
+/* CALENDARIO LOGICA */
 function openCalendar() {
-  const cal = document.getElementById("calendar");
-  cal.style.display = "block";
-  generarCalendario();
+  document.getElementById("calendar").style.display = "block";
 }
 
-function generarCalendario() {
-  const container = document.getElementById("calendar");
-  container.innerHTML = "";
+function closeCalendar() {
+  document.getElementById("calendar").style.display = "none";
+}
 
-  const colores = ["#ff6b6b","#ff9f43","#feca57","#ff7675","#fd79a8"];
+function generateCalendar() {
+  const container = document.getElementById("calendarContainer");
+  const today = new Date();
 
-  let fecha = new Date(2026, 0, 1);
-  const fin = new Date(2027, 0, 31);
-  const hoy = new Date();
-  hoy.setHours(0,0,0,0);
+  const months = ["Enero","Febrero","Marzo","Abril","Mayo"];
 
-  let colorIndex = 0;
+  months.forEach((m, i) => {
+    let monthDiv = document.createElement("div");
+    monthDiv.className = "month " + ["jan","feb","mar","apr","may"][i];
 
-  while (fecha <= fin) {
+    let title = document.createElement("div");
+    title.className = "month-title";
+    title.textContent = m + " 2026";
 
-    const mes = fecha.getMonth();
-    const año = fecha.getFullYear();
+    let daysDiv = document.createElement("div");
+    daysDiv.className = "days";
 
-    const monthDiv = document.createElement("div");
-    monthDiv.className = "calendar-month";
-    monthDiv.style.background = colores[colorIndex % colores.length];
+    for(let d=1; d<=30; d++){
+      let day = document.createElement("div");
+      day.className = "day";
+      day.textContent = d;
 
-    const title = document.createElement("div");
-    title.className = "calendar-title";
-    title.textContent = fecha.toLocaleString("es-ES", { month: "long", year: "numeric" });
+      let date = new Date(2026, i, d);
 
-    const grid = document.createElement("div");
-    grid.className = "calendar-grid";
+      if(date < today) day.classList.add("past");
+      if(date.toDateString() === today.toDateString()) day.classList.add("today");
 
-    const primerDia = new Date(año, mes, 1).getDay();
-    const diasMes = new Date(año, mes + 1, 0).getDate();
-
-    for (let i = 0; i < primerDia; i++) {
-      grid.appendChild(document.createElement("div"));
-    }
-
-    for (let d = 1; d <= diasMes; d++) {
-      const dia = document.createElement("div");
-      dia.className = "calendar-day";
-      dia.textContent = d;
-
-      const fechaDia = new Date(año, mes, d);
-
-      if (fechaDia < hoy) dia.classList.add("past");
-
-      if (
-        fechaDia.getDate() === hoy.getDate() &&
-        fechaDia.getMonth() === hoy.getMonth() &&
-        fechaDia.getFullYear() === hoy.getFullYear()
-      ) {
-        dia.classList.add("today");
-      }
-
-      grid.appendChild(dia);
+      daysDiv.appendChild(day);
     }
 
     monthDiv.appendChild(title);
-    monthDiv.appendChild(grid);
+    monthDiv.appendChild(daysDiv);
     container.appendChild(monthDiv);
+  });
+}
 
-    fecha.setMonth(fecha.getMonth() + 1);
-    fecha.setDate(1);
-    colorIndex++;
-  }
+/* AJUSTES */
+function toggleSettings() {
+  const s = document.getElementById("settings");
+  s.style.display = s.style.display === "block" ? "none" : "block";
 }
 
 </script>
