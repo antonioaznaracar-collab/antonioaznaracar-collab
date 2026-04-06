@@ -19,9 +19,7 @@ body {
   overflow: hidden;
 }
 
-/* =====================
-   INTRO
-===================== */
+/* INTRO */
 .intro {
   position: fixed;
   inset: 0;
@@ -33,18 +31,14 @@ body {
   transition: opacity 1.2s ease, transform 1.2s ease;
 }
 
-.intro h1 {
-  font-size: 50px;
-}
+.intro h1 { font-size: 50px; }
 
 .hide {
   opacity: 0;
   transform: scale(1.1);
 }
 
-/* =====================
-   APP
-===================== */
+/* APP */
 .app {
   display: none;
   padding: 20px;
@@ -58,7 +52,7 @@ body {
   transform: translateY(0);
 }
 
-/* BOTÓN AJUSTES (FIX MÓVIL) */
+/* BOTÓN AJUSTES */
 .settings-btn {
   position: fixed;
   top: 15px;
@@ -72,30 +66,27 @@ body {
   color: white;
 }
 
-/* =====================
-   MENÚ
-===================== */
+/* MENÚ (MEJORADO) */
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
   max-width: 700px;
   margin: auto;
 }
 
 .card {
-  position: relative;
-  height: 170px;
-  border-radius: 20px;
+  height: 110px; /* MÁS PEQUEÑO */
+  border-radius: 14px;
   background-size: cover;
   background-position: center;
-  overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s;
+  position: relative;
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .overlay {
@@ -106,13 +97,11 @@ body {
 
 .content {
   position: absolute;
-  bottom: 15px;
-  left: 15px;
+  bottom: 10px;
+  left: 10px;
 }
 
-/* =====================
-   AJUSTES (NETFLIX STYLE)
-===================== */
+/* AJUSTES */
 .settings {
   position: fixed;
   inset: 0;
@@ -160,25 +149,17 @@ body {
   cursor: pointer;
 }
 
-/* CONTENIDO */
-.settings-body {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 /* PERFIL */
 .profile-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: #333;
   background-size: cover;
@@ -194,6 +175,7 @@ body {
   text-align: center;
 }
 
+/* BOTÓN GUARDAR MEJORADO */
 .profile-box button {
   width: 100%;
   padding: 10px;
@@ -202,11 +184,12 @@ body {
   background: #e50914;
   color: white;
   cursor: pointer;
+  transition: 0.3s;
 }
 
 /* CATEGORÍAS */
 .avatar-category {
-  font-size: 13px;
+  font-size: 12px;
   color: #aaa;
   margin-top: 10px;
 }
@@ -215,18 +198,17 @@ body {
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .avatar-grid img {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 .avatar-grid img:hover {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 @media(min-width: 768px) {
@@ -288,7 +270,7 @@ body {
 
         <input type="text" id="usernameInput">
 
-        <button onclick="saveProfile()">Guardar</button>
+        <button onclick="saveProfile(event)">Guardar</button>
       </div>
 
       <div class="avatar-category">🎬 Películas</div>
@@ -311,17 +293,19 @@ body {
 
 /* INTRO */
 window.onload = () => {
-
   const intro = document.getElementById("intro");
   const app = document.getElementById("app");
 
   app.style.display = "block";
 
   let user = localStorage.getItem("user") || "CineUser";
-  let avatar = localStorage.getItem("avatar") || "";
+  let avatar = localStorage.getItem("avatar");
 
   document.getElementById("usernameInput").value = user;
-  document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
+
+  if (avatar) {
+    document.getElementById("avatar").style.backgroundImage = `url(${avatar})`;
+  }
 
   setTimeout(() => {
     intro.classList.add("hide");
@@ -347,13 +331,21 @@ function toggleSettings() {
   }
 }
 
-/* GUARDAR */
-function saveProfile() {
-  const name = document.getElementById("usernameInput").value;
-  if (name) {
-    localStorage.setItem("user", name);
-    alert("✅ Guardado");
-  }
+/* GUARDAR (FIX TOTAL) */
+function saveProfile(e) {
+  const name = document.getElementById("usernameInput").value.trim();
+
+  if (!name) return;
+
+  localStorage.setItem("user", name);
+
+  const avatar = document.getElementById("avatar").style.backgroundImage;
+  if (avatar) localStorage.setItem("avatar", avatar);
+
+  // feedback real
+  const btn = e.target;
+  btn.textContent = "✔ Guardado";
+  setTimeout(() => btn.textContent = "Guardar", 1500);
 }
 
 /* AVATAR */
@@ -366,5 +358,3 @@ function setAvatar(src) {
 
 </body>
 </html>
-
-
