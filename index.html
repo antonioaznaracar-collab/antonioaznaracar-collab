@@ -1,243 +1,255 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CineMach</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineMach</title>
 
-<style>
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: system-ui, Arial;
-}
+  <style>
+    /* =========================
+       VARIABLES Y RESET
+    ==========================*/
+    :root {
+      --bg: #0b0b0f;
+      --primary: #e50914;
+      --text: #ffffff;
+      --muted: #aaaaaa;
+      --card: #1a1a1a;
+    }
 
-body {
-  background: #0b0b0f;
-  color: white;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, Arial;
+    }
 
-/* INTRO */
-#intro {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at top, #1a1a2e, #0b0b0f);
-  text-align: center;
-  padding: 20px;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
 
-#intro h1 {
-  font-size: 48px;
-  letter-spacing: 2px;
-}
+    /* =========================
+       INTRO
+    ==========================*/
+    .intro {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
 
-#intro p {
-  margin: 15px 0 30px;
-  color: #aaa;
-}
+    .intro h1 {
+      font-size: 60px;
+      letter-spacing: 3px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
 
-.btn {
-  padding: 14px 35px;
-  border: none;
-  border-radius: 30px;
-  background: linear-gradient(90deg, #e50914, #ff2a2a);
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-}
+    .intro p {
+      margin-top: 15px;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+      animation-delay: 1s;
+    }
 
-.btn:hover {
-  transform: scale(1.05);
-}
+    @keyframes glow {
+      from { text-shadow: 0 0 10px var(--primary); }
+      to { text-shadow: 0 0 25px #ff3b3b; }
+    }
 
-/* APP LAYOUT */
-.app {
-  display: none;
-  min-height: 100vh;
-  display: flex;
-}
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
 
-/* SIDEBAR (desktop) */
-.sidebar {
-  width: 220px;
-  background: #111;
-  padding: 20px;
-  display: none;
-  flex-direction: column;
-  gap: 15px;
-}
+    .exit {
+      animation: slideUp 1s forwards;
+    }
 
-.sidebar h2 {
-  margin-bottom: 20px;
-}
+    @keyframes slideUp {
+      to {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+    }
 
-.sidebar div {
-  cursor: pointer;
-  padding: 10px;
-  border-radius: 10px;
-}
+    /* =========================
+       APP
+    ==========================*/
+    .app {
+      display: none;
+      padding: 20px;
+      animation: fadeInApp 1s ease;
+    }
 
-.sidebar div:hover {
-  background: #e50914;
-}
+    @keyframes fadeInApp {
+      from {
+        opacity: 0;
+        transform: scale(1.05);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
 
-/* MAIN */
-.main {
-  flex: 1;
-  padding: 20px;
-}
+    /* HEADER */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-/* HEADER */
-.header {
-  margin-bottom: 20px;
-}
+    .header h2 {
+      font-size: 28px;
+    }
 
-.header h1 {
-  font-size: 24px;
-}
+    /* CARDS */
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-/* CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
-}
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-.card {
-  background: #1a1a1a;
-  padding: 20px;
-  border-radius: 15px;
-  transition: 0.3s;
-  cursor: pointer;
-}
+    .card:hover {
+      background: var(--primary);
+      transform: translateY(-5px) scale(1.02);
+    }
 
-.card:hover {
-  transform: scale(1.03);
-  background: #e50914;
-}
+    .card h3 {
+      margin-bottom: 5px;
+    }
 
-/* BOTTOM NAV (mobile) */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #111;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-}
+    .card p {
+      font-size: 13px;
+      color: var(--muted);
+    }
 
-.bottom-nav div {
-  text-align: center;
-  font-size: 12px;
-  cursor: pointer;
-}
+    /* CONTENIDO */
+    .content {
+      margin-top: 30px;
+      text-align: center;
+      color: var(--muted);
+      min-height: 100px;
+    }
 
-/* CONTENIDO */
-#content {
-  margin-top: 20px;
-  color: #ccc;
-}
+    /* RESPONSIVE */
+    @media (min-width: 768px) {
+      .grid {
+        flex-direction: row;
+        justify-content: center;
+      }
 
-/* RESPONSIVE */
-@media (min-width: 768px) {
-  .sidebar {
-    display: flex;
-  }
-
-  .bottom-nav {
-    display: none;
-  }
-
-  .cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-</style>
+      .card {
+        width: 200px;
+      }
+    }
+  </style>
 
 </head>
 
 <body>
 
-<!-- INTRO -->
-<div id="intro">
-  <h1>🎬 CineMach</h1>
-  <p>La forma más inteligente de ver películas con amigos</p>
-  <button class="btn" onclick="start()">Entrar</button>
-</div>
+  <!-- =========================
+       INTRO
+  ==========================-->
+  <section class="intro" id="intro">
+    <h1>🎬 CineMach</h1>
+    <p>La nueva forma de vivir el cine con amigos</p>
+  </section>
 
-<!-- APP -->
-<div class="app" id="app">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <h2>CineMach</h2>
-    <div onclick="openSection('calendario')">📅 Calendario</div>
-    <div onclick="openSection('social')">👥 Social</div>
-    <div onclick="openSection('explorar')">🎬 Explorar</div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="main">
+  <!-- =========================
+       APP
+  ==========================-->
+  <section class="app" id="app">
 
     <div class="header">
-      <h1>Descubre películas</h1>
+      <h2>🎬 CineMach</h2>
     </div>
 
-    <div class="cards">
-      <div class="card" onclick="openSection('calendario')">
-        📅 Calendario<br><small>Organiza tus planes</small>
+    <div class="grid">
+
+      <div class="card" onclick="navigate('calendario')">
+        <h3>📅 Calendario</h3>
+        <p>Organiza tus planes de cine</p>
       </div>
 
-      <div class="card" onclick="openSection('social')">
-        👥 Social<br><small>Grupos con amigos</small>
+      <div class="card" onclick="navigate('social')">
+        <h3>👥 Social</h3>
+        <p>Grupos y amigos</p>
       </div>
 
-      <div class="card" onclick="openSection('explorar')">
-        🎬 Explorar<br><small>Busca nuevas películas</small>
+      <div class="card" onclick="navigate('explorar')">
+        <h3>🎬 Explorar</h3>
+        <p>Descubre películas</p>
       </div>
+
     </div>
 
-    <div id="content"></div>
-  </div>
-</div>
+    <div class="content" id="content"></div>
 
-<!-- BOTTOM NAV (móvil) -->
-<div class="bottom-nav">
-  <div onclick="openSection('calendario')">📅<br>Calendario</div>
-  <div onclick="openSection('social')">👥<br>Social</div>
-  <div onclick="openSection('explorar')">🎬<br>Explorar</div>
-</div>
+  </section>
 
-<script>
-function start() {
-  document.getElementById("intro").style.display = "none";
-  document.getElementById("app").style.display = "flex";
-}
+  <!-- =========================
+       SCRIPT
+  ==========================-->
+  <script>
 
-function openSection(sec) {
-  const c = document.getElementById("content");
+    /* INTRO AUTOMÁTICA */
+    window.onload = () => {
+      setTimeout(() => {
+        document.getElementById("intro").classList.add("exit");
 
-  if (sec === "calendario") {
-    c.innerHTML = "<h2>📅 Calendario</h2><p>Aquí verás tus películas y planes.</p>";
-  }
+        setTimeout(() => {
+          document.getElementById("intro").style.display = "none";
+          document.getElementById("app").style.display = "block";
+        }, 1000);
 
-  if (sec === "social") {
-    c.innerHTML = "<h2>👥 Social</h2><p>Crea grupos con amigos y vota películas.</p>";
-  }
+      }, 2500);
+    };
 
-  if (sec === "explorar") {
-    c.innerHTML = "<h2>🎬 Explorar</h2><p>Busca y descubre películas populares.</p>";
-  }
-}
-</script>
+    /* NAVEGACIÓN */
+    function navigate(section) {
+      const content = document.getElementById("content");
+
+      switch(section) {
+        case "calendario":
+          content.innerHTML = `
+            <h3>📅 Calendario</h3>
+            <p>Organiza tus películas y planes con amigos.</p>
+          `;
+          break;
+
+        case "social":
+          content.innerHTML = `
+            <h3>👥 Social</h3>
+            <p>Crea grupos y vota películas.</p>
+          `;
+          break;
+
+        case "explorar":
+          content.innerHTML = `
+            <h3>🎬 Explorar</h3>
+            <p>Busca y descubre nuevas películas.</p>
+          `;
+          break;
+      }
+    }
+
+  </script>
 
 </body>
 </html>
+
 
