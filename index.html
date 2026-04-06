@@ -35,40 +35,33 @@ body {
   font-size: 50px;
 }
 
-/* salida */
 .hide {
   opacity: 0;
   transform: scale(1.1);
 }
 
-/* APP */
-.app {
+/* PANTALLAS */
+.screen {
   display: none;
   padding: 20px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: 1s ease;
 }
 
-.show {
-  opacity: 1;
-  transform: translateY(0);
+.active {
+  display: block;
 }
 
 /* HEADER */
 .header {
-  text-align: center;
-  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* BOTÓN AJUSTES */
 .settings-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
   background: #e50914;
   border: none;
-  padding: 10px 14px;
+  padding: 10px;
   border-radius: 10px;
   color: white;
   cursor: pointer;
@@ -81,16 +74,16 @@ body {
   gap: 18px;
   max-width: 700px;
   margin: auto;
+  margin-top: 20px;
 }
 
 .card {
   position: relative;
   height: 170px;
   border-radius: 20px;
-  background-size: cover;
-  background-position: center;
   overflow: hidden;
   cursor: pointer;
+  background-size: cover;
 }
 
 .overlay {
@@ -105,40 +98,33 @@ body {
   left: 15px;
 }
 
-.content h2 {
-  font-size: 22px;
-}
-
-.content p {
-  font-size: 13px;
-  color: #ccc;
-}
-
-/* SETTINGS PANEL */
-.settings {
-  display: none;
-  max-width: 600px;
-  margin: auto;
-}
-
-.setting {
+/* SETTINGS */
+.setting-box {
   background: rgba(255,255,255,0.06);
   padding: 15px;
-  margin-bottom: 10px;
   border-radius: 12px;
+  margin-bottom: 10px;
 }
 
-/* BOTÓN GOOGLE */
+.back-btn {
+  margin-bottom: 15px;
+  background: #333;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .google-btn {
   width: 100%;
-  padding: 14px;
-  margin-top: 15px;
+  padding: 12px;
   border-radius: 10px;
   border: none;
-  cursor: pointer;
   background: white;
   color: black;
   font-weight: bold;
+  cursor: pointer;
 }
 
 /* LOCK SOCIAL */
@@ -146,140 +132,139 @@ body {
   opacity: 0.4;
   pointer-events: none;
 }
-
-/* SWITCH */
-.switch {
-  float: right;
-}
 </style>
 </head>
 
 <body>
 
+<!-- INTRO -->
 <div class="intro" id="intro">
   <h1>🎬 CineMach</h1>
 </div>
 
-<div class="app" id="app">
-
-  <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+<!-- MENÚ -->
+<div class="screen active" id="menuScreen">
 
   <div class="header">
     <h2 id="userName"></h2>
+    <button class="settings-btn" onclick="openSettings()">⚙️</button>
   </div>
 
-  <!-- MENU -->
-  <div class="menu" id="menu">
+  <div class="menu">
 
-    <div class="card" onclick="openSection('calendar')" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
       <div class="overlay"></div>
-      <div class="content">
-        <h2>📅 Calendario</h2>
-        <p>Organiza maratones</p>
-      </div>
+      <div class="content" id="calendarText">📅 Calendario</div>
     </div>
 
-    <div class="card" id="socialCard" onclick="openSection('social')" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
+    <div class="card" id="socialCard" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
       <div class="overlay"></div>
-      <div class="content">
-        <h2>👥 Social</h2>
-        <p>Decide con amigos</p>
-      </div>
+      <div class="content" id="socialText">👥 Social</div>
     </div>
 
-    <div class="card" onclick="openSection('explore')" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
       <div class="overlay"></div>
-      <div class="content">
-        <h2>🎬 Explorar</h2>
-        <p>Descubre películas</p>
-      </div>
+      <div class="content" id="exploreText">🎬 Explorar</div>
     </div>
 
   </div>
 
-  <!-- SETTINGS -->
-  <div class="settings" id="settings">
+</div>
 
-    <h2>⚙️ Ajustes</h2>
+<!-- AJUSTES -->
+<div class="screen" id="settingsScreen">
 
-    <div class="setting">
-      👤 Usuario:
-      <span id="userDisplay"></span>
-    </div>
+  <button class="back-btn" onclick="goBack()">⬅</button>
 
-    <div class="setting">
-      🌍 Idioma
-      <select onchange="changeLang(this.value)">
-        <option value="es">Español</option>
-        <option value="en">English</option>
-      </select>
-    </div>
+  <h2>⚙️ Ajustes</h2>
 
-    <div class="setting">
-      🔔 Notificaciones
-      <input type="checkbox" checked>
-    </div>
+  <div class="setting-box">
+    👤 Usuario: <span id="userDisplay"></span>
+  </div>
 
-    <button class="google-btn" onclick="loginGoogle()">
-      🔵 Sign in with Google
-    </button>
+  <div class="setting-box">
+    🌍 Idioma:
+    <select onchange="changeLang(this.value)">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 
+  <div class="setting-box">
+    🔐 Login
+    <button class="google-btn" onclick="loginGoogle()">🔵 Sign in with Google</button>
   </div>
 
 </div>
 
 <script>
 
+/* TEXTO */
+const t = {
+  es: {
+    calendar: "📅 Calendario",
+    social: "👥 Social",
+    explore: "🎬 Explorar",
+    settings: "⚙️ Ajustes",
+  },
+  en: {
+    calendar: "📅 Calendar",
+    social: "👥 Social",
+    explore: "🎬 Explore",
+    settings: "⚙️ Settings",
+  }
+};
+
 /* INTRO */
 window.onload = () => {
 
-  let user = localStorage.getItem("cinemach_user");
+  let user = localStorage.getItem("user");
 
   if (!user) {
-    user = "CineUser" + Math.floor(Math.random()*9999);
-    localStorage.setItem("cinemach_user", user);
+    user = "User" + Math.floor(Math.random()*9999);
+    localStorage.setItem("user", user);
   }
 
   document.getElementById("userName").innerText = "👤 " + user;
   document.getElementById("userDisplay").innerText = user;
 
+  let lang = localStorage.getItem("lang") || "es";
+  applyLang(lang);
+
   checkLogin();
 
   setTimeout(() => {
-    const intro = document.getElementById("intro");
-    const app = document.getElementById("app");
-
-    intro.classList.add("hide");
-
+    document.getElementById("intro").classList.add("hide");
     setTimeout(() => {
-      intro.style.display = "none";
-      app.style.display = "block";
-
-      setTimeout(() => app.classList.add("show"), 50);
-
+      document.getElementById("intro").style.display = "none";
     }, 1200);
-
   }, 2000);
 };
 
-/* SETTINGS */
-function toggleSettings() {
-  const s = document.getElementById("settings");
-  s.style.display = s.style.display === "block" ? "none" : "block";
+/* NAVEGACIÓN */
+function openSettings() {
+  switchScreen("settingsScreen");
 }
 
-/* LOGIN SIMULADO */
+function goBack() {
+  switchScreen("menuScreen");
+}
+
+function switchScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* LOGIN */
 function loginGoogle() {
-  localStorage.setItem("cinemach_logged", "true");
+  localStorage.setItem("logged", "true");
   alert("Sesión iniciada (simulada)");
   checkLogin();
 }
 
 /* BLOQUEO SOCIAL */
 function checkLogin() {
-  const logged = localStorage.getItem("cinemach_logged");
-
-  if (!logged) {
+  if (!localStorage.getItem("logged")) {
     document.getElementById("socialCard").classList.add("locked");
   } else {
     document.getElementById("socialCard").classList.remove("locked");
@@ -288,11 +273,14 @@ function checkLogin() {
 
 /* IDIOMA */
 function changeLang(lang) {
-  localStorage.setItem("cinemach_lang", lang);
+  localStorage.setItem("lang", lang);
+  applyLang(lang);
 }
 
-function openSection(sec) {
-  alert("Abriste: " + sec);
+function applyLang(lang) {
+  document.getElementById("calendarText").innerText = t[lang].calendar;
+  document.getElementById("socialText").innerText = t[lang].social;
+  document.getElementById("exploreText").innerText = t[lang].explore;
 }
 
 </script>
