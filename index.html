@@ -19,7 +19,9 @@ body {
   overflow: hidden;
 }
 
-/* INTRO */
+/* =====================
+   INTRO
+===================== */
 .intro {
   position: fixed;
   inset: 0;
@@ -42,7 +44,9 @@ body {
   transform: scale(1.1);
 }
 
-/* APP */
+/* =====================
+   APP
+===================== */
 .app {
   display: none;
   padding: 20px;
@@ -57,33 +61,79 @@ body {
   transform: translateY(0);
 }
 
-/* MENÚ */
+/* =====================
+   MENÚ NETFLIX STYLE
+===================== */
 .menu {
-  display: grid;
-  gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 700px;
+  margin: auto;
 }
 
+/* tarjetas tipo Netflix */
 .card {
-  background: rgba(255,255,255,0.06);
-  padding: 20px;
-  border-radius: 16px;
+  position: relative;
+  height: 170px;
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
   cursor: pointer;
-  transition: 0.3s;
+
+  transition: transform 0.35s ease;
 }
 
+/* hover */
 .card:hover {
-  transform: translateY(-5px);
-  background: #e50914;
+  transform: scale(1.03);
 }
 
-/* RESPONSIVE */
+/* overlay oscuro */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.75), transparent);
+}
+
+/* contenido */
+.content {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  z-index: 2;
+}
+
+.content h2 {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.content p {
+  font-size: 13px;
+  color: #ccc;
+}
+
+/* header */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* escritorio */
 @media(min-width: 768px) {
   .menu {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    max-width: 900px;
-    margin: auto;
+    max-width: 1000px;
+  }
+
+  .card {
+    height: 220px;
   }
 }
+
 </style>
 </head>
 
@@ -97,13 +147,35 @@ body {
 <!-- APP -->
 <div class="app" id="app">
 
-  <h2 style="text-align:center; margin-bottom:20px;">CineMach</h2>
+  <div class="header">
+    <h1>CineMach</h1>
+  </div>
 
   <div class="menu">
 
-    <div class="card">📅 Calendario</div>
-    <div class="card">👥 Social</div>
-    <div class="card">🎬 Explorar</div>
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>📅 Calendario</h2>
+        <p>Organiza tus maratones</p>
+      </div>
+    </div>
+
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>👥 Social</h2>
+        <p>Decide con amigos</p>
+      </div>
+    </div>
+
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>🎬 Explorar</h2>
+        <p>Descubre películas</p>
+      </div>
+    </div>
 
   </div>
 
@@ -111,11 +183,11 @@ body {
 
 <script>
 
-/* CONTROL DE INTRO */
+/* CONTROL INTRO */
 window.onload = () => {
 
   setTimeout(() => {
-    
+
     const intro = document.getElementById("intro");
     const app = document.getElementById("app");
 
@@ -128,18 +200,17 @@ window.onload = () => {
       // mostrar app
       app.style.display = "block";
 
-      // animación de entrada
+      // entrada suave
       setTimeout(() => {
         app.classList.add("show");
       }, 50);
 
     }, 1200);
 
-  }, 2000); // tiempo de carga
+  }, 2000); // tiempo de “carga”
 };
 
 </script>
 
 </body>
 </html>
-
