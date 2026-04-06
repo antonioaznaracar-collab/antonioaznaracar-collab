@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CineMatch 2027 | Definitive Edition</title>
+    <title>CineMatch 2027 | Final Pro</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <script src="https://google.com" async defer></script>
     
@@ -12,8 +12,7 @@
             --bg: #050505;
             --accent: #ff003c;
             --glass: rgba(255, 255, 255, 0.08);
-            --text-sec: #00f2ff;
-            --month-color: #00f2ff; 
+            --neon: #00f2ff;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -25,42 +24,46 @@
         @keyframes pulse { from { opacity: 0.3; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         /* --- NAVEGACIÓN --- */
-        .page { position: absolute; inset: 0; display: none; background: radial-gradient(circle at center, #151525 0%, #050505 100%); padding: 20px; overflow-y: auto; }
-        .active-page { display: flex !important; flex-direction: column; align-items: center; justify-content: center; }
+        .page { position: absolute; inset: 0; display: none; background: radial-gradient(circle at center, #151525 0%, #050505 100%); padding: 40px 20px; overflow-y: auto; }
+        .active-page { display: flex !important; flex-direction: column; align-items: center; }
 
-        /* --- MENÚ PRINCIPAL (RECUPERADO) --- */
-        .menu-container { display: grid; gap: 30px; width: 95%; max-width: 1400px; margin: auto; }
-        @media (orientation: portrait) { .menu-container { grid-template-columns: 1fr; padding-top: 40px; } .card { height: 25vh; } }
-        @media (orientation: landscape) { .menu-container { grid-template-columns: repeat(3, 1fr); height: 75vh; } .card { height: 100%; } }
+        /* --- MENÚ GIGANTE --- */
+        .menu-container { display: grid; gap: 30px; width: 95%; max-width: 1400px; margin: auto; height: 75vh; }
+        @media (orientation: portrait) { .menu-container { grid-template-columns: 1fr; padding-top: 60px; } .card { height: 22vh; } }
+        @media (orientation: landscape) { .menu-container { grid-template-columns: repeat(3, 1fr); align-items: center; } .card { height: 100%; } }
 
         .card { 
-            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; 
+            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            padding: 40px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            backdrop-filter: blur(20px); position: relative; cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(20px); cursor: pointer; position: relative;
         }
-        .card:hover { border-color: var(--accent); transform: translateY(-15px) scale(1.03); background: rgba(255, 0, 60, 0.05); box-shadow: 0 20px 60px rgba(255, 0, 60, 0.3); }
-        .card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+        .card:hover { border-color: var(--accent); transform: translateY(-20px) scale(1.05); box-shadow: 0 30px 60px rgba(255, 0, 60, 0.4); background: rgba(255, 0, 60, 0.05); }
+        .card.locked { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
         .card.locked:hover { transform: none; box-shadow: none; border-color: rgba(255,255,255,0.1); }
 
-        .icon { font-size: clamp(3.5rem, 12vh, 6rem); margin-bottom: 20px; }
-        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 3px; font-size: clamp(1.2rem, 3vh, 2rem); }
+        .icon { font-size: 6rem; margin-bottom: 15px; }
+        .label { font-weight: 900; text-transform: uppercase; letter-spacing: 5px; font-size: 2rem; }
 
-        /* --- CALENDARIO (FASE 3) --- */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; width: 100%; max-width: 800px; background: var(--glass); padding: 20px; border-radius: 25px; border: 2px solid var(--month-color); }
-        .day { aspect-ratio: 1; display: flex; justify-content: center; align-items: center; border-radius: 12px; background: rgba(255,255,255,0.03); font-weight: bold; transition: 0.3s; }
-        .day.past { text-decoration: line-through; opacity: 0.3; color: var(--accent); }
-        .day.today { border: 2px solid var(--month-color); box-shadow: 0 0 15px var(--month-color); }
-
-        /* --- BOTÓN GOOGLE (RECUPERADO) --- */
-        .google-btn { background-color: #131314; color: white; border: 1px solid #8e918f; border-radius: 20px; padding: 12px 28px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-top: 20px; }
-        .google-icon { width: 20px; height: 20px; }
+        /* --- CALENDARIO DE PELÍCULAS --- */
+        .timeline { display: flex; gap: 30px; padding: 20px; overflow-x: auto; width: 100%; scroll-snap-type: x mandatory; }
+        .movie-card { 
+            flex: 0 0 300px; background: var(--glass); border-radius: 25px; padding: 20px; 
+            text-align: center; border: 1px solid rgba(255,255,255,0.1); position: relative; scroll-snap-align: center;
+        }
+        .movie-card.past { opacity: 0.4; filter: grayscale(1); }
+        .movie-card.past::after { content: '❌ STRENADA'; position: absolute; top: 40%; left: 0; width: 100%; background: var(--accent); color: white; font-weight: 900; transform: rotate(-20deg); padding: 10px; }
+        .movie-date { color: var(--neon); font-weight: 900; margin-bottom: 10px; }
+        .movie-title { font-family: 'Bebas Neue'; font-size: 1.8rem; }
 
         /* AJUSTES */
-        .settings-card { background: var(--glass); width: 100%; max-width: 600px; padding: 25px; border-radius: 25px; display: flex; flex-direction: column; gap: 15px; }
-        #settings-btn { position: fixed; top: 25px; right: 25px; z-index: 100; font-size: 1.8rem; background: var(--glass); padding: 12px; border-radius: 50%; cursor: pointer; }
-        .btn { background: var(--accent); border: none; color: white; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
-        .error-msg { color: var(--accent); font-size: 0.8rem; display: none; text-align: center; font-weight: bold; }
+        .settings-card { background: var(--glass); padding: 30px; border-radius: 30px; width: 100%; max-width: 600px; margin-top: 50px; }
+        #settings-btn { position: fixed; top: 25px; right: 25px; font-size: 2.5rem; z-index: 1000; cursor: pointer; }
+        
+        .google-btn { 
+            background: #131314; border: 1px solid #8e918f; color: white; padding: 15px; 
+            border-radius: 20px; display: flex; align-items: center; justify-content: center; 
+            gap: 15px; cursor: pointer; margin-top: 20px; width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -68,87 +71,95 @@
     <div id="intro-screen"><div class="logo-intro">CINEMATCH</div></div>
     <div id="settings-btn" onclick="goTo('settings')">⚙️</div>
 
+    <!-- HOME -->
     <main id="page-home" class="page active-page">
         <div class="menu-container">
             <div class="card" onclick="vibrate()">🍿 <div class="label">Maratones</div></div>
             <div class="card" onclick="goTo('calendar')">📅 <div class="label">Calendario</div></div>
             <div id="card-social" class="card locked" onclick="checkSocial()">
-                <div id="social-lock" style="position:absolute; top:20px; right:25px">🔒</div>
+                <div id="social-lock" style="position:absolute; top:20px; right:30px; font-size: 2rem;">🔒</div>
                 👥 <div class="label">Social</div>
             </div>
         </div>
     </main>
 
+    <!-- CALENDARIO -->
     <div id="page-calendar" class="page">
-        <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px">
-            <button class="btn" onclick="prevMonth()">◀</button>
-            <h1 id="month-name" style="font-family:'Bebas Neue'; letter-spacing:4px">ABRIL 2026</h1>
-            <button class="btn" onclick="nextMonth()">▶</button>
-        </div>
-        <div id="calendar-body" class="calendar-grid"></div>
-        <button class="btn" style="margin-top:20px" onclick="goTo('home')">VOLVER</button>
+        <button onclick="goTo('home')" style="background:var(--accent); border:none; color:white; padding:15px 30px; border-radius:15px; font-weight:900; margin-bottom:30px; cursor:pointer;">← VOLVER</button>
+        <h1 style="font-family:'Bebas Neue'; font-size: 3rem; letter-spacing: 5px;">ESTRENOS 2026/27</h1>
+        <div class="timeline" id="movie-list"></div>
     </div>
 
+    <!-- AJUSTES -->
     <div id="page-settings" class="page">
         <div class="settings-card">
-            <button class="btn" onclick="goTo('home')">VOLVER</button>
-            <b data-key="user">Usuario</b>
-            <input type="text" id="user-input" placeholder="Tu apodo..." oninput="validateAndSave(this.value)" style="width:100%; padding:12px; background:#111; color:var(--text-sec); border:1px solid var(--accent); border-radius:12px;">
-            <div id="name-error" class="error-msg">⚠️ Este nombre ya está en uso</div>
+            <button onclick="goTo('home')" style="background:var(--accent); border:none; color:white; padding:10px 20px; border-radius:10px; font-weight:900; cursor:pointer;">← VOLVER</button>
+            <h2 style="font-family:'Bebas Neue'; letter-spacing:3px; margin-top:20px;">AJUSTES DE USUARIO</h2>
+            <input type="text" id="user-input" placeholder="Tu apodo..." oninput="validateName(this.value)" style="width:100%; padding:15px; background:#111; color:var(--neon); border:1px solid var(--accent); border-radius:15px; font-size:1.2rem; text-align:center;">
+            <div id="name-error" style="color:var(--accent); font-size:0.8rem; display:none; margin-top:5px;">⚠️ Nombre ya en uso</div>
             
-            <div id="login-section" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:10px;">
+            <div id="login-box" style="margin-top:30px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
                 <div class="google-btn" onclick="fakeLogin()">
-                    <img src="https://wikimedia.org" class="google-icon">
-                    Sign in with Google
+                    <img src="https://wikimedia.org" width="20">
+                    SIGN IN WITH GOOGLE
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let userLoggedIn = false;
-        let viewDate = new Date(2026, 3, 1);
-        const today = new Date(2026, 3, 6);
-        const takenNames = ["Thanos_271", "IronMan", "Admin"];
+        let loggedIn = false;
+        const today = new Date(2026, 3, 6); // 6 Abril 2026
+        const forbidden = ["Thanos_271", "Admin"];
+
+        const movies = [
+            { t: "AVATAR 3", d: new Date(2025, 11, 19) },
+            { t: "AVENGERS: DOOMSDAY", d: new Date(2026, 4, 1) },
+            { t: "SUPERMAN", d: new Date(2025, 6, 11) },
+            { t: "SPIDER-MAN 4", d: new Date(2026, 6, 24) },
+            { t: "SECRET WARS", d: new Date(2027, 4, 7) }
+        ];
 
         window.onload = () => {
-            const saved = localStorage.getItem('cineMatch_name');
+            const saved = localStorage.getItem('cineMatch_user');
             if (saved) document.getElementById('user-input').value = saved;
-            renderCalendar();
+            
+            const list = document.getElementById('movie-list');
+            movies.sort((a,b) => a.d - b.d).forEach(m => {
+                const isPast = m.d < today;
+                list.innerHTML += `<div class="movie-card ${isPast ? 'past' : ''}">
+                    <div class="movie-date">${m.d.toLocaleDateString()}</div>
+                    <div class="movie-title">${m.t}</div>
+                    <div style="color:gold; margin-top:10px;">RT: 90% | IMDb: 8.2</div>
+                </div>`;
+            });
+
             setTimeout(() => { document.getElementById('intro-screen').style.transform = 'translateY(-100%)'; }, 2500);
         };
 
-        function validateAndSave(name) {
-            const errorEl = document.getElementById('name-error');
-            if (takenNames.includes(name)) { errorEl.style.display = 'block'; return; }
-            errorEl.style.display = 'none';
-            localStorage.setItem('cineMatch_name', name);
+        function validateName(n) {
+            const err = document.getElementById('name-error');
+            if (forbidden.includes(n)) { err.style.display = 'block'; return; }
+            err.style.display = 'none';
+            localStorage.setItem('cineMatch_user', n);
         }
 
-        function renderCalendar() {
-            const grid = document.getElementById('calendar-body');
-            const m = viewDate.getMonth(); const y = viewDate.getFullYear();
-            const colors = ["#00d2ff", "#ff00d2", "#d2ff00", "#00ff7f", "#ff7f00", "#7f00ff", "#ff003c", "#00f2ff", "#ffaa00", "#aaff00", "#00aaff", "#aa00ff"];
-            const names = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-            
-            document.documentElement.style.setProperty('--month-color', colors[m]);
-            document.getElementById('month-name').innerText = `${names[m]} ${y}`;
-            grid.innerHTML = "";
-            const daysInMonth = new Date(y, m + 1, 0).getDate();
-            for(let d=1; d <= daysInMonth; d++) {
-                const cur = new Date(y, m, d);
-                let cls = "day";
-                if (cur < today) cls += " past";
-                if (cur.getTime() === today.getTime()) cls += " today";
-                grid.innerHTML += `<div class="${cls}">${d}</div>`;
-            }
+        function fakeLogin() {
+            loggedIn = true;
+            document.getElementById('card-social').classList.remove('locked');
+            document.getElementById('social-lock').innerText = "🟢";
+            document.getElementById('login-box').style.display = 'none';
+            alert("¡Login Correcto!");
+            goTo('home');
         }
 
-        function nextMonth() { viewDate.setMonth(viewDate.getMonth() + 1); renderCalendar(); }
-        function prevMonth() { viewDate.setMonth(viewDate.getMonth() - 1); renderCalendar(); }
-        function goTo(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById('page-' + id).classList.add('active-page'); }
-        function fakeLogin() { userLoggedIn = true; document.getElementById('card-social').classList.remove('locked'); document.getElementById('social-lock').innerText = "🟢"; goTo('home'); }
-        function checkSocial() { if(!userLoggedIn) alert("¡Login Google primero!"); else alert("Entrando a Social..."); }
+        function goTo(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById('page-' + id).classList.add('active-page');
+            vibrate();
+        }
+
+        function checkSocial() { if(!loggedIn) alert("¡Inicia sesión primero!"); else alert("Entrando a Social..."); }
         function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
     </script>
 </body>
