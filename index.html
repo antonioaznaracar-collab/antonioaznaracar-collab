@@ -16,7 +16,6 @@
 body {
   background: #050507;
   color: white;
-  overflow-x: hidden;
 }
 
 /* INTRO */
@@ -31,8 +30,6 @@ body {
   transition: opacity 1.2s ease, transform 1.2s ease;
 }
 
-.intro h1 { font-size: 50px; }
-
 .hide {
   opacity: 0;
   transform: scale(1.1);
@@ -41,6 +38,11 @@ body {
 /* APP */
 .app {
   display: none;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   padding: 20px;
 }
 
@@ -49,75 +51,55 @@ body {
   position: fixed;
   top: 15px;
   right: 15px;
-  z-index: 999;
   background: #e50914;
   border: none;
   padding: 14px;
   border-radius: 12px;
-  cursor: pointer;
   color: white;
-  font-size: 18px;
   display: none;
 }
 
-/* MENÚ */
+/* MENÚ GIGANTE */
 .menu {
+  width: 100%;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 600px;
-  margin: auto;
+  gap: 25px;
 }
 
 .card {
-  height: 190px;
-  border-radius: 18px;
+  height: 240px;
+  border-radius: 22px;
   background-size: cover;
   background-position: center;
-  cursor: pointer;
   position: relative;
+  cursor: pointer;
 }
 
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.8), transparent);
+  background: linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.2));
+  border-radius: 22px;
 }
 
 .content {
   position: absolute;
-  bottom: 15px;
-  left: 15px;
-  font-size: 20px;
+  bottom: 20px;
+  left: 20px;
+  font-size: 26px;
   font-weight: bold;
 }
 
-/* ========================= */
-/* CALENDARIO 🔥 MEJORADO */
-/* ========================= */
-
+/* CALENDARIO */
 .calendar-screen {
   position: fixed;
   inset: 0;
   background: #050507;
   display: none;
-  z-index: 100;
   overflow-y: auto;
   padding: 20px;
-}
-
-.calendar-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.calendar-header button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
 }
 
 .month {
@@ -129,7 +111,6 @@ body {
 .month-title {
   font-size: 28px;
   margin-bottom: 15px;
-  font-weight: bold;
 }
 
 .days {
@@ -139,66 +120,31 @@ body {
 }
 
 .day {
-  height: 90px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 8px;
-  border-radius: 12px;
+  height: 80px;
+  border-radius: 10px;
   background: rgba(255,255,255,0.05);
-}
-
-.past {
-  text-decoration: line-through;
-  opacity: 0.4;
+  padding: 5px;
 }
 
 .today {
   background: #e50914;
-  font-weight: bold;
-  box-shadow: 0 0 20px #e50914;
-  border: 2px solid white;
 }
 
-/* COLORES */
-.jan { background: linear-gradient(135deg,#ff4e50,#f9d423); }
-.feb { background: linear-gradient(135deg,#ff6a88,#ff99ac); }
-.mar { background: linear-gradient(135deg,#ff9966,#ff5e62); }
-.apr { background: linear-gradient(135deg,#f7971e,#ffd200); }
-.may { background: linear-gradient(135deg,#f857a6,#ff5858); }
-
-/* ========================= */
-/* AJUSTES MEJORADOS */
-/* ========================= */
-
+/* AJUSTES */
 .settings {
   position: fixed;
   inset: 0;
   display: none;
-  z-index: 50;
-  overflow-y: auto; /* 🔥 FIX */
-}
-
-.settings::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
 }
 
 .settings-panel {
-  position: absolute;
-  left: 0;
-  top: 0;
   width: 100%;
   max-width: 420px;
   height: 100%;
   background: #141414;
   padding: 20px;
   transform: translateX(-100%);
-  transition: 0.4s ease;
-  display: flex;
-  flex-direction: column;
+  transition: 0.4s;
   overflow-y: auto;
 }
 
@@ -206,55 +152,11 @@ body {
   transform: translateX(0);
 }
 
-/* HEADER */
-.settings-header {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.settings-header h2 {
-  font-size: 22px;
-}
-
-.settings-header button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-}
-
-/* PERFIL */
-.profile-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-
 .avatar {
   width: 100px;
   height: 100px;
   border-radius: 50%;
   background: #333;
-  background-size: cover;
-  background-position: center;
-  border: 2px solid white;
-}
-
-#usernameInput {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.profile-box button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  background: #e50914;
-  color: white;
 }
 
 /* AVATARES */
@@ -265,14 +167,13 @@ body {
 
 .avatar-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3,1fr);
   gap: 10px;
 }
 
 .avatar-grid img {
   width: 100%;
   border-radius: 50%;
-  cursor: pointer;
 }
 
 </style>
@@ -295,40 +196,50 @@ body {
       <div class="content">📅 Calendario</div>
     </div>
 
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f')">
+      <div class="overlay"></div>
+      <div class="content">👥 Social</div>
+    </div>
+
+    <div class="card" style="background-image:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba')">
+      <div class="overlay"></div>
+      <div class="content">🎬 Explorar</div>
+    </div>
+
   </div>
 </div>
 
 <!-- CALENDARIO -->
 <div class="calendar-screen" id="calendar">
-
-  <div class="calendar-header">
-    <button onclick="closeCalendar()">←</button>
-    <h2>Calendario 2026</h2>
-  </div>
-
+  <button onclick="closeCalendar()">←</button>
+  <h2>Calendario</h2>
   <div id="calendarContainer"></div>
-
 </div>
 
 <!-- AJUSTES -->
 <div class="settings" id="settings">
   <div class="settings-panel">
 
-    <div class="settings-header">
-      <button onclick="toggleSettings()">←</button>
-      <h2>Perfil</h2>
-    </div>
+    <button onclick="toggleSettings()">←</button>
+    <h2>Perfil</h2>
 
-    <div class="profile-box">
-      <div class="avatar" id="avatar"></div>
-      <input id="usernameInput">
-      <button onclick="saveProfile(event)">Guardar</button>
-    </div>
+    <div class="avatar" id="avatar"></div>
 
     <div class="avatar-category">🟥 Marvel</div>
     <div class="avatar-grid">
       <img src="https://image.tmdb.org/t/p/w200/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" onclick="setAvatar(this.src)">
     </div>
+
+    <div class="avatar-category">🔵 DC</div>
+    <div class="avatar-grid">
+      <img src="https://image.tmdb.org/t/p/w200/5TQ6Y4V7b5Qp1nK0uQd5u6rXzXG.jpg" onclick="setAvatar(this.src)">
+    </div>
+
+    <div class="avatar-category">🟡 Warner</div>
+    <div class="avatar-grid"></div>
+
+    <div class="avatar-category">🟣 Universal</div>
+    <div class="avatar-grid"></div>
 
   </div>
 </div>
@@ -337,7 +248,7 @@ body {
 
 /* INTRO */
 window.onload = () => {
-  document.getElementById("app").style.display = "block";
+  document.getElementById("app").style.display = "flex";
 
   setTimeout(() => {
     document.getElementById("intro").classList.add("hide");
@@ -345,70 +256,66 @@ window.onload = () => {
     setTimeout(() => {
       document.getElementById("intro").style.display = "none";
       document.querySelector(".settings-btn").style.display = "block";
-    }, 1200);
+    },1200);
 
-  }, 1500);
+  },1500);
 
   generateCalendar();
 };
 
 /* CALENDARIO */
-function openCalendar() {
-  document.getElementById("calendar").style.display = "block";
+function openCalendar(){
+  document.getElementById("calendar").style.display="block";
 }
 
-function closeCalendar() {
-  document.getElementById("calendar").style.display = "none";
+function closeCalendar(){
+  document.getElementById("calendar").style.display="none";
 }
 
-function generateCalendar() {
+function generateCalendar(){
   const container = document.getElementById("calendarContainer");
-  const today = new Date();
 
-  const months = ["Enero","Febrero","Marzo","Abril","Mayo"];
+  const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio"];
 
-  months.forEach((m, i) => {
+  months.forEach((m,i)=>{
+    let month=document.createElement("div");
+    month.className="month";
 
-    let monthDiv = document.createElement("div");
-    monthDiv.className = "month " + ["jan","feb","mar","apr","may"][i];
+    let title=document.createElement("div");
+    title.className="month-title";
+    title.textContent=m+" 2026";
 
-    let title = document.createElement("div");
-    title.className = "month-title";
-    title.textContent = m + " 2026";
+    let days=document.createElement("div");
+    days.className="days";
 
-    let daysDiv = document.createElement("div");
-    daysDiv.className = "days";
-
-    for(let d=1; d<=30; d++){
-      let day = document.createElement("div");
-      day.className = "day";
-
-      let date = new Date(2026, i, d);
-
-      if(date < today) day.classList.add("past");
-      if(date.toDateString() === today.toDateString()) day.classList.add("today");
-
-      day.textContent = d;
-      daysDiv.appendChild(day);
+    for(let d=1;d<=30;d++){
+      let day=document.createElement("div");
+      day.className="day";
+      day.textContent=d;
+      days.appendChild(day);
     }
 
-    monthDiv.appendChild(title);
-    monthDiv.appendChild(daysDiv);
-    container.appendChild(monthDiv);
+    month.appendChild(title);
+    month.appendChild(days);
+    container.appendChild(month);
   });
 }
 
 /* AJUSTES */
-function toggleSettings() {
-  const s = document.getElementById("settings");
+function toggleSettings(){
+  let s=document.getElementById("settings");
 
-  if (s.style.display === "block") {
-    s.style.display = "none";
+  if(s.style.display==="block"){
+    s.style.display="none";
     s.classList.remove("show");
   } else {
-    s.style.display = "block";
-    setTimeout(() => s.classList.add("show"), 10);
+    s.style.display="block";
+    setTimeout(()=>s.classList.add("show"),10);
   }
+}
+
+function setAvatar(src){
+  document.getElementById("avatar").style.backgroundImage=`url(${src})`;
 }
 
 </script>
