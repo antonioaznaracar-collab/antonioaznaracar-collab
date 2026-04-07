@@ -2,12 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>CineMach</title>
-
   <style>
     :root {
       --bg: #050608;
@@ -26,15 +22,11 @@
       --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
       --safe-top: env(safe-area-inset-top);
       --safe-bottom: env(safe-area-inset-bottom);
+      --focus: 0 0 0 3px rgba(255, 122, 24, 0.35);
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
       margin: 0;
       min-height: 100%;
       background:
@@ -45,11 +37,12 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overflow: hidden;
     }
+    body { display: flex; justify-content: center; align-items: stretch; }
 
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: stretch;
+    button, input, textarea { font: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
     }
 
     .phone-app {
@@ -59,18 +52,10 @@
       min-height: 100dvh;
       overflow: hidden;
       isolation: isolate;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
-        transparent;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), transparent;
     }
 
-    .noise,
-    .glow {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
+    .noise, .glow { position: absolute; inset: 0; pointer-events: none; }
     .noise {
       opacity: 0.05;
       background-image:
@@ -81,1123 +66,310 @@
       background-size: 120px 120px;
       mix-blend-mode: soft-light;
     }
-
-    .glow::before,
-    .glow::after {
+    .glow::before, .glow::after {
       content: "";
       position: absolute;
       border-radius: 999px;
       filter: blur(60px);
       opacity: 0.45;
     }
-
-    .glow::before {
-      width: 180px;
-      height: 180px;
-      background: rgba(255, 48, 64, 0.20);
-      top: -20px;
-      left: -40px;
-    }
-
-    .glow::after {
-      width: 220px;
-      height: 220px;
-      background: rgba(255, 122, 24, 0.12);
-      right: -60px;
-      top: 140px;
-    }
+    .glow::before { width: 180px; height: 180px; background: rgba(255, 48, 64, 0.20); top: -20px; left: -40px; }
+    .glow::after { width: 220px; height: 220px; background: rgba(255, 122, 24, 0.12); right: -60px; top: 140px; }
 
     .intro-screen {
-      position: absolute;
-      inset: 0;
-      z-index: 140;
-      display: grid;
-      place-items: center;
-      padding: 24px;
+      position: absolute; inset: 0; z-index: 140; display: grid; place-items: center; padding: 24px;
       background:
         radial-gradient(circle at 50% 35%, rgba(255, 48, 64, 0.18), transparent 26%),
         linear-gradient(180deg, #040507 0%, #05060a 45%, #090d14 100%);
       transition: opacity 0.9s ease, transform 1s ease, visibility 1s ease;
     }
-
-    .intro-screen.hidden {
-      opacity: 0;
-      transform: scale(1.06);
-      visibility: hidden;
-    }
-
-    .intro-center {
-      text-align: center;
-      transform: translateY(14px);
-      opacity: 0;
-      animation: introReveal 1s ease forwards 0.25s;
-    }
-
+    .intro-screen.hidden { opacity: 0; transform: scale(1.06); visibility: hidden; }
+    .intro-center { text-align: center; transform: translateY(14px); opacity: 0; animation: introReveal 1s ease forwards 0.25s; }
     .brand-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.04);
-      color: var(--muted);
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      box-shadow: var(--shadow);
+      display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; background: rgba(255,255,255,0.04);
+      color: var(--muted); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: var(--shadow);
     }
-
-    .brand-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 20px rgba(255, 48, 64, 0.85);
-    }
-
-    .brand-title {
-      margin: 22px 0 10px;
-      font-size: clamp(42px, 11vw, 62px);
-      line-height: 0.95;
-      letter-spacing: -0.05em;
-      font-weight: 800;
-    }
-
-    .brand-title span {
-      display: inline-block;
-      background: linear-gradient(135deg, #ffffff 0%, #ffd4d8 34%, #ff7a18 110%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .brand-subtitle {
-      margin: 0 auto;
-      max-width: 290px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.55;
-    }
-
-    .loading-wrap {
-      margin-top: 28px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .loading-bar {
-      width: 170px;
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      overflow: hidden;
-      position: relative;
-    }
-
+    .brand-dot { width: 10px; height: 10px; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 0 20px rgba(255, 48, 64, 0.85); }
+    .brand-title { margin: 22px 0 10px; font-size: clamp(42px, 11vw, 62px); line-height: 0.95; letter-spacing: -0.05em; font-weight: 800; }
+    .brand-title span { display: inline-block; background: linear-gradient(135deg, #ffffff 0%, #ffd4d8 34%, #ff7a18 110%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .brand-subtitle { margin: 0 auto; max-width: 290px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .loading-wrap { margin-top: 28px; display: flex; justify-content: center; }
+    .loading-bar { width: 170px; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; position: relative; }
     .loading-bar::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      width: 42%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 24px rgba(255, 48, 64, 0.45);
+      content: ""; position: absolute; inset: 0; width: 42%; border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 24px rgba(255, 48, 64, 0.45);
       animation: loading 1.4s ease-in-out infinite;
     }
 
-    .main-screen,
-    .settings-screen,
-    .explore-screen,
-    .movie-detail-screen,
-    .news-detail-screen {
-      position: absolute;
-      inset: 0;
-      overflow-y: auto;
-      scrollbar-width: none;
+    .main-screen, .settings-screen, .explore-screen, .movie-detail-screen, .news-detail-screen {
+      position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none;
     }
-
-    .main-screen::-webkit-scrollbar,
-    .settings-screen::-webkit-scrollbar,
-    .explore-screen::-webkit-scrollbar,
-    .movie-detail-screen::-webkit-scrollbar,
-    .news-detail-screen::-webkit-scrollbar {
-      display: none;
-    }
+    .main-screen::-webkit-scrollbar, .settings-screen::-webkit-scrollbar, .explore-screen::-webkit-scrollbar,
+    .movie-detail-screen::-webkit-scrollbar, .news-detail-screen::-webkit-scrollbar { display: none; }
 
     .main-screen {
-      z-index: 5;
-      min-height: 100dvh;
-      padding:
-        calc(18px + var(--safe-top))
-        18px
-        calc(22px + var(--safe-bottom))
-        18px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      opacity: 0;
-      transform: translateY(24px);
+      z-index: 5; min-height: 100dvh;
+      padding: calc(18px + var(--safe-top)) 18px calc(22px + var(--safe-bottom)) 18px;
+      display: flex; flex-direction: column; gap: 18px; opacity: 0; transform: translateY(24px);
       transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
     }
+    .main-screen.active { opacity: 1; transform: translateY(0); }
 
-    .main-screen.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-      padding-top: 6px;
-    }
-
-    .topbar-copy small {
-      display: block;
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 8px;
-      letter-spacing: 0.02em;
-    }
-
-    .topbar-copy h1 {
-      margin: 0;
-      font-size: 34px;
-      line-height: 0.98;
-      letter-spacing: -0.05em;
-      font-weight: 800;
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-
+    .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; padding-top: 6px; }
+    .topbar-copy small { display: block; color: var(--muted); font-size: 13px; margin-bottom: 8px; letter-spacing: 0.02em; }
+    .topbar-copy h1 { margin: 0; font-size: 34px; line-height: 0.98; letter-spacing: -0.05em; font-weight: 800; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .profile-mini {
-      width: 54px;
-      height: 54px;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.09);
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-      box-shadow: var(--shadow);
+      width: 54px; height: 54px; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.09);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); box-shadow: var(--shadow);
     }
-
-    .profile-mini img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
+    .profile-mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .settings-launch {
-      min-width: 54px;
-      height: 54px;
-      border: 1px solid rgba(255,255,255,0.09);
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-      display: grid;
-      place-items: center;
-      font-size: 24px;
-      color: #fff;
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      cursor: pointer;
+      min-width: 54px; height: 54px; border: 1px solid rgba(255,255,255,0.09);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); display: grid; place-items: center;
+      font-size: 24px; color: #fff; border-radius: 18px; box-shadow: var(--shadow);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); cursor: pointer;
     }
 
     .news-lobby {
-      position: relative;
-      height: 320px;
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-      background: rgba(255,255,255,0.04);
+      position: relative; height: 320px; border-radius: var(--radius-xl); overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08); box-shadow: var(--shadow); background: rgba(255,255,255,0.04);
     }
-
     .news-slide {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(1.03);
-      transition: opacity 0.65s ease, transform 1.2s ease;
-      background-size: cover;
-      background-position: center;
+      position: absolute; inset: 0; opacity: 0; pointer-events: none; transform: scale(1.03);
+      transition: opacity 0.65s ease, transform 1.2s ease; background-size: cover; background-position: center;
     }
-
-    .news-slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: scale(1);
-    }
-
+    .news-slide.active { opacity: 1; pointer-events: auto; transform: scale(1); }
     .news-slide::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.18) 28%, rgba(0,0,0,0.85) 100%);
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.18) 28%, rgba(0,0,0,0.85) 100%);
     }
-
     .news-top {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
-      z-index: 3;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
+      position: absolute; top: 16px; left: 16px; right: 16px; z-index: 3;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
     }
-
-    .news-chip,
-    .news-counter,
-    .tag-pill {
-      padding: 9px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+    .news-chip, .news-counter, .tag-pill {
+      padding: 9px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #fff;
+      background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     }
-
-    .news-content {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-      z-index: 3;
-    }
-
+    .news-content { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 3; }
     .news-title {
-      margin: 0;
-      font-size: 31px;
-      line-height: 0.98;
-      letter-spacing: -0.05em;
-      font-weight: 900;
-      text-shadow: 0 8px 24px rgba(0,0,0,0.60);
-      max-width: 92%;
+      margin: 0; font-size: 31px; line-height: 0.98; letter-spacing: -0.05em; font-weight: 900;
+      text-shadow: 0 8px 24px rgba(0,0,0,0.60); max-width: 92%;
     }
+    .news-progress { margin-top: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .news-progress-bar { position: relative; height: 4px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,0.20); }
+    .news-progress-fill { position: absolute; inset: 0; width: 0%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .news-progress-bar.active .news-progress-fill { animation: fillBar 4.8s linear forwards; }
 
-    .news-progress {
-      margin-top: 16px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+    .news-nav, .explore-hero-nav {
+      position: absolute; inset: 0; z-index: 4; display: flex; justify-content: space-between; pointer-events: none;
     }
-
-    .news-progress-bar {
-      position: relative;
-      height: 4px;
-      border-radius: 999px;
-      overflow: hidden;
-      background: rgba(255,255,255,0.20);
+    .news-hit, .explore-hit {
+      appearance: none; border: none; background: transparent; color: transparent;
+      pointer-events: auto; cursor: pointer; height: 100%;
     }
+    .news-hit { width: 26%; }
+    .news-hit.center { width: 48%; }
+    .explore-hit { width: 24%; }
+    .explore-hit.center { width: 52%; }
 
-    .news-progress-fill {
-      position: absolute;
-      inset: 0;
-      width: 0%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    }
-
-    .news-progress-bar.active .news-progress-fill {
-      animation: fillBar 4.8s linear forwards;
-    }
-
-    .news-nav {
-      position: absolute;
-      inset: 0;
-      z-index: 4;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-
-    .news-hit {
-      width: 26%;
-      height: 100%;
-      pointer-events: auto;
-    }
-
-    .news-hit.center {
-      width: 48%;
-    }
-
-    .menu-grid {
-      display: grid;
-      gap: 14px;
-    }
-
+    .menu-grid { display: grid; gap: 14px; }
     .menu-card {
-      position: relative;
-      min-height: 120px;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
+      position: relative; min-height: 120px; border-radius: var(--radius-lg); overflow: hidden;
       border: 1px solid rgba(255,255,255,0.08);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03)),
-        rgba(255,255,255,0.03);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      display: flex;
-      align-items: stretch;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.2s ease;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03)), rgba(255,255,255,0.03);
+      box-shadow: var(--shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      display: flex; align-items: stretch; text-decoration: none; color: inherit; transition: transform 0.2s ease;
     }
-
-    .menu-card:active {
-      transform: scale(0.985);
-    }
-
+    .menu-card:active { transform: scale(0.985); }
     .menu-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent 30%),
-        linear-gradient(135deg, rgba(255,255,255,0.04), transparent 55%);
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent 30%), linear-gradient(135deg, rgba(255,255,255,0.04), transparent 55%);
       pointer-events: none;
     }
-
     .menu-card-content {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 18px;
+      position: relative; z-index: 2; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px;
     }
-
-    .menu-card-left {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      min-width: 0;
-    }
-
+    .menu-card-left { display: flex; gap: 14px; align-items: center; min-width: 0; }
     .menu-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      font-size: 24px;
-      flex-shrink: 0;
+      width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; font-size: 24px; flex-shrink: 0;
       border: 1px solid rgba(255,255,255,0.07);
     }
-
-    .menu-card.calendar .menu-icon {
-      background: linear-gradient(135deg, rgba(255,48,64,0.22), rgba(255,122,24,0.12));
-    }
-
-    .menu-card.social .menu-icon {
-      background: linear-gradient(135deg, rgba(80,120,255,0.2), rgba(138,92,246,0.16));
-    }
-
-    .menu-card.search .menu-icon {
-      background: linear-gradient(135deg, rgba(0,200,180,0.2), rgba(0,140,255,0.16));
-    }
-
-    .menu-copy h4 {
-      margin: 0 0 6px;
-      font-size: 19px;
-      letter-spacing: -0.03em;
-    }
-
-    .menu-copy p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
+    .menu-card.calendar .menu-icon { background: linear-gradient(135deg, rgba(255,48,64,0.22), rgba(255,122,24,0.12)); }
+    .menu-card.social .menu-icon { background: linear-gradient(135deg, rgba(80,120,255,0.2), rgba(138,92,246,0.16)); }
+    .menu-card.search .menu-icon { background: linear-gradient(135deg, rgba(0,200,180,0.2), rgba(0,140,255,0.16)); }
+    .menu-copy h4 { margin: 0 0 6px; font-size: 19px; letter-spacing: -0.03em; }
+    .menu-copy p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
     .menu-arrow {
-      flex-shrink: 0;
-      width: 38px;
-      height: 38px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-      color: rgba(255,255,255,0.85);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0; width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center; font-size: 18px; color: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06);
     }
-
     .bottom-note {
-      margin-top: auto;
-      padding: 14px 16px;
-      border-radius: 18px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      text-align: center;
+      margin-top: auto; padding: 14px 16px; border-radius: 18px; color: var(--muted); font-size: 12px; line-height: 1.5;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); text-align: center;
     }
 
-    .settings-screen,
-    .explore-screen,
-    .movie-detail-screen,
-    .news-detail-screen {
+    .settings-screen, .explore-screen, .movie-detail-screen, .news-detail-screen {
       z-index: 70;
-      background:
-        radial-gradient(circle at top left, rgba(255, 48, 64, 0.12), transparent 28%),
-        linear-gradient(180deg, #06070b 0%, #090b11 35%, #0e131c 100%);
-      padding:
-        calc(18px + var(--safe-top))
-        18px
-        calc(24px + var(--safe-bottom))
-        18px;
-      transform: translateX(100%);
-      opacity: 0;
-      transition: transform 0.35s ease, opacity 0.35s ease;
-      pointer-events: none;
+      background: radial-gradient(circle at top left, rgba(255, 48, 64, 0.12), transparent 28%), linear-gradient(180deg, #06070b 0%, #090b11 35%, #0e131c 100%);
+      padding: calc(18px + var(--safe-top)) 18px calc(24px + var(--safe-bottom)) 18px;
+      transform: translateX(100%); opacity: 0; transition: transform 0.35s ease, opacity 0.35s ease; pointer-events: none;
     }
-
-    .settings-screen.show,
-    .explore-screen.show,
-    .movie-detail-screen.show,
-    .news-detail-screen.show {
-      transform: translateX(0);
-      opacity: 1;
-      pointer-events: auto;
+    .settings-screen.show, .explore-screen.show, .movie-detail-screen.show, .news-detail-screen.show {
+      transform: translateX(0); opacity: 1; pointer-events: auto;
     }
-
-    .settings-topbar,
-    .screen-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 22px;
+    .settings-topbar, .screen-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+    .back-btn, .save-btn, .icon-btn {
+      border: none; min-height: 48px; padding: 0 18px; border-radius: 16px; font-weight: 800; color: #fff; cursor: pointer;
     }
-
-    .back-btn,
-    .save-btn,
-    .icon-btn {
-      border: none;
-      min-height: 48px;
-      padding: 0 18px;
-      border-radius: 16px;
-      font-weight: 800;
-      color: #fff;
-      cursor: pointer;
+    .back-btn, .icon-btn { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.08); }
+    .save-btn, .primary-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
     }
-
-    .back-btn,
-    .icon-btn {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .save-btn {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
-    }
-
-    .settings-title,
-    .screen-title {
-      margin: 0;
-      font-size: 30px;
-      line-height: 1;
-      letter-spacing: -0.05em;
-      font-weight: 900;
-    }
-
-    .settings-subtitle,
-    .screen-subtitle {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
+    .settings-title, .screen-title { margin: 0; font-size: 30px; line-height: 1; letter-spacing: -0.05em; font-weight: 900; }
+    .settings-subtitle, .screen-subtitle { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
 
     .profile-hero {
-      margin-top: 22px;
-      padding: 20px;
-      border-radius: 26px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 16px;
+      margin-top: 22px; padding: 20px; border-radius: 26px; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08); box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px;
     }
-
     .profile-avatar-large {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      overflow: hidden;
-      background: rgba(255,255,255,0.06);
-      border: 3px solid rgba(255,255,255,0.08);
-      flex-shrink: 0;
+      width: 88px; height: 88px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.06);
+      border: 3px solid rgba(255,255,255,0.08); flex-shrink: 0;
     }
+    .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .profile-meta h3 { margin: 0 0 6px; font-size: 24px; line-height: 1; letter-spacing: -0.04em; }
+    .profile-meta p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
-    .profile-avatar-large img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .settings-card, .explore-card, .detail-card {
+      margin-top: 18px; padding: 18px; border-radius: 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); box-shadow: var(--shadow);
     }
-
-    .profile-meta h3 {
-      margin: 0 0 6px;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: -0.04em;
+    .settings-card h4, .explore-card h4, .detail-card h4 { margin: 0 0 14px; font-size: 20px; letter-spacing: -0.03em; }
+    .name-label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+    .name-input, .review-input {
+      width: 100%; min-height: 56px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: #fff; padding: 0 16px; font-size: 16px; outline: none;
     }
+    .review-input { min-height: 110px; resize: vertical; padding: 14px 16px; }
+    .name-input::placeholder, .review-input::placeholder { color: rgba(255,255,255,0.34); }
 
-    .profile-meta p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .settings-card,
-    .explore-card,
-    .detail-card {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 24px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-    }
-
-    .settings-card h4,
-    .explore-card h4,
-    .detail-card h4 {
-      margin: 0 0 14px;
-      font-size: 20px;
-      letter-spacing: -0.03em;
-    }
-
-    .name-label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .name-input,
-    .review-input {
-      width: 100%;
-      min-height: 56px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: #fff;
-      padding: 0 16px;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .review-input {
-      min-height: 110px;
-      resize: none;
-      padding: 14px 16px;
-      font-family: inherit;
-    }
-
-    .name-input::placeholder,
-    .review-input::placeholder {
-      color: rgba(255,255,255,0.34);
-    }
-
-    .avatar-section {
-      margin-top: 18px;
-    }
-
-    .avatar-section:first-of-type {
-      margin-top: 0;
-    }
-
-    .avatar-section-title {
-      margin: 0 0 12px;
-      font-size: 18px;
-      letter-spacing: -0.03em;
-    }
-
-    .avatar-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
+    .avatar-section { margin-top: 18px; }
+    .avatar-section:first-of-type { margin-top: 0; }
+    .avatar-section-title { margin: 0 0 12px; font-size: 18px; letter-spacing: -0.03em; }
+    .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .avatar-option {
-      position: relative;
-      aspect-ratio: 1 / 1;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 3px solid transparent;
-      background: rgba(255,255,255,0.05);
-      padding: 0;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      position: relative; aspect-ratio: 1 / 1; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background: rgba(255,255,255,0.05);
+      padding: 0; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.22);
     }
-
-    .avatar-option img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .avatar-option.selected {
-      border-color: #fff;
-      box-shadow: 0 0 0 4px rgba(255, 48, 64, 0.35);
-    }
-
+    .avatar-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .avatar-option.selected { border-color: #fff; box-shadow: 0 0 0 4px rgba(255, 48, 64, 0.35); }
     .avatar-option.selected::after {
-      content: "✓";
-      position: absolute;
-      right: 4px;
-      bottom: 4px;
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      font-size: 12px;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff;
-      border: 2px solid rgba(0,0,0,0.3);
+      content: "✓"; position: absolute; right: 4px; bottom: 4px; width: 24px; height: 24px; border-radius: 999px; display: grid; place-items: center;
+      font-size: 12px; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border: 2px solid rgba(0,0,0,0.3);
     }
 
     .explore-hero {
-      position: relative;
-      height: 280px;
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-      background: rgba(255,255,255,0.03);
-      margin-top: 18px;
+      position: relative; height: 280px; border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: var(--shadow); background: rgba(255,255,255,0.03); margin-top: 18px;
     }
-
-    .explore-news-track {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
+    .explore-news-track { position: relative; width: 100%; height: 100%; }
     .explore-news-slide {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(1.03);
-      transition: opacity 0.55s ease, transform 0.9s ease;
-      background-size: cover;
-      background-position: center;
+      position: absolute; inset: 0; opacity: 0; pointer-events: none; transform: scale(1.03); transition: opacity 0.55s ease, transform 0.9s ease; background-size: cover; background-position: center;
     }
+    .explore-news-slide.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+    .explore-news-slide::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 40%, rgba(0,0,0,0.86) 100%); }
+    .explore-news-content { position: absolute; left: 16px; right: 16px; bottom: 16px; z-index: 2; }
+    .explore-news-content h3 { margin: 10px 0 0; font-size: 24px; line-height: 1.02; letter-spacing: -0.04em; font-weight: 900; text-shadow: 0 10px 26px rgba(0,0,0,0.6); }
+    .explore-news-bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 16px; }
+    .explore-news-bar { position: relative; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.25); overflow: hidden; }
+    .explore-news-bar span { position: absolute; inset: 0; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: inherit; }
+    .explore-news-bar.active span { animation: fillExploreBar 5.2s linear forwards; }
 
-    .explore-news-slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: scale(1);
-    }
-
-    .explore-news-slide::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 40%, rgba(0,0,0,0.86) 100%);
-    }
-
-    .explore-news-content {
-      position: absolute;
-      left: 16px;
-      right: 16px;
-      bottom: 16px;
-      z-index: 2;
-    }
-
-    .explore-news-content h3 {
-      margin: 10px 0 0;
-      font-size: 24px;
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-      font-weight: 900;
-      text-shadow: 0 10px 26px rgba(0,0,0,0.6);
-    }
-
-    .explore-news-bars {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin-top: 16px;
-    }
-
-    .explore-news-bar {
-      position: relative;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.25);
-      overflow: hidden;
-    }
-
-    .explore-news-bar span {
-      position: absolute;
-      inset: 0;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      border-radius: inherit;
-    }
-
-    .explore-news-bar.active span {
-      animation: fillExploreBar 5.2s linear forwards;
-    }
-
-    .explore-hero-nav {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-
-    .explore-hit {
-      width: 24%;
-      height: 100%;
-      pointer-events: auto;
-    }
-
-    .explore-hit.center {
-      width: 52%;
-    }
-
-    .explore-section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 22px;
-      margin-bottom: 12px;
-    }
-
-    .explore-section-head h3 {
-      margin: 0;
-      font-size: 22px;
-      letter-spacing: -0.04em;
-    }
-
-    .explore-section-head span {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .movies-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
+    .explore-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; margin-bottom: 12px; }
+    .explore-section-head h3 { margin: 0; font-size: 22px; letter-spacing: -0.04em; }
+    .explore-section-head span { font-size: 13px; color: var(--muted); }
+    .movies-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .movie-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      cursor: pointer;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); cursor: pointer;
     }
+    .movie-poster { width: 100%; aspect-ratio: 0.72 / 1; object-fit: cover; display: block; background: rgba(255,255,255,0.04); }
+    .movie-card-body { padding: 12px; }
+    .movie-card-title { margin: 0 0 10px; font-size: 16px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 800; }
+    .rating-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .rating-badge { padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); }
+    .rating-badge.tomato { color: #fff; background: rgba(52, 211, 153, 0.15); border-color: rgba(52, 211, 153, 0.25); }
+    .rating-badge.popcorn { color: #fff; background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.25); }
+    .movie-meta { margin-top: 10px; font-size: 12px; color: var(--muted); }
 
-    .movie-poster {
-      width: 100%;
-      aspect-ratio: 0.72 / 1;
-      object-fit: cover;
-      display: block;
-      background: rgba(255,255,255,0.04);
+    .detail-hero, .news-detail-hero {
+      position: relative; height: 290px; border-radius: 28px; overflow: hidden; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); box-shadow: var(--shadow); margin-top: 18px;
     }
-
-    .movie-card-body {
-      padding: 12px;
+    .detail-hero img, .news-detail-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .detail-hero::after, .news-detail-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.72)); }
+    .detail-hero-title, .news-detail-title-wrap { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 2; }
+    .detail-hero-title h2, .news-detail-title-wrap h2 {
+      margin: 0; font-size: 30px; line-height: 0.98; letter-spacing: -0.05em; font-weight: 900; text-shadow: 0 8px 24px rgba(0,0,0,0.55);
     }
+    .video-frame { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 20px; background: #000; margin-top: 8px; }
+    .detail-text, .news-detail-text, .critics-text { color: rgba(245,247,251,0.84); line-height: 1.7; font-size: 15px; margin: 0; }
+    .info-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .review-list { display: grid; gap: 12px; margin-top: 12px; }
+    .review-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 14px; }
+    .review-item strong { display: block; margin-bottom: 6px; font-size: 14px; }
+    .review-item p { margin: 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+    .empty-reviews { padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .action-row { display: flex; gap: 12px; margin-top: 14px; }
+    .primary-btn, .secondary-btn { flex: 1; min-height: 52px; border: none; border-radius: 18px; color: #fff; font-weight: 800; cursor: pointer; }
+    .secondary-btn { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.08); }
 
-    .movie-card-title {
-      margin: 0 0 10px;
-      font-size: 16px;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
-      font-weight: 800;
-    }
-
-    .rating-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .rating-badge {
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .rating-badge.tomato {
-      color: #fff;
-      background: rgba(52, 211, 153, 0.15);
-      border-color: rgba(52, 211, 153, 0.25);
-    }
-
-    .rating-badge.popcorn {
-      color: #fff;
-      background: rgba(251, 191, 36, 0.15);
-      border-color: rgba(251, 191, 36, 0.25);
-    }
-
-    .movie-meta {
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .detail-hero,
-    .news-detail-hero {
-      position: relative;
-      height: 290px;
-      border-radius: 28px;
-      overflow: hidden;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-      margin-top: 18px;
-    }
-
-    .detail-hero img,
-    .news-detail-hero img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .detail-hero::after,
-    .news-detail-hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.72));
-    }
-
-    .detail-hero-title,
-    .news-detail-title-wrap {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-      z-index: 2;
-    }
-
-    .detail-hero-title h2,
-    .news-detail-title-wrap h2 {
-      margin: 0;
-      font-size: 30px;
-      line-height: 0.98;
-      letter-spacing: -0.05em;
-      font-weight: 900;
-      text-shadow: 0 8px 24px rgba(0,0,0,0.55);
-    }
-
-    .video-frame {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border: 0;
-      border-radius: 20px;
-      background: #000;
-      margin-top: 8px;
-    }
-
-    .detail-text,
-    .news-detail-text,
-    .critics-text {
-      color: rgba(245,247,251,0.84);
-      line-height: 1.7;
-      font-size: 15px;
-      margin: 0;
-    }
-
-    .info-pills {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .review-list {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .review-item {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 14px;
-    }
-
-    .review-item strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-    }
-
-    .review-item p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.55;
-      font-size: 14px;
-    }
-
-    .empty-reviews {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .action-row {
-      display: flex;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .primary-btn,
-    .secondary-btn {
-      flex: 1;
-      min-height: 52px;
-      border: none;
-      border-radius: 18px;
-      color: #fff;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .primary-btn {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
-    }
-
-    .secondary-btn {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.08);
+    .status-bar {
+      margin-top: 18px; padding: 14px 16px; border-radius: 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted); font-size: 13px; line-height: 1.5;
     }
 
     .toast {
-      position: absolute;
-      left: 50%;
-      bottom: calc(24px + var(--safe-bottom));
-      transform: translateX(-50%) translateY(24px);
-      width: calc(100% - 36px);
-      max-width: 360px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(10, 12, 18, 0.92);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-      color: #fff;
-      font-size: 14px;
-      line-height: 1.45;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      z-index: 190;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      position: absolute; left: 50%; bottom: calc(24px + var(--safe-bottom)); transform: translateX(-50%) translateY(24px);
+      width: calc(100% - 36px); max-width: 360px; padding: 14px 16px; border-radius: 18px; background: rgba(10, 12, 18, 0.92); border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow); color: #fff; font-size: 14px; line-height: 1.45; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease; z-index: 190; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    @keyframes introReveal { to { transform: translateY(0); opacity: 1; } }
+    @keyframes loading { 0% { transform: translateX(-120%); } 100% { transform: translateX(290%); } }
+    @keyframes fillBar { from { width: 0%; } to { width: 100%; } }
+    @keyframes fillExploreBar { from { width: 0%; } to { width: 100%; } }
 
-    @keyframes introReveal {
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    @keyframes loading {
-      0% { transform: translateX(-120%); }
-      100% { transform: translateX(290%); }
-    }
-
-    @keyframes fillBar {
-      from { width: 0%; }
-      to { width: 100%; }
-    }
-
-    @keyframes fillExploreBar {
-      from { width: 0%; }
-      to { width: 100%; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     }
 
     @media (min-width: 431px) {
-      body {
-        padding: 14px 0;
-      }
-
-      .phone-app {
-        border-radius: 34px;
-        min-height: calc(100dvh - 28px);
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: 0 30px 80px rgba(0,0,0,0.48);
-      }
+      body { padding: 14px 0; }
+      .phone-app { border-radius: 34px; min-height: calc(100dvh - 28px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 30px 80px rgba(0,0,0,0.48); }
     }
   </style>
 </head>
 <body>
-  <div class="phone-app">
+  <div class="phone-app" id="appRoot">
     <div class="noise"></div>
     <div class="glow"></div>
 
-    <section class="intro-screen" id="introScreen">
+    <section class="intro-screen" id="introScreen" aria-label="Pantalla de bienvenida">
       <div class="intro-center">
         <div class="brand-chip">
           <span class="brand-dot"></span>
           <span>Tu app de cine</span>
         </div>
-
         <h1 class="brand-title"><span>CineMach</span></h1>
-        <p class="brand-subtitle">
-          Estrenos, planes, maratones y cine en una sola experiencia.
-        </p>
-
-        <div class="loading-wrap">
-          <div class="loading-bar"></div>
-        </div>
+        <p class="brand-subtitle">Estrenos, planes, maratones y cine en una sola experiencia.</p>
+        <div class="loading-wrap"><div class="loading-bar"></div></div>
       </div>
     </section>
 
@@ -1207,22 +379,18 @@
           <small id="welcomeText">Bienvenido a CineMach</small>
           <h1>Elige tu<br>próximo plan</h1>
         </div>
-
         <div class="topbar-actions">
-          <div class="profile-mini">
-            <img id="miniAvatar" alt="Avatar del usuario" />
-          </div>
+          <div class="profile-mini"><img id="miniAvatar" alt="Avatar del usuario" /></div>
           <button class="settings-launch" id="openSettingsBtn" aria-label="Abrir ajustes">⚙️</button>
         </div>
       </header>
 
-      <section class="news-lobby" id="newsLobby">
+      <section class="news-lobby" id="newsLobby" aria-label="Noticias destacadas">
         <div id="newsSlides"></div>
-
         <div class="news-nav">
-          <div class="news-hit" id="prevHit" aria-label="Anterior"></div>
-          <div class="news-hit center" id="centerHit" aria-label="Noticia"></div>
-          <div class="news-hit" id="nextHit" aria-label="Siguiente"></div>
+          <button class="news-hit" id="prevHit" aria-label="Noticia anterior"></button>
+          <button class="news-hit center" id="centerHit" aria-label="Abrir noticia"></button>
+          <button class="news-hit" id="nextHit" aria-label="Noticia siguiente"></button>
         </div>
       </section>
 
@@ -1239,7 +407,6 @@
             <div class="menu-arrow">→</div>
           </div>
         </a>
-
         <a href="#" class="menu-card social" data-section="Social">
           <div class="menu-card-content">
             <div class="menu-card-left">
@@ -1252,7 +419,6 @@
             <div class="menu-arrow">→</div>
           </div>
         </a>
-
         <a href="#" class="menu-card search" data-section="Buscar">
           <div class="menu-card-content">
             <div class="menu-card-left">
@@ -1267,27 +433,19 @@
         </a>
       </section>
 
-      <div class="bottom-note">
-        Fase 5 lista: Explorar con noticias + cartelera actual de Cartagena + fichas de película.
-      </div>
+      <div class="bottom-note" id="bottomNote">CineMach listo: noticias, explorar, perfil, favoritos y fichas de película.</div>
     </main>
 
-    <section class="settings-screen" id="settingsScreen">
+    <section class="settings-screen" id="settingsScreen" aria-label="Ajustes de perfil">
       <div class="settings-topbar">
         <button class="back-btn" id="closeSettingsBtn">← Volver</button>
         <button class="save-btn" id="saveProfileBtn">Guardar</button>
       </div>
-
       <h2 class="settings-title">Ajustes</h2>
-      <p class="settings-subtitle">
-        Personaliza tu perfil al estilo CineMach.
-      </p>
+      <p class="settings-subtitle">Personaliza tu perfil al estilo CineMach.</p>
 
       <div class="profile-hero">
-        <div class="profile-avatar-large">
-          <img id="settingsAvatarPreview" alt="Avatar seleccionado" />
-        </div>
-
+        <div class="profile-avatar-large"><img id="settingsAvatarPreview" alt="Avatar seleccionado" /></div>
         <div class="profile-meta">
           <h3 id="settingsProfileName">Usuario</h3>
           <p>Tu perfil, tu estilo y tu avatar.</p>
@@ -1297,33 +455,23 @@
       <div class="settings-card">
         <h4>Nombre de perfil</h4>
         <label class="name-label" for="nameInput">Cambia el nombre que te da la app</label>
-        <input
-          class="name-input"
-          id="nameInput"
-          type="text"
-          maxlength="20"
-          placeholder="Escribe tu nombre"
-        />
+        <input class="name-input" id="nameInput" type="text" maxlength="20" placeholder="Escribe tu nombre" />
       </div>
 
       <div class="settings-card">
         <h4>Elige tu avatar</h4>
-
         <div class="avatar-section">
           <h5 class="avatar-section-title">Marvel</h5>
           <div class="avatar-grid" id="marvelGrid"></div>
         </div>
-
         <div class="avatar-section">
           <h5 class="avatar-section-title">DC</h5>
           <div class="avatar-grid" id="dcGrid"></div>
         </div>
-
         <div class="avatar-section">
           <h5 class="avatar-section-title">Universal</h5>
           <div class="avatar-grid" id="universalGrid"></div>
         </div>
-
         <div class="avatar-section">
           <h5 class="avatar-section-title">Warner</h5>
           <div class="avatar-grid" id="warnerGrid"></div>
@@ -1331,61 +479,50 @@
       </div>
     </section>
 
-    <section class="explore-screen" id="exploreScreen">
+    <section class="explore-screen" id="exploreScreen" aria-label="Explorar películas y noticias">
       <div class="screen-topbar">
         <button class="back-btn" id="closeExploreBtn">← Volver</button>
-        <button class="icon-btn" id="exploreRefreshBtn">↻</button>
+        <button class="icon-btn" id="exploreRefreshBtn" aria-label="Actualizar explorar">↻</button>
       </div>
-
       <h2 class="screen-title">Explorar</h2>
-      <p class="screen-subtitle">
-        Noticias en tendencia y cartelera actual de Cartagena con valoración real.
-      </p>
+      <p class="screen-subtitle">Noticias en tendencia y selección destacada con valoración y favoritos.</p>
 
       <section class="explore-hero" id="exploreHero">
         <div class="explore-news-track" id="exploreNewsTrack"></div>
-
         <div class="explore-hero-nav">
-          <div class="explore-hit" id="explorePrevHit"></div>
-          <div class="explore-hit center" id="exploreCenterHit"></div>
-          <div class="explore-hit" id="exploreNextHit"></div>
+          <button class="explore-hit" id="explorePrevHit" aria-label="Noticia anterior"></button>
+          <button class="explore-hit center" id="exploreCenterHit" aria-label="Abrir noticia"></button>
+          <button class="explore-hit" id="exploreNextHit" aria-label="Noticia siguiente"></button>
         </div>
       </section>
 
       <div class="explore-section-head">
-        <h3>Cartelera actual · Cartagena 2026</h3>
-        <span>Valoración real</span>
+        <h3>Películas destacadas</h3>
+        <span id="movieCounter">0 títulos</span>
       </div>
-
       <section class="movies-grid" id="moviesGrid"></section>
+
+      <div class="status-bar" id="apiStatus">
+        Modo inteligente activo: usa datos demo estables. Si añades tu API key de TMDB, CineMach podrá cargar contenido real automáticamente.
+      </div>
     </section>
 
-    <section class="movie-detail-screen" id="movieDetailScreen">
+    <section class="movie-detail-screen" id="movieDetailScreen" aria-label="Detalle de película">
       <div class="screen-topbar">
         <button class="back-btn" id="closeMovieDetailBtn">← Volver</button>
-        <button class="icon-btn" id="movieSaveBtn">★</button>
+        <button class="icon-btn" id="movieSaveBtn" aria-label="Guardar en favoritos">☆</button>
       </div>
-
       <h2 class="screen-title">Película</h2>
       <p class="screen-subtitle">Ficha completa, crítica y reseñas.</p>
 
       <div class="detail-hero">
-        <img id="movieDetailPoster" alt="Poster de la película">
-        <div class="detail-hero-title">
-          <h2 id="movieDetailTitle">Título</h2>
-        </div>
+        <img id="movieDetailPoster" alt="Poster de la película" />
+        <div class="detail-hero-title"><h2 id="movieDetailTitle">Título</h2></div>
       </div>
 
       <div class="detail-card">
         <h4>Tráiler</h4>
-        <iframe
-          id="movieTrailer"
-          class="video-frame"
-          src=""
-          title="Trailer"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
+        <iframe id="movieTrailer" class="video-frame" src="" title="Tráiler" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
 
       <div class="detail-card">
@@ -1406,11 +543,7 @@
 
       <div class="detail-card">
         <h4>Escribe tu reseña</h4>
-        <textarea
-          class="review-input"
-          id="reviewInput"
-          placeholder="Escribe aquí tu opinión..."
-        ></textarea>
+        <textarea class="review-input" id="reviewInput" maxlength="280" placeholder="Escribe aquí tu opinión..."></textarea>
         <div class="action-row">
           <button class="primary-btn" id="publishReviewBtn">Publicar</button>
           <button class="secondary-btn" id="clearReviewBtn">Limpiar</button>
@@ -1418,17 +551,16 @@
       </div>
     </section>
 
-    <section class="news-detail-screen" id="newsDetailScreen">
+    <section class="news-detail-screen" id="newsDetailScreen" aria-label="Detalle de noticia">
       <div class="screen-topbar">
         <button class="back-btn" id="closeNewsDetailBtn">← Volver</button>
-        <button class="icon-btn" id="shareNewsBtn">⤴</button>
+        <button class="icon-btn" id="shareNewsBtn" aria-label="Compartir noticia">⤴</button>
       </div>
-
       <h2 class="screen-title">Noticia</h2>
       <p class="screen-subtitle">Todo el detalle de la noticia seleccionada.</p>
 
       <div class="news-detail-hero">
-        <img id="newsDetailImage" alt="Imagen de la noticia">
+        <img id="newsDetailImage" alt="Imagen de la noticia" />
         <div class="news-detail-title-wrap">
           <div class="tag-pill" id="newsDetailChip">Noticia</div>
           <h2 id="newsDetailTitle" style="margin-top:10px;">Título</h2>
@@ -1441,71 +573,84 @@
       </div>
     </section>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </div>
 
   <script>
-    const homeNewsItems = [
+    const APP_CONFIG = {
+      useRealApi: false,
+      tmdbApiKey: "",
+      tmdbLanguage: "es-ES",
+      tmdbRegion: "ES",
+      tmdbImageBase: "https://image.tmdb.org/t/p/w780"
+    };
+
+    const FALLBACKS = {
+      image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80",
+      avatar: "https://images.unsplash.com/photo-1542204625-de293a2f8ff9?auto=format&fit=crop&w=400&q=80"
+    };
+
+    const demoHomeNewsItems = [
       {
         chip: "Taquilla",
         title: "Mario arrasa el mundo",
-        image: "https://www.nintendo.com/eu/media/images/other_22/misc/the_super_mario_galaxy_movie/16x9_Movie_TheSupermarioGalaxyMovie_HeroCar_ES_es.jpg",
+        image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1200&q=80",
         newsBody: "La película de Mario se mantiene como una de las más comentadas del momento, empujada por la nostalgia, la conversación social y un estreno con muchísimo tirón entre familias y fans del personaje.",
         movieKey: "mario"
       },
       {
         chip: "Estreno",
         title: "Gosling despega en taquilla",
-        image: "https://fotografias-2.larazon.es/assets/tecnologia-consumo/2025/06/project-hail-mary.jpg?width=1900&height=1069",
-        newsBody: "Project Hail Mary ha despertado un interés enorme por su combinación de ciencia ficción, gran estrella protagonista y aspecto visual ambicioso. El ruido alrededor del estreno no para de crecer.",
+        image: "https://images.unsplash.com/photo-1505685296765-3a2736de412f?auto=format&fit=crop&w=1200&q=80",
+        newsBody: "Project Hail Mary ha despertado interés por su mezcla de ciencia ficción, gran estrella protagonista y un acabado visual ambicioso.",
         movieKey: "hailmary"
       },
       {
         chip: "Tendencia",
-        title: "Avatar supera los 1.000 millones",
-        image: "https://s2.ppllstatics.com/leonoticias/www/multimedia/2025/12/15/cartel-avatar-kKxB-U240566197791KDE-1200x840@Leonoticias.jpg",
-        newsBody: "Avatar vuelve a dominar la conversación global con una cifra de taquilla gigantesca. La saga sigue consolidándose como uno de los mayores eventos del cine comercial moderno.",
+        title: "Avatar sigue dominando",
+        image: "https://images.unsplash.com/photo-1513106580091-1d82408b8cd6?auto=format&fit=crop&w=1200&q=80",
+        newsBody: "Avatar vuelve a dominar la conversación global con una cifra de taquilla gigantesca. La saga sigue consolidándose como uno de los mayores eventos del cine comercial.",
         movieKey: "avatar"
       },
       {
         chip: "Cine global",
         title: "Dune 3 ya desata la locura",
-        image: "https://alfabetajuega.com/hero/2024/04/dune-3-denis-villeneuve.jpg?width=1200",
-        newsBody: "La nueva etapa de Dune vuelve a poner a los fans en máxima alerta. El interés por el universo, la estética y el siguiente capítulo ha disparado el seguimiento de cada novedad.",
+        image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80",
+        newsBody: "La nueva etapa de Dune vuelve a poner a los fans en máxima alerta. El interés por el universo y la estética ha disparado el seguimiento de cada novedad.",
         movieKey: "dune"
       }
     ];
 
-    const exploreNewsItems = [
-      ...homeNewsItems,
+    const demoExploreNewsItems = [
+      ...demoHomeNewsItems,
       {
         chip: "Crítica",
         title: "Hamlet sorprende a todos",
-        image: "https://m.media-amazon.com/images/M/MV5BNTM4MWRhYjktYWQ3My00YjM3LWJmNzYtMmNhY2QwYzkwMDE0XkEyXkFqcGc@._V1_.jpg",
-        newsBody: "La nueva versión de Hamlet ha entrado con fuerza en el radar cinéfilo gracias a una recepción crítica muy sólida y un tono visual que ha despertado mucha curiosidad.",
+        image: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=1200&q=80",
+        newsBody: "La nueva versión de Hamlet ha entrado con fuerza en el radar cinéfilo gracias a una recepción crítica muy sólida y un tono visual potente.",
         movieKey: "hamlet"
       },
       {
         chip: "Evento",
         title: "The Drama enciende el debate",
-        image: "https://m.media-amazon.com/images/M/MV5BYTg5MjQ2ZjktOTBhZi00YzQ5LWIxNjAtMjQ4NjQ0YjQ1NmZjXkEyXkFqcGc@._V1_.jpg",
-        newsBody: "The Drama se ha colado en la conversación por sus giros, su tono emocional y las reacciones divididas que está generando. Justo el tipo de película que invita a debatir.",
+        image: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=1200&q=80",
+        newsBody: "The Drama se ha colado en la conversación por sus giros, su tono emocional y las reacciones divididas que está generando.",
         movieKey: "drama"
       },
       {
         chip: "Popular",
         title: "Faces of Death vuelve al foco",
-        image: "https://m.media-amazon.com/images/M/MV5BYzM2ODMxYmMtYmNlNS00MzMyLWEwYjAtYWMwY2QxMWNiOWI0XkEyXkFqcGc@._V1_.jpg",
-        newsBody: "Faces of Death ha regresado al centro del debate con una propuesta provocadora que no está dejando indiferente a nadie. Las reacciones se mueven entre el morbo y la curiosidad.",
+        image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=80",
+        newsBody: "Faces of Death ha regresado al centro del debate con una propuesta provocadora que no está dejando indiferente a nadie.",
         movieKey: "faces"
       }
     ];
 
-    const moviesData = [
+    const demoMoviesData = [
       {
         key: "mario",
         title: "Super Mario Galaxy: La película",
-        poster: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsSncv9q8u0r0BiYi0JmYzR0HwLyVez0pfSQ&s",
+        poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=900&q=80",
         critics: 56,
         audience: 64,
         year: "2026",
@@ -1521,55 +666,51 @@
       {
         key: "hoppers",
         title: "Hoppers",
-        poster: "https://m.media-amazon.com/images/M/MV5BNzRiMzZlMTMtNmU3OC00MDUwLThmNDUtMTBjZmQ3MWQ4NTljXkEyXkFqcGc@._V1_.jpg",
+        poster: "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?auto=format&fit=crop&w=900&q=80",
         critics: 78,
         audience: 70,
         year: "2026",
         genre: "Animación / Comedia",
-        trailer: "https://youtu.be/bv0sKzFvpmo?si=TKoKI1IBN0vJvqNd",
-        description: "Una aventura animada muy loca con energía Pixar, humor rápido y un punto muy original dentro del cine familiar de 2026.",
-        criticText: "De las películas familiares mejor recibidas del momento. Tiene frescura, ritmo y una idea bastante distinta.",
-        reviews: [
-          { author: "FilmHunter", text: "Muy entretenida, muy viva y con bastante personalidad." }
-        ]
+        trailer: "https://youtu.be/bv0sKzFvpmo",
+        description: "Una aventura animada con energía familiar, humor rápido y una idea bastante original.",
+        criticText: "De las películas familiares mejor recibidas del momento. Tiene frescura, ritmo y personalidad.",
+        reviews: [{ author: "FilmHunter", text: "Muy entretenida, muy viva y con bastante personalidad." }]
       },
       {
         key: "laponia",
         title: "Lapönia",
-        poster: "https://img.usheru.com/eyJidWNrZXQiOiJzdGF0aWMudXNoZXJ1LmNvbSIsImtleSI6ImltZy9jaGFubmVscy93d3cuYWNvbnRyYWNvcnJpZW50ZWZpbG1zLmNvbS9tb3ZpZS1jdXN0b20vbGFwb25pYV81OWUxNmYwNC01MTNhLTQ3OTEtODQ3OS0zYTFhM2JjYjY2M2RqcGciLCJlZGl0cyI6eyJyZXNpemUiOnsiZml0IjoiY292ZXIifX19",
+        poster: "https://images.unsplash.com/photo-1516557070061-c3d1653fa646?auto=format&fit=crop&w=900&q=80",
         critics: 66,
         audience: 62,
         year: "2026",
         genre: "Comedia",
-        trailer: "https://youtu.be/fM_XFyEzeqc?si=TDhZpvHfq7JHhDFq",
-        description: "Una comedia española ambientada en Laponia donde una reunión familiar aparentemente idílica termina explotando por los aires.",
-        criticText: "Una propuesta ligera pero con mala leche, muy apoyada en el reparto y en el caos que genera su premisa.",
+        trailer: "https://youtu.be/fM_XFyEzeqc",
+        description: "Una comedia española ambientada en Laponia donde una reunión familiar aparentemente idílica termina estallando.",
+        criticText: "Una propuesta ligera pero afilada, muy apoyada en el reparto y en el caos que genera su premisa.",
         reviews: []
       },
       {
         key: "nochebodas2",
         title: "Noche de bodas 2",
-        poster: "https://lh3.googleusercontent.com/pw/AP1GczNnKLweuZnPauuC1_qQgXKmQb4OKv3MogescVd4vySFs5BQ661xzX4dQbrONfEVNzmpvcAFyhQaf8AOQ1YMSy7h6HMxofCmey-DWBSK2t77rO-X5ZLK=w2400",
+        poster: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80",
         critics: 64,
         audience: 70,
         year: "2026",
         genre: "Terror / Suspense",
-        trailer: "https://youtu.be/OHMbpSUkcfc?si=R9H-thZMWlRU_V7B",
-        description: "La secuela del thriller de caza humana vuelve con más violencia, humor negro y una novia que ya sabe perfectamente a qué juega.",
+        trailer: "https://youtu.be/OHMbpSUkcfc",
+        description: "La secuela del thriller de caza humana vuelve con más violencia, humor negro y una novia que ya sabe a qué juega.",
         criticText: "No sorprende tanto como la primera, pero sigue funcionando bien dentro del terror comercial con mala leche.",
-        reviews: [
-          { author: "MoviePulse", text: "Tiene escenas muy potentes y va directa al grano." }
-        ]
+        reviews: [{ author: "MoviePulse", text: "Tiene escenas muy potentes y va directa al grano." }]
       },
       {
         key: "noise",
         title: "Noise (Ruidos)",
-        poster: "https://m.media-amazon.com/images/M/MV5BNzhhNDUxM2EtYjFhNy00OTIyLWFkNzItMjUxYTFjMWIzMDc4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+        poster: "https://images.unsplash.com/photo-1502139214982-d0ad755818d8?auto=format&fit=crop&w=900&q=80",
         critics: 56,
         audience: 64,
         year: "2025",
         genre: "Terror / Suspense",
-        trailer: "https://youtu.be/hAFefjFB2Gk?si=zmcPff5OrlC1t96d",
+        trailer: "https://youtu.be/hAFefjFB2Gk",
         description: "Terror coreano de atmósfera opresiva centrado en una mujer perseguida por un sonido inquietante ligado a una desaparición del pasado.",
         criticText: "Más atmosférica que explosiva. Funciona especialmente bien cuando apuesta por la tensión sostenida.",
         reviews: []
@@ -1577,27 +718,25 @@
       {
         key: "shelter",
         title: "Shelter: El protector",
-        poster: "https://m.media-amazon.com/images/M/MV5BNmMxMWNjZTktZTYwYi00MTU1LTllODMtMmJlZmYwMGU2NDk4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+        poster: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=900&q=80",
         critics: 58,
         audience: 56,
         year: "2026",
         genre: "Acción / Thriller",
-        trailer: "https://youtu.be/jr_oEh9HS0Y?si=Uch4Udtjd9FmOAJn",
-        description: "Un thriller de acción con Jason Statham al frente: rescate, persecuciones, violencia seca y una misión que se complica cada vez más.",
+        trailer: "https://youtu.be/jr_oEh9HS0Y",
+        description: "Un thriller de acción con rescate, persecuciones, violencia seca y una misión que se complica cada vez más.",
         criticText: "Puro cine de acción musculoso: directo, duro y sin demasiadas vueltas.",
-        reviews: [
-          { author: "SalaOscuraX", text: "Si quieres acción sin respirar, entra perfecto." }
-        ]
+        reviews: [{ author: "SalaOscuraX", text: "Si quieres acción sin respirar, entra perfecto." }]
       },
       {
         key: "hailmary",
         title: "Proyecto Salvación",
-        poster: "https://www.sonypictures.es/statics/medium_Proyecto_Salvacion_INTL_Teaser_2_Online_1080x1350_ESP_eff5e76182.jpg",
+        poster: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=900&q=80",
         critics: 64,
         audience: 76,
         year: "2026",
         genre: "Ciencia ficción",
-        trailer: "https://youtu.be/in-lUuKi0eE?si=oO4N1Skw3yCvSTCb",
+        trailer: "https://youtu.be/in-lUuKi0eE",
         description: "Ryan Gosling protagoniza una gran aventura espacial con humor, emoción y una escala visual enorme.",
         criticText: "Una de las propuestas de ciencia ficción comercial más sólidas del año. Grande, emotiva y muy disfrutable.",
         reviews: [
@@ -1608,176 +747,255 @@
       {
         key: "torrente",
         title: "Torrente presidente",
-        poster: "https://i.postimg.cc/xdQtPKHN/torrente6.jpg",
+        poster: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=900&q=80",
         critics: 68,
         audience: 62,
         year: "2026",
         genre: "Comedia",
-        trailer: "https://youtu.be/tnH_xUjTObI?si=xxXzsNJCa1QeEeJR",
+        trailer: "https://youtu.be/tnH_xUjTObI",
         description: "La nueva locura de Torrente lleva la sátira política y el humor bruto al centro del caos nacional.",
         criticText: "Puede gustarte más o menos, pero como fenómeno popular está funcionando a lo bestia.",
-        reviews: [
-          { author: "ButacaPrime", text: "Es muy suya, muy excesiva y la gente la está viendo muchísimo." }
-        ]
+        reviews: [{ author: "ButacaPrime", text: "Es muy suya, muy excesiva y la gente la está viendo muchísimo." }]
       }
     ];
 
     const avatars = {
       Marvel: [
-        "https://playcontestofchampions.com/wp-content/uploads/2023/04/champion-iron-man-infinity-war.webp",
-        "https://xoandelugo.org/wp-content/uploads/2018/06/capitan-america.jpg",
-        "https://preview.redd.it/my-dream-entrance-in-avengers-endgame-is-bruce-banners-v0-s32dchfsy8q21.jpg?width=640&crop=smart&auto=webp&s=ad575087953fad54382b0e173468771a912fa791"
+        "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80"
       ],
       DC: [
-        "https://img.asmedia.epimg.net/resizer/v2/LGRVCUZP65ENBMUSO2ONNHVCDA.jpg?auth=f6c9098f3af81d7ee213a906bbe97cef1a954745b2999f7a1339fe3758d1634f&width=360",
-        "https://www.telealmerianoticias.es/wp-content/uploads/2026/03/Ben-Affleck-Batman-perfecto-Zack-Snyder-cuenta-por-que-siempre-1200x678.jpeg",
-        "https://i.pinimg.com/474x/a6/e3/22/a6e322ae76240b86af4db8f55a0c74f0.jpg"
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=500&q=80"
       ],
       Universal: [
-        "https://cdn.shopify.com/s/files/1/1943/7257/files/Harry-Potter_large_0dad831f-4b4a-4db5-b0eb-f96e70436102_large.jpg?v=1514443105",
-        "https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/14ca7066-fb88-4e83-b39c-1024a5ea6df4/compose?format=webp&width=2560",
-        "https://static.posters.cz/image/1300/202747.jpg"
+        "https://images.unsplash.com/photo-1541534401786-2077eed87a72?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=500&q=80"
       ],
       Warner: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShv_PZBDjW9pP9VqHzS8CDzDb9R5H3E8_X2g&s",
-        "https://m.media-amazon.com/images/I/5101NtSnx0L._AC_UF1000,1000_QL80_.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSt59s0GpehlufoSpqnkgZEfWk9Z9B7NhScug&s"
+        "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80"
       ]
     };
 
-    const randomNames = [
-      "CineLover77",
-      "PlanazoPopcorn",
-      "MaratonMaster",
-      "ButacaPrime",
-      "FilmHunter",
-      "CineMood",
-      "SalaOscuraX",
-      "PopcornKing",
-      "MoviePulse",
-      "FrameAddict"
-    ];
+    const randomNames = ["CineLover77", "PlanazoPopcorn", "MaratonMaster", "ButacaPrime", "FilmHunter", "CineMood", "SalaOscuraX", "PopcornKing", "MoviePulse", "FrameAddict"];
 
-    const introScreen = document.getElementById("introScreen");
-    const mainScreen = document.getElementById("mainScreen");
-    const newsSlides = document.getElementById("newsSlides");
-    const toast = document.getElementById("toast");
-    const menuCards = document.querySelectorAll(".menu-card");
-    const prevHit = document.getElementById("prevHit");
-    const nextHit = document.getElementById("nextHit");
-    const centerHit = document.getElementById("centerHit");
-    const newsLobby = document.getElementById("newsLobby");
+    const STORAGE_KEYS = {
+      profile: "cinemach_profile_v2",
+      reviews: "cinemach_reviews_v2",
+      favorites: "cinemach_favorites_v1"
+    };
 
-    const welcomeText = document.getElementById("welcomeText");
-    const miniAvatar = document.getElementById("miniAvatar");
+    const state = {
+      homeNewsItems: [],
+      exploreNewsItems: [],
+      moviesData: [],
+      currentIndex: 0,
+      exploreIndex: 0,
+      activeMovieKey: null,
+      selectedAvatar: "",
+      autoTimer: null,
+      exploreTimer: null,
+      slideDuration: 4800,
+      exploreDuration: 5200,
+      startX: 0,
+      endX: 0,
+      exploreStartX: 0,
+      exploreEndX: 0
+    };
 
-    const settingsScreen = document.getElementById("settingsScreen");
-    const openSettingsBtn = document.getElementById("openSettingsBtn");
-    const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-    const nameInput = document.getElementById("nameInput");
-    const settingsAvatarPreview = document.getElementById("settingsAvatarPreview");
-    const settingsProfileName = document.getElementById("settingsProfileName");
+    const el = {
+      introScreen: document.getElementById("introScreen"),
+      mainScreen: document.getElementById("mainScreen"),
+      newsSlides: document.getElementById("newsSlides"),
+      toast: document.getElementById("toast"),
+      menuCards: document.querySelectorAll(".menu-card"),
+      prevHit: document.getElementById("prevHit"),
+      nextHit: document.getElementById("nextHit"),
+      centerHit: document.getElementById("centerHit"),
+      newsLobby: document.getElementById("newsLobby"),
+      welcomeText: document.getElementById("welcomeText"),
+      miniAvatar: document.getElementById("miniAvatar"),
+      settingsScreen: document.getElementById("settingsScreen"),
+      openSettingsBtn: document.getElementById("openSettingsBtn"),
+      closeSettingsBtn: document.getElementById("closeSettingsBtn"),
+      saveProfileBtn: document.getElementById("saveProfileBtn"),
+      nameInput: document.getElementById("nameInput"),
+      settingsAvatarPreview: document.getElementById("settingsAvatarPreview"),
+      settingsProfileName: document.getElementById("settingsProfileName"),
+      marvelGrid: document.getElementById("marvelGrid"),
+      dcGrid: document.getElementById("dcGrid"),
+      universalGrid: document.getElementById("universalGrid"),
+      warnerGrid: document.getElementById("warnerGrid"),
+      exploreScreen: document.getElementById("exploreScreen"),
+      closeExploreBtn: document.getElementById("closeExploreBtn"),
+      exploreRefreshBtn: document.getElementById("exploreRefreshBtn"),
+      exploreNewsTrack: document.getElementById("exploreNewsTrack"),
+      explorePrevHit: document.getElementById("explorePrevHit"),
+      exploreCenterHit: document.getElementById("exploreCenterHit"),
+      exploreNextHit: document.getElementById("exploreNextHit"),
+      moviesGrid: document.getElementById("moviesGrid"),
+      movieCounter: document.getElementById("movieCounter"),
+      apiStatus: document.getElementById("apiStatus"),
+      movieDetailScreen: document.getElementById("movieDetailScreen"),
+      closeMovieDetailBtn: document.getElementById("closeMovieDetailBtn"),
+      movieSaveBtn: document.getElementById("movieSaveBtn"),
+      movieDetailPoster: document.getElementById("movieDetailPoster"),
+      movieDetailTitle: document.getElementById("movieDetailTitle"),
+      movieTrailer: document.getElementById("movieTrailer"),
+      movieDescription: document.getElementById("movieDescription"),
+      movieCritic: document.getElementById("movieCritic"),
+      movieReviewsWrap: document.getElementById("movieReviewsWrap"),
+      movieInfoPills: document.getElementById("movieInfoPills"),
+      reviewInput: document.getElementById("reviewInput"),
+      publishReviewBtn: document.getElementById("publishReviewBtn"),
+      clearReviewBtn: document.getElementById("clearReviewBtn"),
+      newsDetailScreen: document.getElementById("newsDetailScreen"),
+      closeNewsDetailBtn: document.getElementById("closeNewsDetailBtn"),
+      shareNewsBtn: document.getElementById("shareNewsBtn"),
+      newsDetailImage: document.getElementById("newsDetailImage"),
+      newsDetailChip: document.getElementById("newsDetailChip"),
+      newsDetailTitle: document.getElementById("newsDetailTitle"),
+      newsDetailText: document.getElementById("newsDetailText"),
+      bottomNote: document.getElementById("bottomNote")
+    };
 
-    const marvelGrid = document.getElementById("marvelGrid");
-    const dcGrid = document.getElementById("dcGrid");
-    const universalGrid = document.getElementById("universalGrid");
-    const warnerGrid = document.getElementById("warnerGrid");
+    function safeJSONParse(value, fallback) {
+      try {
+        return value ? JSON.parse(value) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
 
-    const exploreScreen = document.getElementById("exploreScreen");
-    const closeExploreBtn = document.getElementById("closeExploreBtn");
-    const exploreRefreshBtn = document.getElementById("exploreRefreshBtn");
-    const exploreNewsTrack = document.getElementById("exploreNewsTrack");
-    const explorePrevHit = document.getElementById("explorePrevHit");
-    const exploreCenterHit = document.getElementById("exploreCenterHit");
-    const exploreNextHit = document.getElementById("exploreNextHit");
-    const moviesGrid = document.getElementById("moviesGrid");
+    function getStorage(key, fallback) {
+      try {
+        return safeJSONParse(localStorage.getItem(key), fallback);
+      } catch {
+        return fallback;
+      }
+    }
 
-    const movieDetailScreen = document.getElementById("movieDetailScreen");
-    const closeMovieDetailBtn = document.getElementById("closeMovieDetailBtn");
-    const movieSaveBtn = document.getElementById("movieSaveBtn");
-    const movieDetailPoster = document.getElementById("movieDetailPoster");
-    const movieDetailTitle = document.getElementById("movieDetailTitle");
-    const movieTrailer = document.getElementById("movieTrailer");
-    const movieDescription = document.getElementById("movieDescription");
-    const movieCritic = document.getElementById("movieCritic");
-    const movieReviewsWrap = document.getElementById("movieReviewsWrap");
-    const movieInfoPills = document.getElementById("movieInfoPills");
-    const reviewInput = document.getElementById("reviewInput");
-    const publishReviewBtn = document.getElementById("publishReviewBtn");
-    const clearReviewBtn = document.getElementById("clearReviewBtn");
-
-    const newsDetailScreen = document.getElementById("newsDetailScreen");
-    const closeNewsDetailBtn = document.getElementById("closeNewsDetailBtn");
-    const shareNewsBtn = document.getElementById("shareNewsBtn");
-    const newsDetailImage = document.getElementById("newsDetailImage");
-    const newsDetailChip = document.getElementById("newsDetailChip");
-    const newsDetailTitle = document.getElementById("newsDetailTitle");
-    const newsDetailText = document.getElementById("newsDetailText");
-
-    let currentIndex = 0;
-    let autoTimer = null;
-    const slideDuration = 4800;
-    let selectedAvatar = "";
-
-    let exploreIndex = 0;
-    let exploreTimer = null;
-    const exploreDuration = 5200;
-
-    let activeMovieKey = null;
-
-    const STORAGE_KEY = "cinemach_profile_v1";
-    const REVIEWS_STORAGE_KEY = "cinemach_reviews_v1";
+    function setStorage(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch {
+        showToast("No se pudo guardar en el dispositivo");
+        return false;
+      }
+    }
 
     function randomFrom(array) {
-      return array[Math.floor(Math.random() * array.length)];
+      return array[Math.floor(Math.random() * array.length)] ?? "CineMach";
+    }
+
+    function sanitizeText(text, max = 280) {
+      return String(text ?? "").replace(/\s+/g, " ").trim().slice(0, max);
+    }
+
+    function safeImage(url) {
+      return typeof url === "string" && url.trim() ? url : FALLBACKS.image;
+    }
+
+    function attachFallbackImage(img, fallback = FALLBACKS.image) {
+      if (!img) return;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.addEventListener("error", () => {
+        if (img.dataset.fallbackApplied === "1") return;
+        img.dataset.fallbackApplied = "1";
+        img.src = fallback;
+      });
+    }
+
+    function createImg(src, alt, className = "", fallback = FALLBACKS.image) {
+      const img = document.createElement("img");
+      img.src = safeImage(src);
+      img.alt = alt;
+      if (className) img.className = className;
+      attachFallbackImage(img, fallback);
+      return img;
     }
 
     function getDefaultAvatar() {
-      return avatars.Marvel[0];
+      return avatars.Marvel[0] || FALLBACKS.avatar;
     }
 
     function getProfile() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
-
-      return {
-        name: randomFrom(randomNames),
-        avatar: getDefaultAvatar()
-      };
+      const profile = getStorage(STORAGE_KEYS.profile, null);
+      if (profile?.name && profile?.avatar) return profile;
+      return { name: randomFrom(randomNames), avatar: getDefaultAvatar() };
     }
 
     function saveProfile(profile) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+      return setStorage(STORAGE_KEYS.profile, profile);
+    }
+
+    function getStoredReviews() {
+      return getStorage(STORAGE_KEYS.reviews, {});
+    }
+
+    function saveStoredReviews(data) {
+      return setStorage(STORAGE_KEYS.reviews, data);
+    }
+
+    function getFavorites() {
+      return getStorage(STORAGE_KEYS.favorites, []);
+    }
+
+    function saveFavorites(favorites) {
+      return setStorage(STORAGE_KEYS.favorites, favorites);
+    }
+
+    function isFavorite(movieKey) {
+      return getFavorites().includes(movieKey);
+    }
+
+    function toggleFavorite(movieKey) {
+      const favorites = getFavorites();
+      const exists = favorites.includes(movieKey);
+      const updated = exists ? favorites.filter((key) => key !== movieKey) : [...favorites, movieKey];
+      saveFavorites(updated);
+      return !exists;
     }
 
     function applyProfile(profile) {
-      welcomeText.textContent = `Bienvenido, ${profile.name}`;
-      miniAvatar.src = profile.avatar;
-      settingsAvatarPreview.src = profile.avatar;
-      settingsProfileName.textContent = profile.name;
-      nameInput.value = profile.name;
-      selectedAvatar = profile.avatar;
+      el.welcomeText.textContent = `Bienvenido, ${profile.name}`;
+      el.settingsProfileName.textContent = profile.name;
+      el.nameInput.value = profile.name;
+      state.selectedAvatar = profile.avatar || getDefaultAvatar();
+      el.miniAvatar.src = state.selectedAvatar;
+      el.settingsAvatarPreview.src = state.selectedAvatar;
+      attachFallbackImage(el.miniAvatar, FALLBACKS.avatar);
+      attachFallbackImage(el.settingsAvatarPreview, FALLBACKS.avatar);
       updateAvatarSelection();
     }
 
     function updateAvatarSelection() {
       document.querySelectorAll(".avatar-option").forEach((button) => {
-        button.classList.toggle("selected", button.dataset.avatar === selectedAvatar);
+        button.classList.toggle("selected", button.dataset.avatar === state.selectedAvatar);
+        button.setAttribute("aria-pressed", button.dataset.avatar === state.selectedAvatar ? "true" : "false");
       });
-      settingsAvatarPreview.src = selectedAvatar;
+      el.settingsAvatarPreview.src = state.selectedAvatar || getDefaultAvatar();
     }
 
     function renderAvatarGroup(grid, list) {
       grid.innerHTML = "";
-      list.forEach((avatarUrl) => {
+      list.forEach((avatarUrl, index) => {
         const button = document.createElement("button");
         button.className = "avatar-option";
         button.type = "button";
         button.dataset.avatar = avatarUrl;
-        button.innerHTML = `<img src="${avatarUrl}" alt="Avatar">`;
+        button.setAttribute("aria-label", `Seleccionar avatar ${index + 1}`);
+        const img = createImg(avatarUrl, `Avatar ${index + 1}`, "", FALLBACKS.avatar);
+        button.appendChild(img);
         button.addEventListener("click", () => {
-          selectedAvatar = avatarUrl;
+          state.selectedAvatar = avatarUrl;
           updateAvatarSelection();
         });
         grid.appendChild(button);
@@ -1785,29 +1003,88 @@
     }
 
     function renderAvatars() {
-      renderAvatarGroup(marvelGrid, avatars.Marvel);
-      renderAvatarGroup(dcGrid, avatars.DC);
-      renderAvatarGroup(universalGrid, avatars.Universal);
-      renderAvatarGroup(warnerGrid, avatars.Warner);
+      renderAvatarGroup(el.marvelGrid, avatars.Marvel);
+      renderAvatarGroup(el.dcGrid, avatars.DC);
+      renderAvatarGroup(el.universalGrid, avatars.Universal);
+      renderAvatarGroup(el.warnerGrid, avatars.Warner);
+    }
+
+    function toYouTubeEmbed(url) {
+      try {
+        const parsed = new URL(url);
+        if (parsed.hostname.includes("youtu.be")) {
+          const id = parsed.pathname.replace("/", "").trim();
+          return id ? `https://www.youtube.com/embed/${id}` : "";
+        }
+        if (parsed.hostname.includes("youtube.com")) {
+          const id = parsed.searchParams.get("v");
+          return id ? `https://www.youtube.com/embed/${id}` : "";
+        }
+        return "";
+      } catch {
+        return "";
+      }
+    }
+
+    function createTag(text) {
+      const tag = document.createElement("div");
+      tag.className = "tag-pill";
+      tag.textContent = text;
+      return tag;
+    }
+
+    function getMovieByKey(key) {
+      return state.moviesData.find((movie) => movie.key === key) || null;
+    }
+
+    function getAllReviewsForMovie(key) {
+      const movie = getMovieByKey(key);
+      if (!movie) return [];
+      const stored = getStoredReviews();
+      const extra = Array.isArray(stored[key]) ? stored[key] : [];
+      return [...(movie.reviews || []), ...extra];
+    }
+
+    function renderMovieReviews(key) {
+      const reviews = getAllReviewsForMovie(key);
+      if (!reviews.length) {
+        el.movieReviewsWrap.innerHTML = `<div class="empty-reviews">No hay valoración todavía. Sé la primera persona en dejar una reseña.</div>`;
+        return;
+      }
+
+      const list = document.createElement("div");
+      list.className = "review-list";
+      reviews.forEach((review) => {
+        const item = document.createElement("div");
+        item.className = "review-item";
+        item.innerHTML = `<strong>${sanitizeText(review.author, 30)}</strong><p>${sanitizeText(review.text, 280)}</p>`;
+        list.appendChild(item);
+      });
+      el.movieReviewsWrap.innerHTML = "";
+      el.movieReviewsWrap.appendChild(list);
+    }
+
+    function updateFavoriteButton() {
+      const saved = state.activeMovieKey && isFavorite(state.activeMovieKey);
+      el.movieSaveBtn.textContent = saved ? "★" : "☆";
+      el.movieSaveBtn.setAttribute("aria-label", saved ? "Quitar de favoritos" : "Guardar en favoritos");
     }
 
     function buildSlides() {
-      newsSlides.innerHTML = "";
-
-      homeNewsItems.forEach((item, index) => {
+      el.newsSlides.innerHTML = "";
+      state.homeNewsItems.forEach((item, index) => {
         const slide = document.createElement("article");
         slide.className = "news-slide";
-        slide.style.backgroundImage = `url('${item.image}')`;
-
+        slide.style.backgroundImage = `url('${safeImage(item.image)}')`;
         slide.innerHTML = `
           <div class="news-top">
-            <div class="news-chip">${item.chip}</div>
-            <div class="news-counter">${String(index + 1).padStart(2, "0")} / ${String(homeNewsItems.length).padStart(2, "0")}</div>
+            <div class="news-chip">${sanitizeText(item.chip, 24)}</div>
+            <div class="news-counter">${String(index + 1).padStart(2, "0")} / ${String(state.homeNewsItems.length).padStart(2, "0")}</div>
           </div>
           <div class="news-content">
-            <h2 class="news-title">${item.title}</h2>
+            <h2 class="news-title">${sanitizeText(item.title, 80)}</h2>
             <div class="news-progress">
-              ${homeNewsItems.map((_, barIndex) => `
+              ${state.homeNewsItems.map((_, barIndex) => `
                 <div class="news-progress-bar ${barIndex === index ? "active" : ""}">
                   <div class="news-progress-fill" style="width:${barIndex < index ? "100%" : "0%"}"></div>
                 </div>
@@ -1815,85 +1092,37 @@
             </div>
           </div>
         `;
-
-        if (index === currentIndex) slide.classList.add("active");
-        newsSlides.appendChild(slide);
+        if (index === state.currentIndex) slide.classList.add("active");
+        el.newsSlides.appendChild(slide);
       });
     }
 
     function showSlide(index) {
-      currentIndex = (index + homeNewsItems.length) % homeNewsItems.length;
+      if (!state.homeNewsItems.length) return;
+      state.currentIndex = (index + state.homeNewsItems.length) % state.homeNewsItems.length;
       buildSlides();
     }
-
-    function nextSlide() {
-      showSlide(currentIndex + 1);
-    }
-
-    function prevSlide() {
-      showSlide(currentIndex - 1);
-    }
-
+    function nextSlide() { showSlide(state.currentIndex + 1); }
+    function prevSlide() { showSlide(state.currentIndex - 1); }
     function startAuto() {
-      clearInterval(autoTimer);
-      autoTimer = setInterval(nextSlide, slideDuration);
-    }
-
-    function stopAuto() {
-      clearInterval(autoTimer);
-    }
-
-    function restartAuto() {
-      startAuto();
-    }
-
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(showToast._timer);
-      showToast._timer = setTimeout(() => {
-        toast.classList.remove("show");
-      }, 1800);
-    }
-
-    function openSettings() {
-      settingsScreen.classList.add("show");
       stopAuto();
-      stopExploreAuto();
+      if (state.homeNewsItems.length > 1) state.autoTimer = window.setInterval(nextSlide, state.slideDuration);
     }
-
-    function closeSettings() {
-      settingsScreen.classList.remove("show");
-      if (!exploreScreen.classList.contains("show")) startAuto();
-      if (exploreScreen.classList.contains("show")) startExploreAuto();
-    }
-
-    function handleSaveProfile() {
-      const cleanName = nameInput.value.trim() || randomFrom(randomNames);
-
-      const profile = {
-        name: cleanName,
-        avatar: selectedAvatar || getDefaultAvatar()
-      };
-
-      saveProfile(profile);
-      applyProfile(profile);
-      showToast("Perfil guardado");
-      closeSettings();
-    }
+    function stopAuto() { if (state.autoTimer) clearInterval(state.autoTimer); state.autoTimer = null; }
+    function restartAuto() { startAuto(); }
 
     function buildExploreNews() {
-      exploreNewsTrack.innerHTML = "";
-      exploreNewsItems.forEach((item, index) => {
+      el.exploreNewsTrack.innerHTML = "";
+      state.exploreNewsItems.forEach((item, index) => {
         const slide = document.createElement("article");
         slide.className = "explore-news-slide";
-        slide.style.backgroundImage = `url('${item.image}')`;
+        slide.style.backgroundImage = `url('${safeImage(item.image)}')`;
         slide.innerHTML = `
           <div class="explore-news-content">
-            <div class="tag-pill">${item.chip}</div>
-            <h3>${item.title}</h3>
+            <div class="tag-pill">${sanitizeText(item.chip, 24)}</div>
+            <h3>${sanitizeText(item.title, 80)}</h3>
             <div class="explore-news-bars">
-              ${exploreNewsItems.map((_, barIndex) => `
+              ${state.exploreNewsItems.map((_, barIndex) => `
                 <div class="explore-news-bar ${barIndex === index ? "active" : ""}">
                   <span style="width:${barIndex < index ? "100%" : "0%"}"></span>
                 </div>
@@ -1901,56 +1130,93 @@
             </div>
           </div>
         `;
-        if (index === exploreIndex) slide.classList.add("active");
-        exploreNewsTrack.appendChild(slide);
+        if (index === state.exploreIndex) slide.classList.add("active");
+        el.exploreNewsTrack.appendChild(slide);
       });
     }
 
     function showExploreNews(index) {
-      exploreIndex = (index + exploreNewsItems.length) % exploreNewsItems.length;
+      if (!state.exploreNewsItems.length) return;
+      state.exploreIndex = (index + state.exploreNewsItems.length) % state.exploreNewsItems.length;
       buildExploreNews();
     }
-
-    function nextExploreNews() {
-      showExploreNews(exploreIndex + 1);
-    }
-
-    function prevExploreNews() {
-      showExploreNews(exploreIndex - 1);
-    }
-
+    function nextExploreNews() { showExploreNews(state.exploreIndex + 1); }
+    function prevExploreNews() { showExploreNews(state.exploreIndex - 1); }
     function startExploreAuto() {
-      clearInterval(exploreTimer);
-      exploreTimer = setInterval(nextExploreNews, exploreDuration);
+      stopExploreAuto();
+      if (state.exploreNewsItems.length > 1) state.exploreTimer = window.setInterval(nextExploreNews, state.exploreDuration);
     }
-
-    function stopExploreAuto() {
-      clearInterval(exploreTimer);
-    }
+    function stopExploreAuto() { if (state.exploreTimer) clearInterval(state.exploreTimer); state.exploreTimer = null; }
 
     function renderMovies() {
-      moviesGrid.innerHTML = "";
-      moviesData.forEach((movie) => {
+      el.moviesGrid.innerHTML = "";
+      el.movieCounter.textContent = `${state.moviesData.length} títulos`;
+
+      state.moviesData.forEach((movie) => {
         const card = document.createElement("article");
         card.className = "movie-card";
-        card.innerHTML = `
-          <img class="movie-poster" src="${movie.poster}" alt="${movie.title}">
-          <div class="movie-card-body">
-            <h4 class="movie-card-title">${movie.title}</h4>
-            <div class="rating-row">
-              <div class="rating-badge tomato">🍅 ${movie.critics}%</div>
-              <div class="rating-badge popcorn">🍿 ${movie.audience}%</div>
-            </div>
-            <div class="movie-meta">${movie.year} · ${movie.genre} · Cartagena</div>
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `Abrir ${movie.title}`);
+
+        const poster = createImg(movie.poster, movie.title, "movie-poster");
+        const body = document.createElement("div");
+        body.className = "movie-card-body";
+        body.innerHTML = `
+          <h4 class="movie-card-title">${sanitizeText(movie.title, 80)}</h4>
+          <div class="rating-row">
+            <div class="rating-badge tomato">🍅 ${Number(movie.critics) || 0}%</div>
+            <div class="rating-badge popcorn">🍿 ${Number(movie.audience) || 0}%</div>
           </div>
+          <div class="movie-meta">${sanitizeText(movie.year, 10)} · ${sanitizeText(movie.genre, 40)}</div>
         `;
-        card.addEventListener("click", () => openMovieDetail(movie.key));
-        moviesGrid.appendChild(card);
+
+        const open = () => openMovieDetail(movie.key);
+        card.addEventListener("click", open);
+        card.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            open();
+          }
+        });
+
+        card.appendChild(poster);
+        card.appendChild(body);
+        el.moviesGrid.appendChild(card);
       });
     }
 
+    function openScreen(screen) {
+      screen.classList.add("show");
+    }
+    function closeScreen(screen) {
+      screen.classList.remove("show");
+    }
+
+    function openSettings() {
+      openScreen(el.settingsScreen);
+      stopAuto();
+      stopExploreAuto();
+    }
+
+    function closeSettings() {
+      closeScreen(el.settingsScreen);
+      if (el.exploreScreen.classList.contains("show")) startExploreAuto();
+      else startAuto();
+    }
+
+    function handleSaveProfile() {
+      const cleanName = sanitizeText(el.nameInput.value, 20) || randomFrom(randomNames);
+      const profile = { name: cleanName, avatar: state.selectedAvatar || getDefaultAvatar() };
+      if (saveProfile(profile)) {
+        applyProfile(profile);
+        showToast("Perfil guardado");
+        closeSettings();
+      }
+    }
+
     function openExplore() {
-      exploreScreen.classList.add("show");
+      openScreen(el.exploreScreen);
       stopAuto();
       buildExploreNews();
       renderMovies();
@@ -1958,244 +1224,279 @@
     }
 
     function closeExplore() {
-      exploreScreen.classList.remove("show");
+      closeScreen(el.exploreScreen);
       stopExploreAuto();
       startAuto();
     }
 
     function openNewsDetail(newsItem) {
-      newsDetailImage.src = newsItem.image;
-      newsDetailChip.textContent = newsItem.chip;
-      newsDetailTitle.textContent = newsItem.title;
-      newsDetailText.textContent = newsItem.newsBody;
-      newsDetailScreen.classList.add("show");
+      if (!newsItem) return;
+      el.newsDetailImage.src = safeImage(newsItem.image);
+      attachFallbackImage(el.newsDetailImage);
+      el.newsDetailChip.textContent = sanitizeText(newsItem.chip, 24);
+      el.newsDetailTitle.textContent = sanitizeText(newsItem.title, 100);
+      el.newsDetailText.textContent = sanitizeText(newsItem.newsBody, 400);
+      openScreen(el.newsDetailScreen);
       stopAuto();
       stopExploreAuto();
     }
 
     function closeNewsDetail() {
-      newsDetailScreen.classList.remove("show");
-      if (exploreScreen.classList.contains("show")) {
-        startExploreAuto();
-      } else {
-        startAuto();
-      }
-    }
-
-    function getStoredReviews() {
-      const saved = localStorage.getItem(REVIEWS_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : {};
-    }
-
-    function saveStoredReviews(data) {
-      localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(data));
-    }
-
-    function getMovieByKey(key) {
-      return moviesData.find((movie) => movie.key === key);
-    }
-
-    function getAllReviewsForMovie(key) {
-      const movie = getMovieByKey(key);
-      const stored = getStoredReviews();
-      const extra = stored[key] || [];
-      return [...movie.reviews, ...extra];
-    }
-
-    function renderMovieReviews(key) {
-      const reviews = getAllReviewsForMovie(key);
-
-      if (!reviews.length) {
-        movieReviewsWrap.innerHTML = `<div class="empty-reviews">No hay valoración todavía.</div>`;
-        return;
-      }
-
-      movieReviewsWrap.innerHTML = `
-        <div class="review-list">
-          ${reviews.map((review) => `
-            <div class="review-item">
-              <strong>${review.author}</strong>
-              <p>${review.text}</p>
-            </div>
-          `).join("")}
-        </div>
-      `;
+      closeScreen(el.newsDetailScreen);
+      if (el.exploreScreen.classList.contains("show")) startExploreAuto();
+      else startAuto();
     }
 
     function openMovieDetail(key) {
       const movie = getMovieByKey(key);
-      activeMovieKey = key;
+      if (!movie) return;
 
-      movieDetailPoster.src = movie.poster;
-      movieDetailTitle.textContent = movie.title;
-      movieTrailer.src = movie.trailer;
-      movieDescription.textContent = movie.description;
-      movieCritic.textContent = movie.criticText;
-      movieInfoPills.innerHTML = `
-        <div class="tag-pill">${movie.year}</div>
-        <div class="tag-pill">${movie.genre}</div>
-        <div class="tag-pill">🍅 ${movie.critics}%</div>
-        <div class="tag-pill">🍿 ${movie.audience}%</div>
-      `;
+      state.activeMovieKey = key;
+      el.movieDetailPoster.src = safeImage(movie.poster);
+      attachFallbackImage(el.movieDetailPoster);
+      el.movieDetailTitle.textContent = sanitizeText(movie.title, 100);
+      el.movieDescription.textContent = sanitizeText(movie.description, 420);
+      el.movieCritic.textContent = sanitizeText(movie.criticText, 320);
+      el.movieInfoPills.innerHTML = "";
+      [movie.year, movie.genre, `🍅 ${Number(movie.critics) || 0}%`, `🍿 ${Number(movie.audience) || 0}%`].forEach((text) => {
+        el.movieInfoPills.appendChild(createTag(sanitizeText(text, 40)));
+      });
+
+      const embedUrl = toYouTubeEmbed(movie.trailer);
+      el.movieTrailer.src = embedUrl || "about:blank";
       renderMovieReviews(key);
-      reviewInput.value = "";
-
-      movieDetailScreen.classList.add("show");
+      el.reviewInput.value = "";
+      updateFavoriteButton();
+      openScreen(el.movieDetailScreen);
       stopAuto();
       stopExploreAuto();
     }
 
     function closeMovieDetail() {
-      movieDetailScreen.classList.remove("show");
-      movieTrailer.src = "";
-      if (exploreScreen.classList.contains("show")) {
-        startExploreAuto();
-      } else {
-        startAuto();
-      }
+      closeScreen(el.movieDetailScreen);
+      el.movieTrailer.src = "about:blank";
+      state.activeMovieKey = null;
+      if (el.exploreScreen.classList.contains("show")) startExploreAuto();
+      else startAuto();
     }
 
     function publishReview() {
-      const text = reviewInput.value.trim();
-      if (!text || !activeMovieKey) {
+      const text = sanitizeText(el.reviewInput.value, 280);
+      if (!text || !state.activeMovieKey) {
         showToast("Escribe una reseña primero");
         return;
       }
-
       const profile = getProfile();
       const stored = getStoredReviews();
-      if (!stored[activeMovieKey]) stored[activeMovieKey] = [];
-      stored[activeMovieKey].push({
-        author: profile.name,
-        text
-      });
-      saveStoredReviews(stored);
-      renderMovieReviews(activeMovieKey);
-      reviewInput.value = "";
-      showToast("Reseña publicada");
+      if (!Array.isArray(stored[state.activeMovieKey])) stored[state.activeMovieKey] = [];
+      stored[state.activeMovieKey].push({ author: profile.name, text });
+      if (saveStoredReviews(stored)) {
+        renderMovieReviews(state.activeMovieKey);
+        el.reviewInput.value = "";
+        showToast("Reseña publicada");
+      }
     }
 
-    window.addEventListener("load", () => {
+    async function shareCurrentNews() {
+      const title = el.newsDetailTitle.textContent;
+      const text = el.newsDetailText.textContent;
+      if (!title || !text) {
+        showToast("No hay noticia para compartir");
+        return;
+      }
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, text });
+        } catch {
+          showToast("Compartir cancelado");
+        }
+      } else if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(`${title}\n\n${text}`);
+          showToast("Resumen copiado al portapapeles");
+        } catch {
+          showToast("Tu navegador no permite compartir");
+        }
+      } else {
+        showToast("Tu navegador no permite compartir");
+      }
+    }
+
+    function showToast(message) {
+      el.toast.textContent = sanitizeText(message, 120);
+      el.toast.classList.add("show");
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => el.toast.classList.remove("show"), 1800);
+    }
+
+    function handleSwipeStart(event, key) {
+      state[key] = event.changedTouches[0].clientX;
+    }
+
+    function handleSwipeEnd(event, startKey, onPrev, onNext, restartFn) {
+      const end = event.changedTouches[0].clientX;
+      const start = state[startKey];
+      const diff = end - start;
+      if (Math.abs(diff) > 45) {
+        if (diff < 0) onNext(); else onPrev();
+        restartFn();
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        stopAuto();
+        stopExploreAuto();
+        return;
+      }
+      if (el.newsDetailScreen.classList.contains("show") || el.movieDetailScreen.classList.contains("show") || el.settingsScreen.classList.contains("show")) return;
+      if (el.exploreScreen.classList.contains("show")) startExploreAuto();
+      else startAuto();
+    }
+
+    async function fetchTmdbDiscoverMovies() {
+      const url = new URL("https://api.themoviedb.org/3/discover/movie");
+      url.searchParams.set("api_key", APP_CONFIG.tmdbApiKey);
+      url.searchParams.set("language", APP_CONFIG.tmdbLanguage);
+      url.searchParams.set("region", APP_CONFIG.tmdbRegion);
+      url.searchParams.set("sort_by", "popularity.desc");
+      url.searchParams.set("include_adult", "false");
+      url.searchParams.set("page", "1");
+      const response = await fetch(url.toString());
+      if (!response.ok) throw new Error("TMDB no respondió correctamente");
+      const data = await response.json();
+      return Array.isArray(data.results) ? data.results : [];
+    }
+
+    function normalizeTmdbMovie(item, index) {
+      const year = item.release_date ? String(item.release_date).slice(0, 4) : "Próximamente";
+      const vote = Math.round((Number(item.vote_average) || 0) * 10);
+      const audience = Math.min(99, vote + 6);
+      return {
+        key: `tmdb-${item.id}-${index}`,
+        title: item.title || item.name || "Película",
+        poster: item.poster_path ? `${APP_CONFIG.tmdbImageBase}${item.poster_path}` : FALLBACKS.image,
+        critics: vote,
+        audience,
+        year,
+        genre: "Cine / Tendencia",
+        trailer: "",
+        description: sanitizeText(item.overview || "Descripción no disponible.", 420),
+        criticText: "Popular ahora mismo en TMDB. Añade trailers de YouTube o una API de vídeos para una ficha todavía más potente.",
+        reviews: []
+      };
+    }
+
+    async function loadAppData() {
+      if (APP_CONFIG.useRealApi && APP_CONFIG.tmdbApiKey) {
+        try {
+          const tmdbMovies = await fetchTmdbDiscoverMovies();
+          if (tmdbMovies.length) {
+            state.moviesData = tmdbMovies.slice(0, 8).map(normalizeTmdbMovie);
+            state.homeNewsItems = demoHomeNewsItems;
+            state.exploreNewsItems = demoExploreNewsItems;
+            el.apiStatus.textContent = "API real activa: TMDB conectado correctamente. Ya puedes reemplazar noticias demo por tus propias fuentes reales.";
+            return;
+          }
+        } catch {
+          el.apiStatus.textContent = "La API real falló. CineMach sigue funcionando con datos demo seguros para que la app nunca se rompa.";
+        }
+      }
+
+      state.homeNewsItems = demoHomeNewsItems;
+      state.exploreNewsItems = demoExploreNewsItems;
+      state.moviesData = demoMoviesData;
+      el.apiStatus.textContent = "Modo inteligente activo: usa datos demo estables. Si añades tu API key de TMDB, CineMach podrá cargar contenido real automáticamente.";
+    }
+
+    function bindEvents() {
+      el.prevHit.addEventListener("click", () => { prevSlide(); restartAuto(); });
+      el.nextHit.addEventListener("click", () => { nextSlide(); restartAuto(); });
+      el.centerHit.addEventListener("click", () => openNewsDetail(state.homeNewsItems[state.currentIndex]));
+
+      el.openSettingsBtn.addEventListener("click", openSettings);
+      el.closeSettingsBtn.addEventListener("click", closeSettings);
+      el.saveProfileBtn.addEventListener("click", handleSaveProfile);
+      el.nameInput.addEventListener("input", () => {
+        el.settingsProfileName.textContent = sanitizeText(el.nameInput.value, 20) || "Usuario";
+      });
+
+      el.menuCards.forEach((card) => {
+        card.addEventListener("click", (e) => {
+          e.preventDefault();
+          const section = card.dataset.section;
+          if (section === "Buscar") openExplore();
+          else showToast(`Módulo ${section} en expansión`);
+        });
+      });
+
+      el.closeExploreBtn.addEventListener("click", closeExplore);
+      el.exploreRefreshBtn.addEventListener("click", async () => {
+        await loadAppData();
+        showExploreNews(0);
+        renderMovies();
+        startExploreAuto();
+        showToast("Explorar actualizado");
+      });
+      el.explorePrevHit.addEventListener("click", () => { prevExploreNews(); startExploreAuto(); });
+      el.exploreNextHit.addEventListener("click", () => { nextExploreNews(); startExploreAuto(); });
+      el.exploreCenterHit.addEventListener("click", () => openNewsDetail(state.exploreNewsItems[state.exploreIndex]));
+
+      el.closeMovieDetailBtn.addEventListener("click", closeMovieDetail);
+      el.closeNewsDetailBtn.addEventListener("click", closeNewsDetail);
+      el.publishReviewBtn.addEventListener("click", publishReview);
+      el.clearReviewBtn.addEventListener("click", () => { el.reviewInput.value = ""; });
+      el.movieSaveBtn.addEventListener("click", () => {
+        if (!state.activeMovieKey) return;
+        const added = toggleFavorite(state.activeMovieKey);
+        updateFavoriteButton();
+        showToast(added ? "Película guardada en favoritos" : "Película quitada de favoritos");
+      });
+      el.shareNewsBtn.addEventListener("click", shareCurrentNews);
+
+      el.newsLobby.addEventListener("touchstart", (e) => handleSwipeStart(e, "startX"), { passive: true });
+      el.newsLobby.addEventListener("touchend", (e) => handleSwipeEnd(e, "startX", prevSlide, nextSlide, restartAuto), { passive: true });
+      const exploreHero = document.getElementById("exploreHero");
+      exploreHero.addEventListener("touchstart", (e) => handleSwipeStart(e, "exploreStartX"), { passive: true });
+      exploreHero.addEventListener("touchend", (e) => handleSwipeEnd(e, "exploreStartX", prevExploreNews, nextExploreNews, startExploreAuto), { passive: true });
+
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+      window.addEventListener("beforeunload", () => { stopAuto(); stopExploreAuto(); });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (el.newsDetailScreen.classList.contains("show")) closeNewsDetail();
+        else if (el.movieDetailScreen.classList.contains("show")) closeMovieDetail();
+        else if (el.settingsScreen.classList.contains("show")) closeSettings();
+        else if (el.exploreScreen.classList.contains("show")) closeExplore();
+      });
+    }
+
+    let appBooted = false;
+
+    async function init() {
+      if (appBooted) return;
+      appBooted = true;
+
       renderAvatars();
       const profile = getProfile();
       applyProfile(profile);
+      await loadAppData();
       buildSlides();
+      bindEvents();
+      el.bottomNote.textContent = `CineMach listo: ${state.moviesData.length} películas, favoritos persistentes y reseñas locales.`;
 
-      setTimeout(() => {
-        introScreen.classList.add("hidden");
-        mainScreen.classList.add("active");
+      window.setTimeout(() => {
+        el.introScreen.classList.add("hidden");
+        el.mainScreen.classList.add("active");
         startAuto();
-      }, 1900);
-    });
+      }, 1700);
+    }
 
-    prevHit.addEventListener("click", () => {
-      prevSlide();
-      restartAuto();
-    });
-
-    nextHit.addEventListener("click", () => {
-      nextSlide();
-      restartAuto();
-    });
-
-    centerHit.addEventListener("click", () => {
-      openNewsDetail(homeNewsItems[currentIndex]);
-    });
-
-    openSettingsBtn.addEventListener("click", openSettings);
-    closeSettingsBtn.addEventListener("click", closeSettings);
-    saveProfileBtn.addEventListener("click", handleSaveProfile);
-
-    nameInput.addEventListener("input", () => {
-      const currentName = nameInput.value.trim() || "Usuario";
-      settingsProfileName.textContent = currentName;
-    });
-
-    menuCards.forEach((card) => {
-      card.addEventListener("click", (e) => {
-        e.preventDefault();
-        const section = card.dataset.section;
-        if (section === "Buscar") {
-          openExplore();
-        } else {
-          showToast("Abrir: " + section);
-        }
-      });
-    });
-
-    closeExploreBtn.addEventListener("click", closeExplore);
-    exploreRefreshBtn.addEventListener("click", () => {
-      showExploreNews(0);
-      renderMovies();
-      startExploreAuto();
-      showToast("Explorar actualizado");
-    });
-
-    explorePrevHit.addEventListener("click", () => {
-      prevExploreNews();
-      startExploreAuto();
-    });
-
-    exploreNextHit.addEventListener("click", () => {
-      nextExploreNews();
-      startExploreAuto();
-    });
-
-    exploreCenterHit.addEventListener("click", () => {
-      openNewsDetail(exploreNewsItems[exploreIndex]);
-    });
-
-    closeMovieDetailBtn.addEventListener("click", closeMovieDetail);
-    closeNewsDetailBtn.addEventListener("click", closeNewsDetail);
-    publishReviewBtn.addEventListener("click", publishReview);
-    clearReviewBtn.addEventListener("click", () => {
-      reviewInput.value = "";
-    });
-
-    movieSaveBtn.addEventListener("click", () => {
-      showToast("Película guardada");
-    });
-
-    shareNewsBtn.addEventListener("click", () => {
-      showToast("Compartir llegará después");
-    });
-
-    let startX = 0;
-    let endX = 0;
-
-    newsLobby.addEventListener("touchstart", (e) => {
-      startX = e.changedTouches[0].clientX;
-    }, { passive: true });
-
-    newsLobby.addEventListener("touchend", (e) => {
-      endX = e.changedTouches[0].clientX;
-      const diff = endX - startX;
-
-      if (Math.abs(diff) > 45) {
-        if (diff < 0) nextSlide();
-        else prevSlide();
-        restartAuto();
-      }
-    }, { passive: true });
-
-    const exploreHero = document.getElementById("exploreHero");
-    let exploreStartX = 0;
-    let exploreEndX = 0;
-
-    exploreHero.addEventListener("touchstart", (e) => {
-      exploreStartX = e.changedTouches[0].clientX;
-    }, { passive: true });
-
-    exploreHero.addEventListener("touchend", (e) => {
-      exploreEndX = e.changedTouches[0].clientX;
-      const diff = exploreEndX - exploreStartX;
-
-      if (Math.abs(diff) > 45) {
-        if (diff < 0) nextExploreNews();
-        else prevExploreNews();
-        startExploreAuto();
-      }
-    }, { passive: true });
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+    window.addEventListener("load", init, { once: true });
+    window.setTimeout(init, 2200);
   </script>
 </body>
 </html>
+
+  
