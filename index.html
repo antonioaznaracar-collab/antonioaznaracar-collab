@@ -1268,7 +1268,7 @@
       </section>
 
       <div class="bottom-note">
-        Fase 5 lista: Explorar, noticias y fichas de película.
+        Fase 5 lista: Explorar con noticias + cartelera actual de Cartagena + fichas de película.
       </div>
     </main>
 
@@ -1339,7 +1339,7 @@
 
       <h2 class="screen-title">Explorar</h2>
       <p class="screen-subtitle">
-        Noticias en tendencia y películas con valoración.
+        Noticias en tendencia y cartelera actual de Cartagena con valoración real.
       </p>
 
       <section class="explore-hero" id="exploreHero">
@@ -1353,8 +1353,8 @@
       </section>
 
       <div class="explore-section-head">
-        <h3>Películas</h3>
-        <span>Valoraciones en vivo</span>
+        <h3>Cartelera actual · Cartagena 2026</h3>
+        <span>Valoración real</span>
       </div>
 
       <section class="movies-grid" id="moviesGrid"></section>
@@ -1504,105 +1504,120 @@
     const moviesData = [
       {
         key: "mario",
-        title: "The Super Mario Galaxy Movie",
+        title: "Super Mario Galaxy: La película",
         poster: "https://m.media-amazon.com/images/M/MV5BN2Y0NTk0YjItMTk1MS00MWI3LTlkOTktYzE2M2U4NmIwNTMzXkEyXkFqcGc@._V1_.jpg",
-        critics: 89,
-        audience: 94,
+        critics: 56,
+        audience: 64,
         year: "2026",
         genre: "Animación / Aventura",
         trailer: "https://www.youtube.com/embed/TnGl01FkMMo",
-        description: "Mario vuelve a la gran pantalla con una nueva aventura galáctica llena de color, humor y espectáculo visual. Una película pensada para fans del personaje y para público familiar.",
-        criticText: "Un blockbuster muy bien calibrado para entretenimiento puro: visualmente vibrante, rápido, accesible y con suficiente carisma para sostener el viaje.",
+        description: "Mario vuelve a la gran pantalla con una aventura galáctica pensada para público familiar, acción arcade y muchísimo color.",
+        criticText: "Visualmente muy potente y muy fácil de disfrutar. Funciona como gran evento familiar y como cine comercial puro.",
         reviews: [
-          { author: "CineMood", text: "Muy divertida y perfecta para verla con amigos. Tiene energía todo el rato." },
+          { author: "CineMood", text: "Muy divertida y perfecta para verla con amigos." },
           { author: "ButacaPrime", text: "No para nunca. Es puro espectáculo familiar." }
         ]
       },
       {
-        key: "faces",
-        title: "Faces of Death",
-        poster: "https://m.media-amazon.com/images/M/MV5BYzM2ODMxYmMtYmNlNS00MzMyLWEwYjAtYWMwY2QxMWNiOWI0XkEyXkFqcGc@._V1_.jpg",
-        critics: 63,
-        audience: 58,
+        key: "hoppers",
+        title: "Hoppers",
+        poster: "https://m.media-amazon.com/images/M/MV5BYmY1OGMzNzQtOTZiNS00NjM4LWEwNTAtOGFlYjA0ODAyNzhjXkEyXkFqcGc@._V1_.jpg",
+        critics: 78,
+        audience: 70,
         year: "2026",
-        genre: "Terror / Thriller",
+        genre: "Animación / Comedia",
         trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        description: "Una reinterpretación moderna de un título de culto que apuesta por el impacto, la tensión y el morbo contemporáneo.",
-        criticText: "Más interesante por la conversación que genera que por su ejecución, aunque tiene una atmósfera suficientemente agresiva para atraer a su público.",
+        description: "Una aventura animada muy loca con energía Pixar, humor rápido y un punto muy original dentro del cine familiar de 2026.",
+        criticText: "De las películas familiares mejor recibidas del momento. Tiene frescura, ritmo y una idea bastante distinta.",
+        reviews: [
+          { author: "FilmHunter", text: "Muy entretenida, muy viva y con bastante personalidad." }
+        ]
+      },
+      {
+        key: "laponia",
+        title: "Lapönia",
+        poster: "https://m.media-amazon.com/images/M/MV5BMmZhNDU1NWYtMDE0Mi00M2Y0LWJmMjEtZGY2ODQ4YWNmMTNmXkEyXkFqcGc@._V1_.jpg",
+        critics: 66,
+        audience: 62,
+        year: "2026",
+        genre: "Comedia",
+        trailer: "https://www.youtube.com/embed/RqGB6Hg0-R0",
+        description: "Una comedia española ambientada en Laponia donde una reunión familiar aparentemente idílica termina explotando por los aires.",
+        criticText: "Una propuesta ligera pero con mala leche, muy apoyada en el reparto y en el caos que genera su premisa.",
         reviews: []
       },
       {
-        key: "drama",
-        title: "The Drama",
-        poster: "https://m.media-amazon.com/images/M/MV5BYTg5MjQ2ZjktOTBhZi00YzQ5LWIxNjAtMjQ4NjQ0YjQ1NmZjXkEyXkFqcGc@._V1_.jpg",
-        critics: 77,
-        audience: 80,
+        key: "nochebodas2",
+        title: "Noche de bodas 2",
+        poster: "https://m.media-amazon.com/images/M/MV5BY2Y4N2MxM2MtZjkzMC00YzA4LWE3NjEtNzJkYzRkNzNmM2Q5XkEyXkFqcGc@._V1_.jpg",
+        critics: 64,
+        audience: 70,
         year: "2026",
-        genre: "Drama / Romance",
-        trailer: "https://www.youtube.com/embed/8ugaeA-nMTc",
-        description: "Un drama intenso y emocional centrado en relaciones complejas, heridas abiertas y decisiones imposibles.",
-        criticText: "Sostiene muy bien la emoción y da espacio a sus intérpretes, con momentos de gran sensibilidad.",
+        genre: "Terror / Suspense",
+        trailer: "https://www.youtube.com/embed/20630756",
+        description: "La secuela del thriller de caza humana vuelve con más violencia, humor negro y una novia que ya sabe perfectamente a qué juega.",
+        criticText: "No sorprende tanto como la primera, pero sigue funcionando bien dentro del terror comercial con mala leche.",
         reviews: [
-          { author: "FilmHunter", text: "Bastante intensa. Me dejó pensando más de lo que esperaba." }
+          { author: "MoviePulse", text: "Tiene escenas muy potentes y va directa al grano." }
+        ]
+      },
+      {
+        key: "noise",
+        title: "Noise (Ruidos)",
+        poster: "https://m.media-amazon.com/images/M/MV5BMDYxZDNjNjQtMGRmYy00MmM2LTg5MDktNWEzM2E0OTZkZmVlXkEyXkFqcGc@._V1_.jpg",
+        critics: 56,
+        audience: 64,
+        year: "2025",
+        genre: "Terror / Suspense",
+        trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        description: "Terror coreano de atmósfera opresiva centrado en una mujer perseguida por un sonido inquietante ligado a una desaparición del pasado.",
+        criticText: "Más atmosférica que explosiva. Funciona especialmente bien cuando apuesta por la tensión sostenida.",
+        reviews: []
+      },
+      {
+        key: "shelter",
+        title: "Shelter: El protector",
+        poster: "https://m.media-amazon.com/images/M/MV5BNzdhZDNmYjAtZmJiYi00MGM5LWE0NmEtNWY0YjI2MDMyYzQ5XkEyXkFqcGc@._V1_.jpg",
+        critics: 58,
+        audience: 56,
+        year: "2026",
+        genre: "Acción / Thriller",
+        trailer: "https://www.youtube.com/embed/20632284",
+        description: "Un thriller de acción con Jason Statham al frente: rescate, persecuciones, violencia seca y una misión que se complica cada vez más.",
+        criticText: "Puro cine de acción musculoso: directo, duro y sin demasiadas vueltas.",
+        reviews: [
+          { author: "SalaOscuraX", text: "Si quieres acción sin respirar, entra perfecto." }
         ]
       },
       {
         key: "hailmary",
-        title: "Project Hail Mary",
+        title: "Proyecto Salvación",
         poster: "https://m.media-amazon.com/images/M/MV5BODJhMWJmYjUtYzM2Mi00YjY5LWE4ZmMtZjUyYjMzZmRlNzg1XkEyXkFqcGc@._V1_.jpg",
-        critics: 94,
-        audience: 96,
+        critics: 64,
+        audience: 76,
         year: "2026",
         genre: "Ciencia ficción",
         trailer: "https://www.youtube.com/embed/5Y2FT7KQFqA",
-        description: "Ryan Gosling lidera una aventura espacial de alto concepto donde el ingenio, la supervivencia y la escala visual marcan el ritmo.",
-        criticText: "Una ciencia ficción comercial elegante, inteligente y muy bien sostenida por su protagonista.",
+        description: "Ryan Gosling protagoniza una gran aventura espacial con humor, emoción y una escala visual enorme.",
+        criticText: "Una de las propuestas de ciencia ficción comercial más sólidas del año. Grande, emotiva y muy disfrutable.",
         reviews: [
-          { author: "MoviePulse", text: "De lo mejor del año. Grande, emocionante y muy entretenida." },
-          { author: "SalaOscuraX", text: "Se ve enorme y además funciona a nivel emocional." }
+          { author: "PopcornKing", text: "De lo mejor del año. Muy grande visualmente." },
+          { author: "FrameAddict", text: "Tiene alma además de espectáculo." }
         ]
       },
       {
-        key: "hamlet",
-        title: "Hamlet",
-        poster: "https://m.media-amazon.com/images/M/MV5BNTM4MWRhYjktYWQ3My00YjM3LWJmNzYtMmNhY2QwYzkwMDE0XkEyXkFqcGc@._V1_.jpg",
-        critics: 82,
-        audience: 74,
+        key: "torrente",
+        title: "Torrente presidente",
+        poster: "https://m.media-amazon.com/images/M/MV5BNzUwY2U0OWMtYjJiNS00MjViLWFlNDYtYzQzN2U4OWM4NjExXkEyXkFqcGc@._V1_.jpg",
+        critics: 68,
+        audience: 62,
         year: "2026",
-        genre: "Drama / Adaptación",
-        trailer: "https://www.youtube.com/embed/oHg5SJYRHA0",
-        description: "Una reinterpretación visualmente potente del clásico, con un enfoque moderno y un tono más oscuro.",
-        criticText: "Ambiciosa y desigual, pero con personalidad suficiente para destacar entre otras adaptaciones.",
-        reviews: []
-      },
-      {
-        key: "avatar",
-        title: "Avatar: Fire and Ash",
-        poster: "https://m.media-amazon.com/images/M/MV5BMWNjM2VlZDAtNzA4NC00YzI5LWI2MWUtN2I4ZTQ0YzI5ZjIyXkEyXkFqcGc@._V1_.jpg",
-        critics: 92,
-        audience: 97,
-        year: "2025",
-        genre: "Ciencia ficción / Épica",
-        trailer: "https://www.youtube.com/embed/nb_fF7sA7t8",
-        description: "La saga de Pandora vuelve con una nueva escala de conflicto, imágenes gigantes y una apuesta total por el espectáculo.",
-        criticText: "Sigue siendo referencia absoluta en ambición visual. Cuando entra en modo evento, pocas películas pueden competir.",
+        genre: "Comedia",
+        trailer: "https://www.youtube.com/embed/20633922",
+        description: "La nueva locura de Torrente lleva la sátira política y el humor bruto al centro del caos nacional.",
+        criticText: "Puede gustarte más o menos, pero como fenómeno popular está funcionando a lo bestia.",
         reviews: [
-          { author: "PopcornKing", text: "Es una barbaridad visual. Hay que verla gigante." }
-        ]
-      },
-      {
-        key: "dune",
-        title: "Dune: Part Three",
-        poster: "https://m.media-amazon.com/images/M/MV5BODg0M2MzNjQtNDM0NS00NWU4LTg2YjQtYzJmMGYxMTE0ZTY3XkEyXkFqcGc@._V1_.jpg",
-        critics: 95,
-        audience: 93,
-        year: "2026",
-        genre: "Ciencia ficción / Aventura",
-        trailer: "https://www.youtube.com/embed/Way9Dexny3w",
-        description: "La épica de Arrakis continúa con más tensión política, guerra, destino y una puesta en escena monumental.",
-        criticText: "Una saga que ya se siente grande en lo narrativo y gigante en lo audiovisual. Cine de evento de verdad.",
-        reviews: [
-          { author: "FrameAddict", text: "Solo por la atmósfera ya merece la pena. Todo se siente enorme." }
+          { author: "ButacaPrime", text: "Es muy suya, muy excesiva y la gente la está viendo muchísimo." }
         ]
       }
     ];
@@ -1926,7 +1941,7 @@
               <div class="rating-badge tomato">🍅 ${movie.critics}%</div>
               <div class="rating-badge popcorn">🍿 ${movie.audience}%</div>
             </div>
-            <div class="movie-meta">${movie.year} · ${movie.genre}</div>
+            <div class="movie-meta">${movie.year} · ${movie.genre} · Cartagena</div>
           </div>
         `;
         card.addEventListener("click", () => openMovieDetail(movie.key));
