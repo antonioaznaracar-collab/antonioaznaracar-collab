@@ -10,19 +10,18 @@
 
   <style>
     :root {
-      --bg: #07080b;
-      --bg-2: #0f1117;
-      --card: rgba(255, 255, 255, 0.06);
-      --card-2: rgba(255, 255, 255, 0.1);
-      --line: rgba(255, 255, 255, 0.08);
+      --bg: #050608;
+      --bg-2: #0d1016;
       --text: #f5f7fb;
       --muted: rgba(245, 247, 251, 0.66);
+      --line: rgba(255, 255, 255, 0.08);
+      --card: rgba(255, 255, 255, 0.05);
       --accent: #ff3040;
       --accent-2: #ff7a18;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
       --radius-xl: 30px;
       --radius-lg: 24px;
       --radius-md: 18px;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
       --safe-top: env(safe-area-inset-top);
       --safe-bottom: env(safe-area-inset-bottom);
     }
@@ -37,9 +36,9 @@
       margin: 0;
       min-height: 100%;
       background:
-        radial-gradient(circle at top left, rgba(255, 48, 64, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(255, 122, 24, 0.16), transparent 30%),
-        linear-gradient(180deg, #090a0d 0%, #06070a 45%, #0c1016 100%);
+        radial-gradient(circle at top left, rgba(255, 48, 64, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 122, 24, 0.10), transparent 32%),
+        linear-gradient(180deg, #07080b 0%, #050608 48%, #0a0f16 100%);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overflow: hidden;
@@ -57,10 +56,10 @@
       max-width: 430px;
       min-height: 100dvh;
       overflow: hidden;
+      isolation: isolate;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
         transparent;
-      isolation: isolate;
     }
 
     .noise,
@@ -87,13 +86,13 @@
       position: absolute;
       border-radius: 999px;
       filter: blur(60px);
-      opacity: 0.5;
+      opacity: 0.45;
     }
 
     .glow::before {
       width: 180px;
       height: 180px;
-      background: rgba(255, 48, 64, 0.22);
+      background: rgba(255, 48, 64, 0.20);
       top: -20px;
       left: -40px;
     }
@@ -101,7 +100,7 @@
     .glow::after {
       width: 220px;
       height: 220px;
-      background: rgba(255, 122, 24, 0.14);
+      background: rgba(255, 122, 24, 0.12);
       right: -60px;
       top: 140px;
     }
@@ -116,10 +115,7 @@
       background:
         radial-gradient(circle at 50% 35%, rgba(255, 48, 64, 0.18), transparent 26%),
         linear-gradient(180deg, #040507 0%, #05060a 45%, #090d14 100%);
-      transition:
-        opacity 0.9s ease,
-        transform 1s ease,
-        visibility 1s ease;
+      transition: opacity 0.9s ease, transform 1s ease, visibility 1s ease;
     }
 
     .intro-screen.hidden {
@@ -277,225 +273,128 @@
       -webkit-backdrop-filter: blur(16px);
     }
 
-    .hero-news {
+    .news-lobby {
       position: relative;
+      height: 320px;
       border-radius: var(--radius-xl);
       overflow: hidden;
-      min-height: 228px;
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: var(--shadow);
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.04);
     }
 
-    .hero-slide {
-      position: relative;
-      min-height: 228px;
-      display: flex;
-      align-items: flex-end;
-      padding: 22px;
+    .news-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.03);
+      transition: opacity 0.65s ease, transform 1.2s ease;
       background-size: cover;
       background-position: center;
-      cursor: pointer;
-      transition: transform 0.45s ease;
     }
 
-    .hero-slide:active {
-      transform: scale(0.99);
+    .news-slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
     }
 
-    .hero-slide::before {
+    .news-slide::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.82) 100%);
-      z-index: 1;
+        linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.18) 28%, rgba(0,0,0,0.85) 100%);
     }
 
-    .hero-news-topfade {
+    .news-top {
       position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255,48,64,0.18), transparent 24%),
-        radial-gradient(circle at 100% 20%, rgba(255,122,24,0.10), transparent 24%);
-      z-index: 2;
-    }
-
-    .hero-content {
-      position: relative;
+      top: 16px;
+      left: 16px;
+      right: 16px;
       z-index: 3;
-      width: 100%;
-    }
-
-    .hero-meta-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
     }
 
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 14px;
+    .news-chip,
+    .news-counter {
+      padding: 9px 12px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.08);
       font-size: 12px;
-      color: #fff;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      max-width: fit-content;
-    }
-
-    .hero-stat {
-      font-size: 12px;
-      color: rgba(255,255,255,0.88);
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      white-space: nowrap;
-    }
-
-    .hero-title {
-      margin: 0 0 10px;
-      font-size: 18px;
-      line-height: 1.1;
-      letter-spacing: -0.04em;
-      font-weight: 800;
-      max-width: 92%;
-      text-shadow: 0 8px 24px rgba(0,0,0,0.55);
-    }
-
-    .hero-summary {
-      margin: 0;
-      color: rgba(255,255,255,0.84);
-      font-size: 14px;
-      line-height: 1.55;
-      max-width: 92%;
-    }
-
-    .hero-footer {
-      margin-top: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .hero-cta {
-      font-size: 13px;
-      color: #fff;
       font-weight: 700;
-      letter-spacing: 0.01em;
-    }
-
-    .hero-dots {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .hero-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.36);
-      transition: all 0.25s ease;
-    }
-
-    .hero-dot.active {
-      width: 24px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 12px rgba(255, 48, 64, 0.5);
-    }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-top: 2px;
-    }
-
-    .section-head h3 {
-      margin: 0;
-      font-size: 20px;
-      letter-spacing: -0.03em;
-    }
-
-    .section-head span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .mini-news-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .mini-news-card {
-      position: relative;
-      border-radius: 22px;
-      overflow: hidden;
-      min-height: 150px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      box-shadow: var(--shadow);
-      cursor: pointer;
-    }
-
-    .mini-news-bg {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      filter: saturate(1.02);
-      transform: scale(1.02);
-    }
-
-    .mini-news-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.72));
-    }
-
-    .mini-news-content {
-      position: relative;
-      z-index: 2;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 8px;
-      padding: 14px;
-    }
-
-    .mini-news-label {
-      font-size: 11px;
-      font-weight: 700;
-      width: fit-content;
-      padding: 7px 10px;
-      border-radius: 999px;
+      color: #fff;
       background: rgba(255,255,255,0.10);
       border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
-    .mini-news-title {
+    .news-content {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      z-index: 3;
+    }
+
+    .news-title {
       margin: 0;
-      font-size: 14px;
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -0.03em;
+      font-size: 31px;
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+      text-shadow: 0 8px 24px rgba(0,0,0,0.60);
+      max-width: 92%;
+    }
+
+    .news-progress {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .news-progress-bar {
+      position: relative;
+      height: 4px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.20);
+    }
+
+    .news-progress-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .news-progress-bar.active .news-progress-fill {
+      animation: fillBar 4.8s linear forwards;
+    }
+
+    .news-nav {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .news-hit {
+      width: 26%;
+      height: 100%;
+      pointer-events: auto;
+    }
+
+    .news-hit.center {
+      width: 48%;
     }
 
     .menu-grid {
@@ -519,7 +418,7 @@
       align-items: stretch;
       text-decoration: none;
       color: inherit;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      transition: transform 0.2s ease;
     }
 
     .menu-card:active {
@@ -562,8 +461,19 @@
       place-items: center;
       font-size: 24px;
       flex-shrink: 0;
-      background: linear-gradient(135deg, rgba(255,48,64,0.18), rgba(255,122,24,0.14));
       border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .menu-card.calendar .menu-icon {
+      background: linear-gradient(135deg, rgba(255,48,64,0.22), rgba(255,122,24,0.12));
+    }
+
+    .menu-card.social .menu-icon {
+      background: linear-gradient(135deg, rgba(80,120,255,0.2), rgba(138,92,246,0.16));
+    }
+
+    .menu-card.search .menu-icon {
+      background: linear-gradient(135deg, rgba(0,200,180,0.2), rgba(0,140,255,0.16));
     }
 
     .menu-copy {
@@ -594,18 +504,6 @@
       color: rgba(255,255,255,0.85);
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .menu-card.calendar .menu-icon {
-      background: linear-gradient(135deg, rgba(255,48,64,0.22), rgba(255,122,24,0.12));
-    }
-
-    .menu-card.social .menu-icon {
-      background: linear-gradient(135deg, rgba(80,120,255,0.2), rgba(138,92,246,0.16));
-    }
-
-    .menu-card.search .menu-icon {
-      background: linear-gradient(135deg, rgba(0,200,180,0.2), rgba(0,140,255,0.16));
     }
 
     .bottom-note {
@@ -648,167 +546,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    .news-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 60;
-      display: none;
-      background: rgba(3, 5, 9, 0.88);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
-    .news-modal.show {
-      display: block;
-    }
-
-    .news-modal-sheet {
-      position: absolute;
-      inset: 0;
-      overflow-y: auto;
-      padding: calc(18px + var(--safe-top)) 18px calc(24px + var(--safe-bottom)) 18px;
-      scrollbar-width: none;
-    }
-
-    .news-modal-sheet::-webkit-scrollbar {
-      display: none;
-    }
-
-    .news-modal-close {
-      position: sticky;
-      top: 0;
-      z-index: 4;
-      margin-left: auto;
-      width: 46px;
-      height: 46px;
-      border: none;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.08);
-      color: white;
-      font-size: 18px;
-      display: grid;
-      place-items: center;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
-    .news-modal-card {
-      margin-top: 16px;
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      box-shadow: var(--shadow);
-    }
-
-    .news-modal-image {
-      position: relative;
-      height: 250px;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .news-modal-image::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.55) 100%);
-    }
-
-    .news-modal-meta {
-      position: absolute;
-      left: 16px;
-      right: 16px;
-      bottom: 16px;
-      z-index: 2;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .news-modal-badge,
-    .news-modal-money {
-      padding: 9px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: white;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    .news-modal-body {
-      padding: 20px;
-    }
-
-    .news-modal-body h2 {
-      margin: 0 0 10px;
-      font-size: 28px;
-      line-height: 1.02;
-      letter-spacing: -0.05em;
-    }
-
-    .news-modal-body p {
-      margin: 0 0 18px;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 15px;
-    }
-
-    .news-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .news-stat-box {
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .news-stat-box small {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .news-stat-box strong {
-      font-size: 16px;
-      letter-spacing: -0.02em;
-    }
-
-    .news-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .news-btn {
-      flex: 1;
-      border: none;
-      min-height: 52px;
-      border-radius: 18px;
-      font-weight: 800;
-      font-size: 14px;
-      color: white;
-    }
-
-    .news-btn.primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
-    }
-
-    .news-btn.secondary {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
     @keyframes introReveal {
       to {
         transform: translateY(0);
@@ -823,6 +560,11 @@
       100% {
         transform: translateX(290%);
       }
+    }
+
+    @keyframes fillBar {
+      from { width: 0%; }
+      to { width: 100%; }
     }
 
     @media (min-width: 431px) {
@@ -853,7 +595,7 @@
 
         <h1 class="brand-title"><span>CineMach</span></h1>
         <p class="brand-subtitle">
-          Estrenos, noticias, maratones, planes con amigos y todo lo que quieres ver en un solo lugar.
+          Estrenos, planes, maratones y cine en una sola experiencia.
         </p>
 
         <div class="loading-wrap">
@@ -871,37 +613,15 @@
         <div class="topbar-badge">🎬</div>
       </header>
 
-      <section class="hero-news" id="heroNewsCard">
-        <div class="hero-news-topfade"></div>
-        <div class="hero-slide" id="heroSlide">
-          <div class="hero-content">
-            <div class="hero-meta-row">
-              <div class="hero-tag" id="heroCategory">🍿 Noticias premium</div>
-              <div class="hero-stat" id="heroStat">+0 M$</div>
-            </div>
+      <section class="news-lobby" id="newsLobby">
+        <div id="newsSlides"></div>
 
-            <h2 class="hero-title" id="heroTitle">Cargando noticia destacada...</h2>
-            <p class="hero-summary" id="heroSummary">Preparando el bloque principal de CineMach.</p>
-
-            <div class="hero-footer">
-              <div class="hero-cta">Toca para ver la noticia</div>
-              <div class="hero-dots" id="heroDots"></div>
-            </div>
-          </div>
+        <div class="news-nav">
+          <div class="news-hit" id="prevHit" aria-label="Anterior"></div>
+          <div class="news-hit center" id="centerHit" aria-label="Noticia"></div>
+          <div class="news-hit" id="nextHit" aria-label="Siguiente"></div>
         </div>
       </section>
-
-      <div class="section-head">
-        <h3>Radar de cine</h3>
-        <span>Último movimiento</span>
-      </div>
-
-      <section class="mini-news-row" id="miniNewsRow"></section>
-
-      <div class="section-head">
-        <h3>Menú principal</h3>
-        <span>3 accesos</span>
-      </div>
 
       <section class="menu-grid">
         <a href="#" class="menu-card calendar" data-section="Calendario">
@@ -945,226 +665,107 @@
       </section>
 
       <div class="bottom-note">
-        Base lista para seguir con la siguiente fase: pantalla de noticia completa, ajustes y conexión con datos reales.
+        Fase 3 cerrada: lobby de noticias visual, limpio y listo para crecer.
       </div>
     </main>
 
     <div class="toast" id="toast"></div>
-
-    <div class="news-modal" id="newsModal">
-      <div class="news-modal-sheet">
-        <button class="news-modal-close" id="closeNewsModal">✕</button>
-
-        <div class="news-modal-card">
-          <div class="news-modal-image" id="modalImage">
-            <div class="news-modal-meta">
-              <div class="news-modal-badge" id="modalCategory">Estreno</div>
-              <div class="news-modal-money" id="modalMoney">+0 M$</div>
-            </div>
-          </div>
-
-          <div class="news-modal-body">
-            <h2 id="modalTitle">Título noticia</h2>
-            <p id="modalDescription">Descripción noticia</p>
-
-            <div class="news-stats">
-              <div class="news-stat-box">
-                <small>Recaudación</small>
-                <strong id="modalBoxOffice">--</strong>
-              </div>
-              <div class="news-stat-box">
-                <small>Estado</small>
-                <strong id="modalStatus">--</strong>
-              </div>
-              <div class="news-stat-box">
-                <small>Impacto</small>
-                <strong id="modalImpact">--</strong>
-              </div>
-              <div class="news-stat-box">
-                <small>En CineMach</small>
-                <strong id="modalActionHint">--</strong>
-              </div>
-            </div>
-
-            <div class="news-actions">
-              <button class="news-btn primary" id="saveNewsBtn">Guardar</button>
-              <button class="news-btn secondary" id="shareNewsBtn">Compartir</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script>
-    const newsData = [
+    const newsItems = [
       {
-        category: "🔥 Estreno fuerte",
-        stat: "842 M$",
-        title: "La nueva gran superproducción del año arrasa en taquilla y dispara el interés por su universo",
-        summary: "Una película reciente rompe previsiones, domina la conversación y reabre el debate sobre las grandes sagas.",
-        description: "El estreno ha superado las expectativas del mercado en su primer tramo en salas. La película ha generado conversación por su recaudación, por la respuesta del público y por el potencial que abre para secuelas, spin-offs y futuros maratones dentro de la app.",
-        image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1200&q=80",
-        money: "842 M$",
-        boxOffice: "842 millones",
-        status: "En cartel",
-        impact: "Muy alto",
-        actionHint: "Añadir a plan"
+        chip: "Última hora",
+        title: "La película más esperada del año rompe internet antes de su estreno",
+        image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1400&q=80"
       },
       {
-        category: "🎟️ Taquilla",
-        stat: "215 M$",
-        title: "El thriller sorpresa del mes multiplica ingresos y se convierte en el fenómeno inesperado del cine",
-        summary: "Una apuesta más pequeña escala puestos y se mete entre las películas más comentadas de la semana.",
-        description: "La sorpresa del mes no venía como favorita, pero su crecimiento en taquilla ha sido rapidísimo. Este tipo de noticias encaja perfecto en CineMach porque ayuda a decidir qué ver antes de que pase el momento fuerte de conversación social.",
-        image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80",
-        money: "215 M$",
-        boxOffice: "215 millones",
-        status: "Subiendo",
-        impact: "Alto",
-        actionHint: "Seguir noticia"
+        chip: "Taquilla",
+        title: "Un estreno sorpresa arrasa en cines y deja a todos hablando de su final",
+        image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=80"
       },
       {
-        category: "🍿 Industria",
-        stat: "Top 1",
-        title: "Los grandes estudios vuelven a apostar por eventos en sala y el público responde mejor de lo esperado",
-        summary: "El cine de evento recupera fuerza y vuelve a hacer que ir al cine sea plan social de primera opción.",
-        description: "La industria está viendo señales sólidas en películas concebidas como gran experiencia de sala. Para una app como CineMach, esto es clave: cuando una película se convierte en acontecimiento, la gente quiere organizar planes, comparar opiniones y montar quedadas.",
-        image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=80",
-        money: "Top tendencia",
-        boxOffice: "Mercado fuerte",
-        status: "En alza",
-        impact: "Muy alto",
-        actionHint: "Ver detalles"
+        chip: "Tendencia",
+        title: "La saga que parecía acabada vuelve más fuerte y desata la locura entre fans",
+        image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1400&q=80"
       },
       {
-        category: "⭐ Tendencia",
-        stat: "92%",
-        title: "Una cinta reciente conquista crítica y público y ya suena como candidata a liderar rankings del año",
-        summary: "Su recepción ha sido tan buena que empieza a colarse en listas personales y debates entre amigos.",
-        description: "Cuando una película conecta tanto con crítica como con público, se convierte en el tipo de contenido perfecto para CineMach: genera rankings, recomendaciones, discusiones y ganas de verla en grupo o incluirla en maratones temáticos.",
-        image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80",
-        money: "92% aprobación",
-        boxOffice: "Crítica y público",
-        status: "Muy recomendada",
-        impact: "Altísimo",
-        actionHint: "Rankear luego"
+        chip: "Cine global",
+        title: "Hollywood cambia el tablero con una apuesta gigante que nadie esperaba",
+        image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1400&q=80"
       }
     ];
 
     const introScreen = document.getElementById("introScreen");
     const mainScreen = document.getElementById("mainScreen");
+    const newsSlides = document.getElementById("newsSlides");
     const toast = document.getElementById("toast");
     const menuCards = document.querySelectorAll(".menu-card");
+    const prevHit = document.getElementById("prevHit");
+    const nextHit = document.getElementById("nextHit");
+    const centerHit = document.getElementById("centerHit");
 
-    const heroSlide = document.getElementById("heroSlide");
-    const heroCategory = document.getElementById("heroCategory");
-    const heroStat = document.getElementById("heroStat");
-    const heroTitle = document.getElementById("heroTitle");
-    const heroSummary = document.getElementById("heroSummary");
-    const heroDots = document.getElementById("heroDots");
+    let currentIndex = 0;
+    let autoTimer = null;
+    const slideDuration = 4800;
 
-    const miniNewsRow = document.getElementById("miniNewsRow");
+    function buildSlides() {
+      newsSlides.innerHTML = "";
 
-    const newsModal = document.getElementById("newsModal");
-    const closeNewsModal = document.getElementById("closeNewsModal");
-    const modalImage = document.getElementById("modalImage");
-    const modalCategory = document.getElementById("modalCategory");
-    const modalMoney = document.getElementById("modalMoney");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalDescription = document.getElementById("modalDescription");
-    const modalBoxOffice = document.getElementById("modalBoxOffice");
-    const modalStatus = document.getElementById("modalStatus");
-    const modalImpact = document.getElementById("modalImpact");
-    const modalActionHint = document.getElementById("modalActionHint");
-    const saveNewsBtn = document.getElementById("saveNewsBtn");
-    const shareNewsBtn = document.getElementById("shareNewsBtn");
+      newsItems.forEach((item, index) => {
+        const slide = document.createElement("article");
+        slide.className = "news-slide";
+        slide.style.backgroundImage = `url('${item.image}')`;
 
-    let currentNewsIndex = 0;
-    let newsInterval = null;
+        slide.innerHTML = `
+          <div class="news-top">
+            <div class="news-chip">${item.chip}</div>
+            <div class="news-counter">${String(index + 1).padStart(2, "0")} / ${String(newsItems.length).padStart(2, "0")}</div>
+          </div>
 
-    function renderDots() {
-      heroDots.innerHTML = "";
-      newsData.forEach((_, index) => {
-        const dot = document.createElement("div");
-        dot.className = "hero-dot" + (index === currentNewsIndex ? " active" : "");
-        dot.addEventListener("click", (e) => {
-          e.stopPropagation();
-          currentNewsIndex = index;
-          renderHeroNews();
-          restartCarousel();
-        });
-        heroDots.appendChild(dot);
-      });
-    }
+          <div class="news-content">
+            <h2 class="news-title">${item.title}</h2>
 
-    function renderHeroNews() {
-      const item = newsData[currentNewsIndex];
-
-      heroSlide.style.backgroundImage = `url('${item.image}')`;
-      heroCategory.textContent = item.category;
-      heroStat.textContent = item.stat;
-      heroTitle.textContent = item.title;
-      heroSummary.textContent = item.summary;
-
-      renderDots();
-    }
-
-    function nextHeroNews() {
-      currentNewsIndex = (currentNewsIndex + 1) % newsData.length;
-      renderHeroNews();
-    }
-
-    function startCarousel() {
-      newsInterval = setInterval(nextHeroNews, 4200);
-    }
-
-    function restartCarousel() {
-      clearInterval(newsInterval);
-      startCarousel();
-    }
-
-    function openNewsModal(index) {
-      const item = newsData[index];
-
-      modalImage.style.backgroundImage = `url('${item.image}')`;
-      modalCategory.textContent = item.category;
-      modalMoney.textContent = item.money;
-      modalTitle.textContent = item.title;
-      modalDescription.textContent = item.description;
-      modalBoxOffice.textContent = item.boxOffice;
-      modalStatus.textContent = item.status;
-      modalImpact.textContent = item.impact;
-      modalActionHint.textContent = item.actionHint;
-
-      newsModal.classList.add("show");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeModal() {
-      newsModal.classList.remove("show");
-      document.body.style.overflow = "";
-    }
-
-    function renderMiniNews() {
-      miniNewsRow.innerHTML = "";
-
-      newsData.slice(1, 3).forEach((item, index) => {
-        const card = document.createElement("article");
-        card.className = "mini-news-card";
-        card.innerHTML = `
-          <div class="mini-news-bg" style="background-image:url('${item.image}')"></div>
-          <div class="mini-news-overlay"></div>
-          <div class="mini-news-content">
-            <div class="mini-news-label">${item.category}</div>
-            <h4 class="mini-news-title">${item.title}</h4>
+            <div class="news-progress">
+              ${newsItems.map((_, barIndex) => `
+                <div class="news-progress-bar ${barIndex === index ? "active" : ""}">
+                  <div class="news-progress-fill" style="width:${barIndex < index ? "100%" : "0%"}"></div>
+                </div>
+              `).join("")}
+            </div>
           </div>
         `;
-        card.addEventListener("click", () => {
-          openNewsModal(index + 1);
-        });
-        miniNewsRow.appendChild(card);
+
+        if (index === currentIndex) {
+          slide.classList.add("active");
+        }
+
+        newsSlides.appendChild(slide);
       });
+    }
+
+    function showSlide(index) {
+      currentIndex = (index + newsItems.length) % newsItems.length;
+      buildSlides();
+    }
+
+    function nextSlide() {
+      showSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      showSlide(currentIndex - 1);
+    }
+
+    function startAuto() {
+      clearInterval(autoTimer);
+      autoTimer = setInterval(() => {
+        nextSlide();
+      }, slideDuration);
+    }
+
+    function restartAuto() {
+      startAuto();
     }
 
     function showToast(message) {
@@ -1178,35 +779,27 @@
     }
 
     window.addEventListener("load", () => {
-      renderHeroNews();
-      renderMiniNews();
+      buildSlides();
 
       setTimeout(() => {
         introScreen.classList.add("hidden");
         mainScreen.classList.add("active");
-        startCarousel();
+        startAuto();
       }, 1900);
     });
 
-    heroSlide.addEventListener("click", () => {
-      openNewsModal(currentNewsIndex);
-      restartCarousel();
+    prevHit.addEventListener("click", () => {
+      prevSlide();
+      restartAuto();
     });
 
-    closeNewsModal.addEventListener("click", closeModal);
-
-    newsModal.addEventListener("click", (e) => {
-      if (e.target === newsModal) {
-        closeModal();
-      }
+    nextHit.addEventListener("click", () => {
+      nextSlide();
+      restartAuto();
     });
 
-    saveNewsBtn.addEventListener("click", () => {
-      showToast("Noticia guardada en CineMach");
-    });
-
-    shareNewsBtn.addEventListener("click", () => {
-      showToast("Compartir llegará en la siguiente fase");
+    centerHit.addEventListener("click", () => {
+      showToast("Aquí irá la apertura de la noticia en la Fase 4");
     });
 
     menuCards.forEach((card) => {
@@ -1216,6 +809,29 @@
         showToast("Abrir: " + section);
       });
     });
+
+    let startX = 0;
+    let endX = 0;
+
+    const newsLobby = document.getElementById("newsLobby");
+
+    newsLobby.addEventListener("touchstart", (e) => {
+      startX = e.changedTouches[0].clientX;
+    }, { passive: true });
+
+    newsLobby.addEventListener("touchend", (e) => {
+      endX = e.changedTouches[0].clientX;
+      const diff = endX - startX;
+
+      if (Math.abs(diff) > 45) {
+        if (diff < 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+        restartAuto();
+      }
+    }, { passive: true });
   </script>
 </body>
 </html>
