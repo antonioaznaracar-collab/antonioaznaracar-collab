@@ -16,7 +16,7 @@
       --card-2: rgba(255, 255, 255, 0.1);
       --line: rgba(255, 255, 255, 0.08);
       --text: #f5f7fb;
-      --muted: rgba(245, 247, 251, 0.64);
+      --muted: rgba(245, 247, 251, 0.66);
       --accent: #ff3040;
       --accent-2: #ff7a18;
       --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
@@ -109,7 +109,7 @@
     .intro-screen {
       position: absolute;
       inset: 0;
-      z-index: 20;
+      z-index: 40;
       display: grid;
       place-items: center;
       padding: 24px;
@@ -225,6 +225,12 @@
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .main-screen::-webkit-scrollbar {
+      display: none;
     }
 
     .main-screen.active {
@@ -271,41 +277,69 @@
       -webkit-backdrop-filter: blur(16px);
     }
 
-    .hero {
+    .hero-news {
       position: relative;
       border-radius: var(--radius-xl);
       overflow: hidden;
-      min-height: 230px;
-      padding: 22px;
-      display: flex;
-      align-items: flex-end;
+      min-height: 228px;
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: var(--shadow);
-      background:
-        linear-gradient(180deg, rgba(9, 10, 14, 0.1), rgba(9, 10, 14, 0.65)),
-        url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80") center/cover no-repeat;
+      background: rgba(255,255,255,0.03);
     }
 
-    .hero::after {
+    .hero-slide {
+      position: relative;
+      min-height: 228px;
+      display: flex;
+      align-items: flex-end;
+      padding: 22px;
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+      transition: transform 0.45s ease;
+    }
+
+    .hero-slide:active {
+      transform: scale(0.99);
+    }
+
+    .hero-slide::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.78) 100%);
+        linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.82) 100%);
+      z-index: 1;
+    }
+
+    .hero-news-topfade {
+      position: absolute;
+      inset: 0;
       pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,48,64,0.18), transparent 24%),
+        radial-gradient(circle at 100% 20%, rgba(255,122,24,0.10), transparent 24%);
+      z-index: 2;
     }
 
     .hero-content {
       position: relative;
-      z-index: 2;
-      max-width: 90%;
+      z-index: 3;
+      width: 100%;
+    }
+
+    .hero-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
     .hero-tag {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 12px;
       padding: 9px 14px;
       border-radius: 999px;
       background: rgba(255,255,255,0.1);
@@ -314,20 +348,72 @@
       color: #fff;
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
+      max-width: fit-content;
     }
 
-    .hero h2 {
+    .hero-stat {
+      font-size: 12px;
+      color: rgba(255,255,255,0.88);
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      white-space: nowrap;
+    }
+
+    .hero-title {
       margin: 0 0 10px;
-      font-size: 29px;
-      line-height: 1;
-      letter-spacing: -0.05em;
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      max-width: 92%;
+      text-shadow: 0 8px 24px rgba(0,0,0,0.55);
     }
 
-    .hero p {
+    .hero-summary {
       margin: 0;
-      color: rgba(255,255,255,0.82);
+      color: rgba(255,255,255,0.84);
       font-size: 14px;
       line-height: 1.55;
+      max-width: 92%;
+    }
+
+    .hero-footer {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .hero-cta {
+      font-size: 13px;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .hero-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.36);
+      transition: all 0.25s ease;
+    }
+
+    .hero-dot.active {
+      width: 24px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 12px rgba(255, 48, 64, 0.5);
     }
 
     .section-head {
@@ -347,6 +433,69 @@
     .section-head span {
       color: var(--muted);
       font-size: 13px;
+    }
+
+    .mini-news-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .mini-news-card {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      min-height: 150px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
+    .mini-news-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1.02);
+      transform: scale(1.02);
+    }
+
+    .mini-news-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.72));
+    }
+
+    .mini-news-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .mini-news-label {
+      font-size: 11px;
+      font-weight: 700;
+      width: fit-content;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .mini-news-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
     }
 
     .menu-grid {
@@ -480,7 +629,7 @@
       max-width: 360px;
       padding: 14px 16px;
       border-radius: 18px;
-      background: rgba(10, 12, 18, 0.9);
+      background: rgba(10, 12, 18, 0.92);
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: var(--shadow);
       color: #fff;
@@ -489,7 +638,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease, transform 0.25s ease;
-      z-index: 30;
+      z-index: 50;
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
@@ -497,6 +646,167 @@
     .toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
+    }
+
+    .news-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      background: rgba(3, 5, 9, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .news-modal.show {
+      display: block;
+    }
+
+    .news-modal-sheet {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      padding: calc(18px + var(--safe-top)) 18px calc(24px + var(--safe-bottom)) 18px;
+      scrollbar-width: none;
+    }
+
+    .news-modal-sheet::-webkit-scrollbar {
+      display: none;
+    }
+
+    .news-modal-close {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      margin-left: auto;
+      width: 46px;
+      height: 46px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 18px;
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .news-modal-card {
+      margin-top: 16px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      box-shadow: var(--shadow);
+    }
+
+    .news-modal-image {
+      position: relative;
+      height: 250px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .news-modal-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.55) 100%);
+    }
+
+    .news-modal-meta {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .news-modal-badge,
+    .news-modal-money {
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: white;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .news-modal-body {
+      padding: 20px;
+    }
+
+    .news-modal-body h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+
+    .news-modal-body p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .news-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .news-stat-box {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .news-stat-box small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .news-stat-box strong {
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .news-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .news-btn {
+      flex: 1;
+      border: none;
+      min-height: 52px;
+      border-radius: 18px;
+      font-weight: 800;
+      font-size: 14px;
+      color: white;
+    }
+
+    .news-btn.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
+    }
+
+    .news-btn.secondary {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     @keyframes introReveal {
@@ -534,7 +844,6 @@
     <div class="noise"></div>
     <div class="glow"></div>
 
-    <!-- INTRO -->
     <section class="intro-screen" id="introScreen">
       <div class="intro-center">
         <div class="brand-chip">
@@ -544,7 +853,7 @@
 
         <h1 class="brand-title"><span>CineMach</span></h1>
         <p class="brand-subtitle">
-          Estrenos, maratones, planes con amigos y todo lo que quieres ver en un solo lugar.
+          Estrenos, noticias, maratones, planes con amigos y todo lo que quieres ver en un solo lugar.
         </p>
 
         <div class="loading-wrap">
@@ -553,7 +862,6 @@
       </div>
     </section>
 
-    <!-- HOME / MENÚ -->
     <main class="main-screen" id="mainScreen">
       <header class="topbar">
         <div class="topbar-copy">
@@ -563,15 +871,32 @@
         <div class="topbar-badge">🎬</div>
       </header>
 
-      <section class="hero">
-        <div class="hero-content">
-          <div class="hero-tag">✨ Fase 1 · Intro & menú premium</div>
-          <h2>Cine, amigos y planes</h2>
-          <p>
-            Diseñado para móvil, limpio, potente y listo para crecer con ajustes, calendario y más.
-          </p>
+      <section class="hero-news" id="heroNewsCard">
+        <div class="hero-news-topfade"></div>
+        <div class="hero-slide" id="heroSlide">
+          <div class="hero-content">
+            <div class="hero-meta-row">
+              <div class="hero-tag" id="heroCategory">🍿 Noticias premium</div>
+              <div class="hero-stat" id="heroStat">+0 M$</div>
+            </div>
+
+            <h2 class="hero-title" id="heroTitle">Cargando noticia destacada...</h2>
+            <p class="hero-summary" id="heroSummary">Preparando el bloque principal de CineMach.</p>
+
+            <div class="hero-footer">
+              <div class="hero-cta">Toca para ver la noticia</div>
+              <div class="hero-dots" id="heroDots"></div>
+            </div>
+          </div>
         </div>
       </section>
+
+      <div class="section-head">
+        <h3>Radar de cine</h3>
+        <span>Último movimiento</span>
+      </div>
+
+      <section class="mini-news-row" id="miniNewsRow"></section>
 
       <div class="section-head">
         <h3>Menú principal</h3>
@@ -620,25 +945,227 @@
       </section>
 
       <div class="bottom-note">
-        Base lista para seguir con la Fase 2: ajustes y perfil del usuario.
+        Base lista para seguir con la siguiente fase: pantalla de noticia completa, ajustes y conexión con datos reales.
       </div>
     </main>
 
     <div class="toast" id="toast"></div>
+
+    <div class="news-modal" id="newsModal">
+      <div class="news-modal-sheet">
+        <button class="news-modal-close" id="closeNewsModal">✕</button>
+
+        <div class="news-modal-card">
+          <div class="news-modal-image" id="modalImage">
+            <div class="news-modal-meta">
+              <div class="news-modal-badge" id="modalCategory">Estreno</div>
+              <div class="news-modal-money" id="modalMoney">+0 M$</div>
+            </div>
+          </div>
+
+          <div class="news-modal-body">
+            <h2 id="modalTitle">Título noticia</h2>
+            <p id="modalDescription">Descripción noticia</p>
+
+            <div class="news-stats">
+              <div class="news-stat-box">
+                <small>Recaudación</small>
+                <strong id="modalBoxOffice">--</strong>
+              </div>
+              <div class="news-stat-box">
+                <small>Estado</small>
+                <strong id="modalStatus">--</strong>
+              </div>
+              <div class="news-stat-box">
+                <small>Impacto</small>
+                <strong id="modalImpact">--</strong>
+              </div>
+              <div class="news-stat-box">
+                <small>En CineMach</small>
+                <strong id="modalActionHint">--</strong>
+              </div>
+            </div>
+
+            <div class="news-actions">
+              <button class="news-btn primary" id="saveNewsBtn">Guardar</button>
+              <button class="news-btn secondary" id="shareNewsBtn">Compartir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
+    const newsData = [
+      {
+        category: "🔥 Estreno fuerte",
+        stat: "842 M$",
+        title: "La nueva gran superproducción del año arrasa en taquilla y dispara el interés por su universo",
+        summary: "Una película reciente rompe previsiones, domina la conversación y reabre el debate sobre las grandes sagas.",
+        description: "El estreno ha superado las expectativas del mercado en su primer tramo en salas. La película ha generado conversación por su recaudación, por la respuesta del público y por el potencial que abre para secuelas, spin-offs y futuros maratones dentro de la app.",
+        image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1200&q=80",
+        money: "842 M$",
+        boxOffice: "842 millones",
+        status: "En cartel",
+        impact: "Muy alto",
+        actionHint: "Añadir a plan"
+      },
+      {
+        category: "🎟️ Taquilla",
+        stat: "215 M$",
+        title: "El thriller sorpresa del mes multiplica ingresos y se convierte en el fenómeno inesperado del cine",
+        summary: "Una apuesta más pequeña escala puestos y se mete entre las películas más comentadas de la semana.",
+        description: "La sorpresa del mes no venía como favorita, pero su crecimiento en taquilla ha sido rapidísimo. Este tipo de noticias encaja perfecto en CineMach porque ayuda a decidir qué ver antes de que pase el momento fuerte de conversación social.",
+        image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80",
+        money: "215 M$",
+        boxOffice: "215 millones",
+        status: "Subiendo",
+        impact: "Alto",
+        actionHint: "Seguir noticia"
+      },
+      {
+        category: "🍿 Industria",
+        stat: "Top 1",
+        title: "Los grandes estudios vuelven a apostar por eventos en sala y el público responde mejor de lo esperado",
+        summary: "El cine de evento recupera fuerza y vuelve a hacer que ir al cine sea plan social de primera opción.",
+        description: "La industria está viendo señales sólidas en películas concebidas como gran experiencia de sala. Para una app como CineMach, esto es clave: cuando una película se convierte en acontecimiento, la gente quiere organizar planes, comparar opiniones y montar quedadas.",
+        image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=80",
+        money: "Top tendencia",
+        boxOffice: "Mercado fuerte",
+        status: "En alza",
+        impact: "Muy alto",
+        actionHint: "Ver detalles"
+      },
+      {
+        category: "⭐ Tendencia",
+        stat: "92%",
+        title: "Una cinta reciente conquista crítica y público y ya suena como candidata a liderar rankings del año",
+        summary: "Su recepción ha sido tan buena que empieza a colarse en listas personales y debates entre amigos.",
+        description: "Cuando una película conecta tanto con crítica como con público, se convierte en el tipo de contenido perfecto para CineMach: genera rankings, recomendaciones, discusiones y ganas de verla en grupo o incluirla en maratones temáticos.",
+        image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80",
+        money: "92% aprobación",
+        boxOffice: "Crítica y público",
+        status: "Muy recomendada",
+        impact: "Altísimo",
+        actionHint: "Rankear luego"
+      }
+    ];
+
     const introScreen = document.getElementById("introScreen");
     const mainScreen = document.getElementById("mainScreen");
     const toast = document.getElementById("toast");
     const menuCards = document.querySelectorAll(".menu-card");
 
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        introScreen.classList.add("hidden");
-        mainScreen.classList.add("active");
-      }, 1900);
-    });
+    const heroSlide = document.getElementById("heroSlide");
+    const heroCategory = document.getElementById("heroCategory");
+    const heroStat = document.getElementById("heroStat");
+    const heroTitle = document.getElementById("heroTitle");
+    const heroSummary = document.getElementById("heroSummary");
+    const heroDots = document.getElementById("heroDots");
+
+    const miniNewsRow = document.getElementById("miniNewsRow");
+
+    const newsModal = document.getElementById("newsModal");
+    const closeNewsModal = document.getElementById("closeNewsModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalCategory = document.getElementById("modalCategory");
+    const modalMoney = document.getElementById("modalMoney");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDescription = document.getElementById("modalDescription");
+    const modalBoxOffice = document.getElementById("modalBoxOffice");
+    const modalStatus = document.getElementById("modalStatus");
+    const modalImpact = document.getElementById("modalImpact");
+    const modalActionHint = document.getElementById("modalActionHint");
+    const saveNewsBtn = document.getElementById("saveNewsBtn");
+    const shareNewsBtn = document.getElementById("shareNewsBtn");
+
+    let currentNewsIndex = 0;
+    let newsInterval = null;
+
+    function renderDots() {
+      heroDots.innerHTML = "";
+      newsData.forEach((_, index) => {
+        const dot = document.createElement("div");
+        dot.className = "hero-dot" + (index === currentNewsIndex ? " active" : "");
+        dot.addEventListener("click", (e) => {
+          e.stopPropagation();
+          currentNewsIndex = index;
+          renderHeroNews();
+          restartCarousel();
+        });
+        heroDots.appendChild(dot);
+      });
+    }
+
+    function renderHeroNews() {
+      const item = newsData[currentNewsIndex];
+
+      heroSlide.style.backgroundImage = `url('${item.image}')`;
+      heroCategory.textContent = item.category;
+      heroStat.textContent = item.stat;
+      heroTitle.textContent = item.title;
+      heroSummary.textContent = item.summary;
+
+      renderDots();
+    }
+
+    function nextHeroNews() {
+      currentNewsIndex = (currentNewsIndex + 1) % newsData.length;
+      renderHeroNews();
+    }
+
+    function startCarousel() {
+      newsInterval = setInterval(nextHeroNews, 4200);
+    }
+
+    function restartCarousel() {
+      clearInterval(newsInterval);
+      startCarousel();
+    }
+
+    function openNewsModal(index) {
+      const item = newsData[index];
+
+      modalImage.style.backgroundImage = `url('${item.image}')`;
+      modalCategory.textContent = item.category;
+      modalMoney.textContent = item.money;
+      modalTitle.textContent = item.title;
+      modalDescription.textContent = item.description;
+      modalBoxOffice.textContent = item.boxOffice;
+      modalStatus.textContent = item.status;
+      modalImpact.textContent = item.impact;
+      modalActionHint.textContent = item.actionHint;
+
+      newsModal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      newsModal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    function renderMiniNews() {
+      miniNewsRow.innerHTML = "";
+
+      newsData.slice(1, 3).forEach((item, index) => {
+        const card = document.createElement("article");
+        card.className = "mini-news-card";
+        card.innerHTML = `
+          <div class="mini-news-bg" style="background-image:url('${item.image}')"></div>
+          <div class="mini-news-overlay"></div>
+          <div class="mini-news-content">
+            <div class="mini-news-label">${item.category}</div>
+            <h4 class="mini-news-title">${item.title}</h4>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          openNewsModal(index + 1);
+        });
+        miniNewsRow.appendChild(card);
+      });
+    }
 
     function showToast(message) {
       toast.textContent = message;
@@ -649,6 +1176,38 @@
         toast.classList.remove("show");
       }, 1800);
     }
+
+    window.addEventListener("load", () => {
+      renderHeroNews();
+      renderMiniNews();
+
+      setTimeout(() => {
+        introScreen.classList.add("hidden");
+        mainScreen.classList.add("active");
+        startCarousel();
+      }, 1900);
+    });
+
+    heroSlide.addEventListener("click", () => {
+      openNewsModal(currentNewsIndex);
+      restartCarousel();
+    });
+
+    closeNewsModal.addEventListener("click", closeModal);
+
+    newsModal.addEventListener("click", (e) => {
+      if (e.target === newsModal) {
+        closeModal();
+      }
+    });
+
+    saveNewsBtn.addEventListener("click", () => {
+      showToast("Noticia guardada en CineMach");
+    });
+
+    shareNewsBtn.addEventListener("click", () => {
+      showToast("Compartir llegará en la siguiente fase");
+    });
 
     menuCards.forEach((card) => {
       card.addEventListener("click", (e) => {
