@@ -225,7 +225,8 @@
       scrollbar-width: none;
     }
 
-    .main-screen::-webkit-scrollbar {
+    .main-screen::-webkit-scrollbar,
+    .settings-screen::-webkit-scrollbar {
       display: none;
     }
 
@@ -258,19 +259,44 @@
       font-weight: 800;
     }
 
-    .topbar-badge {
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       flex-shrink: 0;
-      min-width: 54px;
+    }
+
+    .profile-mini {
+      width: 54px;
       height: 54px;
       border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+    }
+
+    .profile-mini img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .settings-launch {
+      min-width: 54px;
+      height: 54px;
       border: 1px solid rgba(255,255,255,0.09);
       background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
       display: grid;
       place-items: center;
       font-size: 24px;
+      color: #fff;
+      border-radius: 18px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
+      cursor: pointer;
     }
 
     .news-lobby {
@@ -476,10 +502,6 @@
       background: linear-gradient(135deg, rgba(0,200,180,0.2), rgba(0,140,255,0.16));
     }
 
-    .menu-copy {
-      min-width: 0;
-    }
-
     .menu-copy h4 {
       margin: 0 0 6px;
       font-size: 19px;
@@ -518,6 +540,216 @@
       text-align: center;
     }
 
+    .settings-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      background:
+        radial-gradient(circle at top left, rgba(255, 48, 64, 0.12), transparent 28%),
+        linear-gradient(180deg, #06070b 0%, #090b11 35%, #0e131c 100%);
+      padding:
+        calc(18px + var(--safe-top))
+        18px
+        calc(24px + var(--safe-bottom))
+        18px;
+      overflow-y: auto;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      scrollbar-width: none;
+    }
+
+    .settings-screen.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .settings-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .back-btn,
+    .save-btn {
+      border: none;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 16px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .save-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
+    }
+
+    .settings-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+    }
+
+    .settings-subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .profile-hero {
+      margin-top: 22px;
+      padding: 20px;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .profile-avatar-large {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      border: 3px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+
+    .profile-avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .profile-meta h3 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .profile-meta p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .settings-card {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .settings-card h4 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .name-label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .name-input {
+      width: 100%;
+      min-height: 56px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      padding: 0 16px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .name-input::placeholder {
+      color: rgba(255,255,255,0.34);
+    }
+
+    .avatar-section {
+      margin-top: 18px;
+    }
+
+    .avatar-section:first-of-type {
+      margin-top: 0;
+    }
+
+    .avatar-section-title {
+      margin: 0 0 12px;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .avatar-option {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid transparent;
+      background: rgba(255,255,255,0.05);
+      padding: 0;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+    }
+
+    .avatar-option img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-option.selected {
+      border-color: #fff;
+      box-shadow: 0 0 0 4px rgba(255, 48, 64, 0.35);
+    }
+
+    .avatar-option.selected::after {
+      content: "✓";
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      border: 2px solid rgba(0,0,0,0.3);
+    }
+
     .toast {
       position: absolute;
       left: 50%;
@@ -536,7 +768,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease, transform 0.25s ease;
-      z-index: 50;
+      z-index: 90;
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
@@ -554,12 +786,8 @@
     }
 
     @keyframes loading {
-      0% {
-        transform: translateX(-120%);
-      }
-      100% {
-        transform: translateX(290%);
-      }
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(290%); }
     }
 
     @keyframes fillBar {
@@ -607,10 +835,16 @@
     <main class="main-screen" id="mainScreen">
       <header class="topbar">
         <div class="topbar-copy">
-          <small>Bienvenido a CineMach</small>
+          <small id="welcomeText">Bienvenido a CineMach</small>
           <h1>Elige tu<br>próximo plan</h1>
         </div>
-        <div class="topbar-badge">🎬</div>
+
+        <div class="topbar-actions">
+          <div class="profile-mini">
+            <img id="miniAvatar" alt="Avatar del usuario" />
+          </div>
+          <button class="settings-launch" id="openSettingsBtn" aria-label="Abrir ajustes">⚙️</button>
+        </div>
       </header>
 
       <section class="news-lobby" id="newsLobby">
@@ -665,9 +899,68 @@
       </section>
 
       <div class="bottom-note">
-        Fase 3 cerrada: lobby de noticias visual, limpio y listo para crecer.
+        Fase 4: ajustes, avatar y nombre guardados en local.
       </div>
     </main>
+
+    <section class="settings-screen" id="settingsScreen">
+      <div class="settings-topbar">
+        <button class="back-btn" id="closeSettingsBtn">← Volver</button>
+        <button class="save-btn" id="saveProfileBtn">Guardar</button>
+      </div>
+
+      <h2 class="settings-title">Ajustes</h2>
+      <p class="settings-subtitle">
+        Personaliza tu perfil al estilo CineMach.
+      </p>
+
+      <div class="profile-hero">
+        <div class="profile-avatar-large">
+          <img id="settingsAvatarPreview" alt="Avatar seleccionado" />
+        </div>
+
+        <div class="profile-meta">
+          <h3 id="settingsProfileName">Usuario</h3>
+          <p>Tu perfil, tu estilo y tu avatar.</p>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h4>Nombre de perfil</h4>
+        <label class="name-label" for="nameInput">Cambia el nombre que te da la app</label>
+        <input
+          class="name-input"
+          id="nameInput"
+          type="text"
+          maxlength="20"
+          placeholder="Escribe tu nombre"
+        />
+      </div>
+
+      <div class="settings-card">
+        <h4>Elige tu avatar</h4>
+
+        <div class="avatar-section">
+          <h5 class="avatar-section-title">Marvel</h5>
+          <div class="avatar-grid" id="marvelGrid"></div>
+        </div>
+
+        <div class="avatar-section">
+          <h5 class="avatar-section-title">DC</h5>
+          <div class="avatar-grid" id="dcGrid"></div>
+        </div>
+
+        <div class="avatar-section">
+          <h5 class="avatar-section-title">Universal</h5>
+          <div class="avatar-grid" id="universalGrid"></div>
+        </div>
+
+        <div class="avatar-section">
+          <h5 class="avatar-section-title">Warner</h5>
+          <div class="avatar-grid" id="warnerGrid"></div>
+        </div>
+      </div>
+    </section>
 
     <div class="toast" id="toast"></div>
   </div>
@@ -675,25 +968,61 @@
   <script>
     const newsItems = [
       {
-        chip: "Última hora",
+        chip: "Taquilla",
         title: "Mario arrasa el mundo",
-        image: "https://i.ytimg.com/vi/iG_2kaF4cDU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDqgaTVKzjxfO6pzJ9-GUzIZ4QYQw"
+        image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1400&q=80"
       },
       {
-        chip: "Taquilla",
+        chip: "Estreno",
         title: "Gosling despega en taquilla",
-        image: "https://fotografias-2.larazon.es/assets/tecnologia-consumo/2025/06/project-hail-mary.jpg?width=1900&height=1069"
+        image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=80"
       },
       {
         chip: "Tendencia",
         title: "Avatar supera los 1.000 millones",
-        image: "https://i0.wp.com/www.generacionxr.com/wp-content/uploads/2025/09/6-16.jpg?fit=1137%2C674&ssl=1"
+        image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1400&q=80"
       },
       {
         chip: "Cine global",
         title: "Dune 3 ya desata la locura",
-        image: "https://i.blogs.es/90c9c4/dune/500_333.webp"
+        image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1400&q=80"
       }
+    ];
+
+    const avatars = {
+      Marvel: [
+        "https://images.unsplash.com/photo-1612036782180-6f0822045d12?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1608889825103-eb5ed706fc64?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?auto=format&fit=crop&w=400&q=80"
+      ],
+      DC: [
+        "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1638913662180-4a8f11cf4b74?auto=format&fit=crop&w=400&q=80"
+      ],
+      Universal: [
+        "https://images.unsplash.com/photo-1585951237318-9ea5e175b891?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1596727147705-61a532a659bd?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1608889335941-32ac5f2041b9?auto=format&fit=crop&w=400&q=80"
+      ],
+      Warner: [
+        "https://images.unsplash.com/photo-1611604548018-d56bbd85d681?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1608500218808-898ca5f9f4c2?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1631217868264-e6b90bb7e133?auto=format&fit=crop&w=400&q=80"
+      ]
+    };
+
+    const randomNames = [
+      "CineLover77",
+      "PlanazoPopcorn",
+      "MaratonMaster",
+      "ButacaPrime",
+      "FilmHunter",
+      "CineMood",
+      "SalaOscuraX",
+      "PopcornKing",
+      "MoviePulse",
+      "FrameAddict"
     ];
 
     const introScreen = document.getElementById("introScreen");
@@ -704,10 +1033,101 @@
     const prevHit = document.getElementById("prevHit");
     const nextHit = document.getElementById("nextHit");
     const centerHit = document.getElementById("centerHit");
+    const newsLobby = document.getElementById("newsLobby");
+
+    const welcomeText = document.getElementById("welcomeText");
+    const miniAvatar = document.getElementById("miniAvatar");
+
+    const settingsScreen = document.getElementById("settingsScreen");
+    const openSettingsBtn = document.getElementById("openSettingsBtn");
+    const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const nameInput = document.getElementById("nameInput");
+    const settingsAvatarPreview = document.getElementById("settingsAvatarPreview");
+    const settingsProfileName = document.getElementById("settingsProfileName");
+
+    const marvelGrid = document.getElementById("marvelGrid");
+    const dcGrid = document.getElementById("dcGrid");
+    const universalGrid = document.getElementById("universalGrid");
+    const warnerGrid = document.getElementById("warnerGrid");
 
     let currentIndex = 0;
     let autoTimer = null;
     const slideDuration = 4800;
+    let selectedAvatar = "";
+
+    const STORAGE_KEY = "cinemach_profile_v1";
+
+    function randomFrom(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function getDefaultAvatar() {
+      return avatars.Marvel[0];
+    }
+
+    function getProfile() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+
+      return {
+        name: randomFrom(randomNames),
+        avatar: getDefaultAvatar()
+      };
+    }
+
+    function saveProfile(profile) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    }
+
+    function applyProfile(profile) {
+      welcomeText.textContent = `Bienvenido, ${profile.name}`;
+      miniAvatar.src = profile.avatar;
+      settingsAvatarPreview.src = profile.avatar;
+      settingsProfileName.textContent = profile.name;
+      nameInput.value = profile.name;
+      selectedAvatar = profile.avatar;
+      updateAvatarSelection();
+    }
+
+    function updateAvatarSelection() {
+      document.querySelectorAll(".avatar-option").forEach((button) => {
+        if (button.dataset.avatar === selectedAvatar) {
+          button.classList.add("selected");
+        } else {
+          button.classList.remove("selected");
+        }
+      });
+
+      settingsAvatarPreview.src = selectedAvatar;
+    }
+
+    function renderAvatarGroup(grid, list) {
+      grid.innerHTML = "";
+      list.forEach((avatarUrl) => {
+        const button = document.createElement("button");
+        button.className = "avatar-option";
+        button.type = "button";
+        button.dataset.avatar = avatarUrl;
+        button.innerHTML = `<img src="${avatarUrl}" alt="Avatar">`;
+
+        button.addEventListener("click", () => {
+          selectedAvatar = avatarUrl;
+          updateAvatarSelection();
+        });
+
+        grid.appendChild(button);
+      });
+    }
+
+    function renderAvatars() {
+      renderAvatarGroup(marvelGrid, avatars.Marvel);
+      renderAvatarGroup(dcGrid, avatars.DC);
+      renderAvatarGroup(universalGrid, avatars.Universal);
+      renderAvatarGroup(warnerGrid, avatars.Warner);
+    }
 
     function buildSlides() {
       newsSlides.innerHTML = "";
@@ -768,6 +1188,10 @@
       startAuto();
     }
 
+    function stopAuto() {
+      clearInterval(autoTimer);
+    }
+
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
@@ -778,7 +1202,36 @@
       }, 1800);
     }
 
+    function openSettings() {
+      settingsScreen.classList.add("show");
+      stopAuto();
+    }
+
+    function closeSettings() {
+      settingsScreen.classList.remove("show");
+      startAuto();
+    }
+
+    function handleSaveProfile() {
+      const cleanName = nameInput.value.trim() || randomFrom(randomNames);
+
+      const profile = {
+        name: cleanName,
+        avatar: selectedAvatar || getDefaultAvatar()
+      };
+
+      saveProfile(profile);
+      applyProfile(profile);
+      showToast("Perfil guardado");
+      closeSettings();
+    }
+
     window.addEventListener("load", () => {
+      renderAvatars();
+
+      const profile = getProfile();
+      applyProfile(profile);
+
       buildSlides();
 
       setTimeout(() => {
@@ -799,7 +1252,16 @@
     });
 
     centerHit.addEventListener("click", () => {
-      showToast("Aquí irá la apertura de la noticia en la Fase 4");
+      showToast("Aquí irá la apertura de la noticia en la Fase 5");
+    });
+
+    openSettingsBtn.addEventListener("click", openSettings);
+    closeSettingsBtn.addEventListener("click", closeSettings);
+    saveProfileBtn.addEventListener("click", handleSaveProfile);
+
+    nameInput.addEventListener("input", () => {
+      const currentName = nameInput.value.trim() || "Usuario";
+      settingsProfileName.textContent = currentName;
     });
 
     menuCards.forEach((card) => {
@@ -812,8 +1274,6 @@
 
     let startX = 0;
     let endX = 0;
-
-    const newsLobby = document.getElementById("newsLobby");
 
     newsLobby.addEventListener("touchstart", (e) => {
       startX = e.changedTouches[0].clientX;
