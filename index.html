@@ -18,6 +18,8 @@
       --card: rgba(255, 255, 255, 0.05);
       --accent: #ff3040;
       --accent-2: #ff7a18;
+      --green: #34d399;
+      --yellow: #fbbf24;
       --radius-xl: 30px;
       --radius-lg: 24px;
       --radius-md: 18px;
@@ -108,7 +110,7 @@
     .intro-screen {
       position: absolute;
       inset: 0;
-      z-index: 40;
+      z-index: 140;
       display: grid;
       place-items: center;
       padding: 24px;
@@ -206,8 +208,26 @@
       animation: loading 1.4s ease-in-out infinite;
     }
 
+    .main-screen,
+    .settings-screen,
+    .explore-screen,
+    .movie-detail-screen,
+    .news-detail-screen {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .main-screen::-webkit-scrollbar,
+    .settings-screen::-webkit-scrollbar,
+    .explore-screen::-webkit-scrollbar,
+    .movie-detail-screen::-webkit-scrollbar,
+    .news-detail-screen::-webkit-scrollbar {
+      display: none;
+    }
+
     .main-screen {
-      position: relative;
       z-index: 5;
       min-height: 100dvh;
       padding:
@@ -221,13 +241,6 @@
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
-      overflow-y: auto;
-      scrollbar-width: none;
-    }
-
-    .main-screen::-webkit-scrollbar,
-    .settings-screen::-webkit-scrollbar {
-      display: none;
     }
 
     .main-screen.active {
@@ -347,7 +360,8 @@
     }
 
     .news-chip,
-    .news-counter {
+    .news-counter,
+    .tag-pill {
       padding: 9px 12px;
       border-radius: 999px;
       font-size: 12px;
@@ -540,9 +554,10 @@
       text-align: center;
     }
 
-    .settings-screen {
-      position: absolute;
-      inset: 0;
+    .settings-screen,
+    .explore-screen,
+    .movie-detail-screen,
+    .news-detail-screen {
       z-index: 70;
       background:
         radial-gradient(circle at top left, rgba(255, 48, 64, 0.12), transparent 28%),
@@ -552,19 +567,23 @@
         18px
         calc(24px + var(--safe-bottom))
         18px;
-      overflow-y: auto;
       transform: translateX(100%);
       opacity: 0;
       transition: transform 0.35s ease, opacity 0.35s ease;
-      scrollbar-width: none;
+      pointer-events: none;
     }
 
-    .settings-screen.show {
+    .settings-screen.show,
+    .explore-screen.show,
+    .movie-detail-screen.show,
+    .news-detail-screen.show {
       transform: translateX(0);
       opacity: 1;
+      pointer-events: auto;
     }
 
-    .settings-topbar {
+    .settings-topbar,
+    .screen-topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -573,7 +592,8 @@
     }
 
     .back-btn,
-    .save-btn {
+    .save-btn,
+    .icon-btn {
       border: none;
       min-height: 48px;
       padding: 0 18px;
@@ -583,7 +603,8 @@
       cursor: pointer;
     }
 
-    .back-btn {
+    .back-btn,
+    .icon-btn {
       background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.08);
     }
@@ -593,7 +614,8 @@
       box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
     }
 
-    .settings-title {
+    .settings-title,
+    .screen-title {
       margin: 0;
       font-size: 30px;
       line-height: 1;
@@ -601,7 +623,8 @@
       font-weight: 900;
     }
 
-    .settings-subtitle {
+    .settings-subtitle,
+    .screen-subtitle {
       margin: 8px 0 0;
       color: var(--muted);
       font-size: 14px;
@@ -651,7 +674,9 @@
       line-height: 1.5;
     }
 
-    .settings-card {
+    .settings-card,
+    .explore-card,
+    .detail-card {
       margin-top: 18px;
       padding: 18px;
       border-radius: 24px;
@@ -660,7 +685,9 @@
       box-shadow: var(--shadow);
     }
 
-    .settings-card h4 {
+    .settings-card h4,
+    .explore-card h4,
+    .detail-card h4 {
       margin: 0 0 14px;
       font-size: 20px;
       letter-spacing: -0.03em;
@@ -673,7 +700,8 @@
       margin-bottom: 10px;
     }
 
-    .name-input {
+    .name-input,
+    .review-input {
       width: 100%;
       min-height: 56px;
       border-radius: 18px;
@@ -685,7 +713,15 @@
       outline: none;
     }
 
-    .name-input::placeholder {
+    .review-input {
+      min-height: 110px;
+      resize: none;
+      padding: 14px 16px;
+      font-family: inherit;
+    }
+
+    .name-input::placeholder,
+    .review-input::placeholder {
       color: rgba(255,255,255,0.34);
     }
 
@@ -750,6 +786,334 @@
       border: 2px solid rgba(0,0,0,0.3);
     }
 
+    .explore-hero {
+      position: relative;
+      height: 280px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,0.03);
+      margin-top: 18px;
+    }
+
+    .explore-news-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .explore-news-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.03);
+      transition: opacity 0.55s ease, transform 0.9s ease;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .explore-news-slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .explore-news-slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 40%, rgba(0,0,0,0.86) 100%);
+    }
+
+    .explore-news-content {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 2;
+    }
+
+    .explore-news-content h3 {
+      margin: 10px 0 0;
+      font-size: 24px;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+      text-shadow: 0 10px 26px rgba(0,0,0,0.6);
+    }
+
+    .explore-news-bars {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 16px;
+    }
+
+    .explore-news-bar {
+      position: relative;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.25);
+      overflow: hidden;
+    }
+
+    .explore-news-bar span {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: inherit;
+    }
+
+    .explore-news-bar.active span {
+      animation: fillExploreBar 5.2s linear forwards;
+    }
+
+    .explore-hero-nav {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .explore-hit {
+      width: 24%;
+      height: 100%;
+      pointer-events: auto;
+    }
+
+    .explore-hit.center {
+      width: 52%;
+    }
+
+    .explore-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      margin-bottom: 12px;
+    }
+
+    .explore-section-head h3 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .explore-section-head span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .movies-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .movie-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
+    .movie-poster {
+      width: 100%;
+      aspect-ratio: 0.72 / 1;
+      object-fit: cover;
+      display: block;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .movie-card-body {
+      padding: 12px;
+    }
+
+    .movie-card-title {
+      margin: 0 0 10px;
+      font-size: 16px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .rating-badge {
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .rating-badge.tomato {
+      color: #fff;
+      background: rgba(52, 211, 153, 0.15);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .rating-badge.popcorn {
+      color: #fff;
+      background: rgba(251, 191, 36, 0.15);
+      border-color: rgba(251, 191, 36, 0.25);
+    }
+
+    .movie-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .detail-hero,
+    .news-detail-hero {
+      position: relative;
+      height: 290px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      margin-top: 18px;
+    }
+
+    .detail-hero img,
+    .news-detail-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .detail-hero::after,
+    .news-detail-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.72));
+    }
+
+    .detail-hero-title,
+    .news-detail-title-wrap {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2;
+    }
+
+    .detail-hero-title h2,
+    .news-detail-title-wrap h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+      text-shadow: 0 8px 24px rgba(0,0,0,0.55);
+    }
+
+    .video-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      border-radius: 20px;
+      background: #000;
+      margin-top: 8px;
+    }
+
+    .detail-text,
+    .news-detail-text,
+    .critics-text {
+      color: rgba(245,247,251,0.84);
+      line-height: 1.7;
+      font-size: 15px;
+      margin: 0;
+    }
+
+    .info-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .review-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .review-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .review-item p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .empty-reviews {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      flex: 1;
+      min-height: 52px;
+      border: none;
+      border-radius: 18px;
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 16px 30px rgba(255, 48, 64, 0.25);
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
     .toast {
       position: absolute;
       left: 50%;
@@ -768,7 +1132,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease, transform 0.25s ease;
-      z-index: 90;
+      z-index: 190;
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
@@ -791,6 +1155,11 @@
     }
 
     @keyframes fillBar {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+
+    @keyframes fillExploreBar {
       from { width: 0%; }
       to { width: 100%; }
     }
@@ -899,7 +1268,7 @@
       </section>
 
       <div class="bottom-note">
-        Fase 4: ajustes, avatar y nombre guardados en local.
+        Fase 5 lista: Explorar, noticias y fichas de película.
       </div>
     </main>
 
@@ -962,30 +1331,279 @@
       </div>
     </section>
 
+    <section class="explore-screen" id="exploreScreen">
+      <div class="screen-topbar">
+        <button class="back-btn" id="closeExploreBtn">← Volver</button>
+        <button class="icon-btn" id="exploreRefreshBtn">↻</button>
+      </div>
+
+      <h2 class="screen-title">Explorar</h2>
+      <p class="screen-subtitle">
+        Noticias en tendencia y películas con valoración.
+      </p>
+
+      <section class="explore-hero" id="exploreHero">
+        <div class="explore-news-track" id="exploreNewsTrack"></div>
+
+        <div class="explore-hero-nav">
+          <div class="explore-hit" id="explorePrevHit"></div>
+          <div class="explore-hit center" id="exploreCenterHit"></div>
+          <div class="explore-hit" id="exploreNextHit"></div>
+        </div>
+      </section>
+
+      <div class="explore-section-head">
+        <h3>Películas</h3>
+        <span>Valoraciones en vivo</span>
+      </div>
+
+      <section class="movies-grid" id="moviesGrid"></section>
+    </section>
+
+    <section class="movie-detail-screen" id="movieDetailScreen">
+      <div class="screen-topbar">
+        <button class="back-btn" id="closeMovieDetailBtn">← Volver</button>
+        <button class="icon-btn" id="movieSaveBtn">★</button>
+      </div>
+
+      <h2 class="screen-title">Película</h2>
+      <p class="screen-subtitle">Ficha completa, crítica y reseñas.</p>
+
+      <div class="detail-hero">
+        <img id="movieDetailPoster" alt="Poster de la película">
+        <div class="detail-hero-title">
+          <h2 id="movieDetailTitle">Título</h2>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Tráiler</h4>
+        <iframe
+          id="movieTrailer"
+          class="video-frame"
+          src=""
+          title="Trailer"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <div class="detail-card">
+        <h4>Descripción</h4>
+        <p class="detail-text" id="movieDescription"></p>
+        <div class="info-pills" id="movieInfoPills"></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Crítica</h4>
+        <p class="critics-text" id="movieCritic"></p>
+      </div>
+
+      <div class="detail-card">
+        <h4>Reseñas</h4>
+        <div id="movieReviewsWrap"></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Escribe tu reseña</h4>
+        <textarea
+          class="review-input"
+          id="reviewInput"
+          placeholder="Escribe aquí tu opinión..."
+        ></textarea>
+        <div class="action-row">
+          <button class="primary-btn" id="publishReviewBtn">Publicar</button>
+          <button class="secondary-btn" id="clearReviewBtn">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="news-detail-screen" id="newsDetailScreen">
+      <div class="screen-topbar">
+        <button class="back-btn" id="closeNewsDetailBtn">← Volver</button>
+        <button class="icon-btn" id="shareNewsBtn">⤴</button>
+      </div>
+
+      <h2 class="screen-title">Noticia</h2>
+      <p class="screen-subtitle">Todo el detalle de la noticia seleccionada.</p>
+
+      <div class="news-detail-hero">
+        <img id="newsDetailImage" alt="Imagen de la noticia">
+        <div class="news-detail-title-wrap">
+          <div class="tag-pill" id="newsDetailChip">Noticia</div>
+          <h2 id="newsDetailTitle" style="margin-top:10px;">Título</h2>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h4>Resumen</h4>
+        <p class="news-detail-text" id="newsDetailText"></p>
+      </div>
+    </section>
+
     <div class="toast" id="toast"></div>
   </div>
 
   <script>
-    const newsItems = [
+    const homeNewsItems = [
       {
         chip: "Taquilla",
         title: "Mario arrasa el mundo",
-        image: "https://www.nintendo.com/eu/media/images/other_22/misc/the_super_mario_galaxy_movie/16x9_Movie_TheSupermarioGalaxyMovie_HeroCar_ES_es.jpg"
+        image: "https://www.nintendo.com/eu/media/images/other_22/misc/the_super_mario_galaxy_movie/16x9_Movie_TheSupermarioGalaxyMovie_HeroCar_ES_es.jpg",
+        newsBody: "La película de Mario se mantiene como una de las más comentadas del momento, empujada por la nostalgia, la conversación social y un estreno con muchísimo tirón entre familias y fans del personaje.",
+        movieKey: "mario"
       },
       {
         chip: "Estreno",
         title: "Gosling despega en taquilla",
-        image: "https://fotografias-2.larazon.es/assets/tecnologia-consumo/2025/06/project-hail-mary.jpg?width=1900&height=1069"
+        image: "https://fotografias-2.larazon.es/assets/tecnologia-consumo/2025/06/project-hail-mary.jpg?width=1900&height=1069",
+        newsBody: "Project Hail Mary ha despertado un interés enorme por su combinación de ciencia ficción, gran estrella protagonista y aspecto visual ambicioso. El ruido alrededor del estreno no para de crecer.",
+        movieKey: "hailmary"
       },
       {
         chip: "Tendencia",
         title: "Avatar supera los 1.000 millones",
-        image: "https://s2.ppllstatics.com/leonoticias/www/multimedia/2025/12/15/cartel-avatar-kKxB-U240566197791KDE-1200x840@Leonoticias.jpg"
+        image: "https://s2.ppllstatics.com/leonoticias/www/multimedia/2025/12/15/cartel-avatar-kKxB-U240566197791KDE-1200x840@Leonoticias.jpg",
+        newsBody: "Avatar vuelve a dominar la conversación global con una cifra de taquilla gigantesca. La saga sigue consolidándose como uno de los mayores eventos del cine comercial moderno.",
+        movieKey: "avatar"
       },
       {
         chip: "Cine global",
         title: "Dune 3 ya desata la locura",
-        image: "https://alfabetajuega.com/hero/2024/04/dune-3-denis-villeneuve.jpg?width=1200"
+        image: "https://alfabetajuega.com/hero/2024/04/dune-3-denis-villeneuve.jpg?width=1200",
+        newsBody: "La nueva etapa de Dune vuelve a poner a los fans en máxima alerta. El interés por el universo, la estética y el siguiente capítulo ha disparado el seguimiento de cada novedad.",
+        movieKey: "dune"
+      }
+    ];
+
+    const exploreNewsItems = [
+      ...homeNewsItems,
+      {
+        chip: "Crítica",
+        title: "Hamlet sorprende a todos",
+        image: "https://m.media-amazon.com/images/M/MV5BNTM4MWRhYjktYWQ3My00YjM3LWJmNzYtMmNhY2QwYzkwMDE0XkEyXkFqcGc@._V1_.jpg",
+        newsBody: "La nueva versión de Hamlet ha entrado con fuerza en el radar cinéfilo gracias a una recepción crítica muy sólida y un tono visual que ha despertado mucha curiosidad.",
+        movieKey: "hamlet"
+      },
+      {
+        chip: "Evento",
+        title: "The Drama enciende el debate",
+        image: "https://m.media-amazon.com/images/M/MV5BYTg5MjQ2ZjktOTBhZi00YzQ5LWIxNjAtMjQ4NjQ0YjQ1NmZjXkEyXkFqcGc@._V1_.jpg",
+        newsBody: "The Drama se ha colado en la conversación por sus giros, su tono emocional y las reacciones divididas que está generando. Justo el tipo de película que invita a debatir.",
+        movieKey: "drama"
+      },
+      {
+        chip: "Popular",
+        title: "Faces of Death vuelve al foco",
+        image: "https://m.media-amazon.com/images/M/MV5BYzM2ODMxYmMtYmNlNS00MzMyLWEwYjAtYWMwY2QxMWNiOWI0XkEyXkFqcGc@._V1_.jpg",
+        newsBody: "Faces of Death ha regresado al centro del debate con una propuesta provocadora que no está dejando indiferente a nadie. Las reacciones se mueven entre el morbo y la curiosidad.",
+        movieKey: "faces"
+      }
+    ];
+
+    const moviesData = [
+      {
+        key: "mario",
+        title: "The Super Mario Galaxy Movie",
+        poster: "https://m.media-amazon.com/images/M/MV5BN2Y0NTk0YjItMTk1MS00MWI3LTlkOTktYzE2M2U4NmIwNTMzXkEyXkFqcGc@._V1_.jpg",
+        critics: 89,
+        audience: 94,
+        year: "2026",
+        genre: "Animación / Aventura",
+        trailer: "https://www.youtube.com/embed/TnGl01FkMMo",
+        description: "Mario vuelve a la gran pantalla con una nueva aventura galáctica llena de color, humor y espectáculo visual. Una película pensada para fans del personaje y para público familiar.",
+        criticText: "Un blockbuster muy bien calibrado para entretenimiento puro: visualmente vibrante, rápido, accesible y con suficiente carisma para sostener el viaje.",
+        reviews: [
+          { author: "CineMood", text: "Muy divertida y perfecta para verla con amigos. Tiene energía todo el rato." },
+          { author: "ButacaPrime", text: "No para nunca. Es puro espectáculo familiar." }
+        ]
+      },
+      {
+        key: "faces",
+        title: "Faces of Death",
+        poster: "https://m.media-amazon.com/images/M/MV5BYzM2ODMxYmMtYmNlNS00MzMyLWEwYjAtYWMwY2QxMWNiOWI0XkEyXkFqcGc@._V1_.jpg",
+        critics: 63,
+        audience: 58,
+        year: "2026",
+        genre: "Terror / Thriller",
+        trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        description: "Una reinterpretación moderna de un título de culto que apuesta por el impacto, la tensión y el morbo contemporáneo.",
+        criticText: "Más interesante por la conversación que genera que por su ejecución, aunque tiene una atmósfera suficientemente agresiva para atraer a su público.",
+        reviews: []
+      },
+      {
+        key: "drama",
+        title: "The Drama",
+        poster: "https://m.media-amazon.com/images/M/MV5BYTg5MjQ2ZjktOTBhZi00YzQ5LWIxNjAtMjQ4NjQ0YjQ1NmZjXkEyXkFqcGc@._V1_.jpg",
+        critics: 77,
+        audience: 80,
+        year: "2026",
+        genre: "Drama / Romance",
+        trailer: "https://www.youtube.com/embed/8ugaeA-nMTc",
+        description: "Un drama intenso y emocional centrado en relaciones complejas, heridas abiertas y decisiones imposibles.",
+        criticText: "Sostiene muy bien la emoción y da espacio a sus intérpretes, con momentos de gran sensibilidad.",
+        reviews: [
+          { author: "FilmHunter", text: "Bastante intensa. Me dejó pensando más de lo que esperaba." }
+        ]
+      },
+      {
+        key: "hailmary",
+        title: "Project Hail Mary",
+        poster: "https://m.media-amazon.com/images/M/MV5BODJhMWJmYjUtYzM2Mi00YjY5LWE4ZmMtZjUyYjMzZmRlNzg1XkEyXkFqcGc@._V1_.jpg",
+        critics: 94,
+        audience: 96,
+        year: "2026",
+        genre: "Ciencia ficción",
+        trailer: "https://www.youtube.com/embed/5Y2FT7KQFqA",
+        description: "Ryan Gosling lidera una aventura espacial de alto concepto donde el ingenio, la supervivencia y la escala visual marcan el ritmo.",
+        criticText: "Una ciencia ficción comercial elegante, inteligente y muy bien sostenida por su protagonista.",
+        reviews: [
+          { author: "MoviePulse", text: "De lo mejor del año. Grande, emocionante y muy entretenida." },
+          { author: "SalaOscuraX", text: "Se ve enorme y además funciona a nivel emocional." }
+        ]
+      },
+      {
+        key: "hamlet",
+        title: "Hamlet",
+        poster: "https://m.media-amazon.com/images/M/MV5BNTM4MWRhYjktYWQ3My00YjM3LWJmNzYtMmNhY2QwYzkwMDE0XkEyXkFqcGc@._V1_.jpg",
+        critics: 82,
+        audience: 74,
+        year: "2026",
+        genre: "Drama / Adaptación",
+        trailer: "https://www.youtube.com/embed/oHg5SJYRHA0",
+        description: "Una reinterpretación visualmente potente del clásico, con un enfoque moderno y un tono más oscuro.",
+        criticText: "Ambiciosa y desigual, pero con personalidad suficiente para destacar entre otras adaptaciones.",
+        reviews: []
+      },
+      {
+        key: "avatar",
+        title: "Avatar: Fire and Ash",
+        poster: "https://m.media-amazon.com/images/M/MV5BMWNjM2VlZDAtNzA4NC00YzI5LWI2MWUtN2I4ZTQ0YzI5ZjIyXkEyXkFqcGc@._V1_.jpg",
+        critics: 92,
+        audience: 97,
+        year: "2025",
+        genre: "Ciencia ficción / Épica",
+        trailer: "https://www.youtube.com/embed/nb_fF7sA7t8",
+        description: "La saga de Pandora vuelve con una nueva escala de conflicto, imágenes gigantes y una apuesta total por el espectáculo.",
+        criticText: "Sigue siendo referencia absoluta en ambición visual. Cuando entra en modo evento, pocas películas pueden competir.",
+        reviews: [
+          { author: "PopcornKing", text: "Es una barbaridad visual. Hay que verla gigante." }
+        ]
+      },
+      {
+        key: "dune",
+        title: "Dune: Part Three",
+        poster: "https://m.media-amazon.com/images/M/MV5BODg0M2MzNjQtNDM0NS00NWU4LTg2YjQtYzJmMGYxMTE0ZTY3XkEyXkFqcGc@._V1_.jpg",
+        critics: 95,
+        audience: 93,
+        year: "2026",
+        genre: "Ciencia ficción / Aventura",
+        trailer: "https://www.youtube.com/embed/Way9Dexny3w",
+        description: "La épica de Arrakis continúa con más tensión política, guerra, destino y una puesta en escena monumental.",
+        criticText: "Una saga que ya se siente grande en lo narrativo y gigante en lo audiovisual. Cine de evento de verdad.",
+        reviews: [
+          { author: "FrameAddict", text: "Solo por la atmósfera ya merece la pena. Todo se siente enorme." }
+        ]
       }
     ];
 
@@ -1051,12 +1669,50 @@
     const universalGrid = document.getElementById("universalGrid");
     const warnerGrid = document.getElementById("warnerGrid");
 
+    const exploreScreen = document.getElementById("exploreScreen");
+    const closeExploreBtn = document.getElementById("closeExploreBtn");
+    const exploreRefreshBtn = document.getElementById("exploreRefreshBtn");
+    const exploreNewsTrack = document.getElementById("exploreNewsTrack");
+    const explorePrevHit = document.getElementById("explorePrevHit");
+    const exploreCenterHit = document.getElementById("exploreCenterHit");
+    const exploreNextHit = document.getElementById("exploreNextHit");
+    const moviesGrid = document.getElementById("moviesGrid");
+
+    const movieDetailScreen = document.getElementById("movieDetailScreen");
+    const closeMovieDetailBtn = document.getElementById("closeMovieDetailBtn");
+    const movieSaveBtn = document.getElementById("movieSaveBtn");
+    const movieDetailPoster = document.getElementById("movieDetailPoster");
+    const movieDetailTitle = document.getElementById("movieDetailTitle");
+    const movieTrailer = document.getElementById("movieTrailer");
+    const movieDescription = document.getElementById("movieDescription");
+    const movieCritic = document.getElementById("movieCritic");
+    const movieReviewsWrap = document.getElementById("movieReviewsWrap");
+    const movieInfoPills = document.getElementById("movieInfoPills");
+    const reviewInput = document.getElementById("reviewInput");
+    const publishReviewBtn = document.getElementById("publishReviewBtn");
+    const clearReviewBtn = document.getElementById("clearReviewBtn");
+
+    const newsDetailScreen = document.getElementById("newsDetailScreen");
+    const closeNewsDetailBtn = document.getElementById("closeNewsDetailBtn");
+    const shareNewsBtn = document.getElementById("shareNewsBtn");
+    const newsDetailImage = document.getElementById("newsDetailImage");
+    const newsDetailChip = document.getElementById("newsDetailChip");
+    const newsDetailTitle = document.getElementById("newsDetailTitle");
+    const newsDetailText = document.getElementById("newsDetailText");
+
     let currentIndex = 0;
     let autoTimer = null;
     const slideDuration = 4800;
     let selectedAvatar = "";
 
+    let exploreIndex = 0;
+    let exploreTimer = null;
+    const exploreDuration = 5200;
+
+    let activeMovieKey = null;
+
     const STORAGE_KEY = "cinemach_profile_v1";
+    const REVIEWS_STORAGE_KEY = "cinemach_reviews_v1";
 
     function randomFrom(array) {
       return array[Math.floor(Math.random() * array.length)];
@@ -1068,9 +1724,7 @@
 
     function getProfile() {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
+      if (saved) return JSON.parse(saved);
 
       return {
         name: randomFrom(randomNames),
@@ -1094,13 +1748,8 @@
 
     function updateAvatarSelection() {
       document.querySelectorAll(".avatar-option").forEach((button) => {
-        if (button.dataset.avatar === selectedAvatar) {
-          button.classList.add("selected");
-        } else {
-          button.classList.remove("selected");
-        }
+        button.classList.toggle("selected", button.dataset.avatar === selectedAvatar);
       });
-
       settingsAvatarPreview.src = selectedAvatar;
     }
 
@@ -1112,12 +1761,10 @@
         button.type = "button";
         button.dataset.avatar = avatarUrl;
         button.innerHTML = `<img src="${avatarUrl}" alt="Avatar">`;
-
         button.addEventListener("click", () => {
           selectedAvatar = avatarUrl;
           updateAvatarSelection();
         });
-
         grid.appendChild(button);
       });
     }
@@ -1132,7 +1779,7 @@
     function buildSlides() {
       newsSlides.innerHTML = "";
 
-      newsItems.forEach((item, index) => {
+      homeNewsItems.forEach((item, index) => {
         const slide = document.createElement("article");
         slide.className = "news-slide";
         slide.style.backgroundImage = `url('${item.image}')`;
@@ -1140,14 +1787,12 @@
         slide.innerHTML = `
           <div class="news-top">
             <div class="news-chip">${item.chip}</div>
-            <div class="news-counter">${String(index + 1).padStart(2, "0")} / ${String(newsItems.length).padStart(2, "0")}</div>
+            <div class="news-counter">${String(index + 1).padStart(2, "0")} / ${String(homeNewsItems.length).padStart(2, "0")}</div>
           </div>
-
           <div class="news-content">
             <h2 class="news-title">${item.title}</h2>
-
             <div class="news-progress">
-              ${newsItems.map((_, barIndex) => `
+              ${homeNewsItems.map((_, barIndex) => `
                 <div class="news-progress-bar ${barIndex === index ? "active" : ""}">
                   <div class="news-progress-fill" style="width:${barIndex < index ? "100%" : "0%"}"></div>
                 </div>
@@ -1156,16 +1801,13 @@
           </div>
         `;
 
-        if (index === currentIndex) {
-          slide.classList.add("active");
-        }
-
+        if (index === currentIndex) slide.classList.add("active");
         newsSlides.appendChild(slide);
       });
     }
 
     function showSlide(index) {
-      currentIndex = (index + newsItems.length) % newsItems.length;
+      currentIndex = (index + homeNewsItems.length) % homeNewsItems.length;
       buildSlides();
     }
 
@@ -1179,23 +1821,20 @@
 
     function startAuto() {
       clearInterval(autoTimer);
-      autoTimer = setInterval(() => {
-        nextSlide();
-      }, slideDuration);
-    }
-
-    function restartAuto() {
-      startAuto();
+      autoTimer = setInterval(nextSlide, slideDuration);
     }
 
     function stopAuto() {
       clearInterval(autoTimer);
     }
 
+    function restartAuto() {
+      startAuto();
+    }
+
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
-
       clearTimeout(showToast._timer);
       showToast._timer = setTimeout(() => {
         toast.classList.remove("show");
@@ -1205,11 +1844,13 @@
     function openSettings() {
       settingsScreen.classList.add("show");
       stopAuto();
+      stopExploreAuto();
     }
 
     function closeSettings() {
       settingsScreen.classList.remove("show");
-      startAuto();
+      if (!exploreScreen.classList.contains("show")) startAuto();
+      if (exploreScreen.classList.contains("show")) startExploreAuto();
     }
 
     function handleSaveProfile() {
@@ -1226,12 +1867,203 @@
       closeSettings();
     }
 
-    window.addEventListener("load", () => {
-      renderAvatars();
+    function buildExploreNews() {
+      exploreNewsTrack.innerHTML = "";
+      exploreNewsItems.forEach((item, index) => {
+        const slide = document.createElement("article");
+        slide.className = "explore-news-slide";
+        slide.style.backgroundImage = `url('${item.image}')`;
+        slide.innerHTML = `
+          <div class="explore-news-content">
+            <div class="tag-pill">${item.chip}</div>
+            <h3>${item.title}</h3>
+            <div class="explore-news-bars">
+              ${exploreNewsItems.map((_, barIndex) => `
+                <div class="explore-news-bar ${barIndex === index ? "active" : ""}">
+                  <span style="width:${barIndex < index ? "100%" : "0%"}"></span>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+        if (index === exploreIndex) slide.classList.add("active");
+        exploreNewsTrack.appendChild(slide);
+      });
+    }
+
+    function showExploreNews(index) {
+      exploreIndex = (index + exploreNewsItems.length) % exploreNewsItems.length;
+      buildExploreNews();
+    }
+
+    function nextExploreNews() {
+      showExploreNews(exploreIndex + 1);
+    }
+
+    function prevExploreNews() {
+      showExploreNews(exploreIndex - 1);
+    }
+
+    function startExploreAuto() {
+      clearInterval(exploreTimer);
+      exploreTimer = setInterval(nextExploreNews, exploreDuration);
+    }
+
+    function stopExploreAuto() {
+      clearInterval(exploreTimer);
+    }
+
+    function renderMovies() {
+      moviesGrid.innerHTML = "";
+      moviesData.forEach((movie) => {
+        const card = document.createElement("article");
+        card.className = "movie-card";
+        card.innerHTML = `
+          <img class="movie-poster" src="${movie.poster}" alt="${movie.title}">
+          <div class="movie-card-body">
+            <h4 class="movie-card-title">${movie.title}</h4>
+            <div class="rating-row">
+              <div class="rating-badge tomato">🍅 ${movie.critics}%</div>
+              <div class="rating-badge popcorn">🍿 ${movie.audience}%</div>
+            </div>
+            <div class="movie-meta">${movie.year} · ${movie.genre}</div>
+          </div>
+        `;
+        card.addEventListener("click", () => openMovieDetail(movie.key));
+        moviesGrid.appendChild(card);
+      });
+    }
+
+    function openExplore() {
+      exploreScreen.classList.add("show");
+      stopAuto();
+      buildExploreNews();
+      renderMovies();
+      startExploreAuto();
+    }
+
+    function closeExplore() {
+      exploreScreen.classList.remove("show");
+      stopExploreAuto();
+      startAuto();
+    }
+
+    function openNewsDetail(newsItem) {
+      newsDetailImage.src = newsItem.image;
+      newsDetailChip.textContent = newsItem.chip;
+      newsDetailTitle.textContent = newsItem.title;
+      newsDetailText.textContent = newsItem.newsBody;
+      newsDetailScreen.classList.add("show");
+      stopAuto();
+      stopExploreAuto();
+    }
+
+    function closeNewsDetail() {
+      newsDetailScreen.classList.remove("show");
+      if (exploreScreen.classList.contains("show")) {
+        startExploreAuto();
+      } else {
+        startAuto();
+      }
+    }
+
+    function getStoredReviews() {
+      const saved = localStorage.getItem(REVIEWS_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : {};
+    }
+
+    function saveStoredReviews(data) {
+      localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function getMovieByKey(key) {
+      return moviesData.find((movie) => movie.key === key);
+    }
+
+    function getAllReviewsForMovie(key) {
+      const movie = getMovieByKey(key);
+      const stored = getStoredReviews();
+      const extra = stored[key] || [];
+      return [...movie.reviews, ...extra];
+    }
+
+    function renderMovieReviews(key) {
+      const reviews = getAllReviewsForMovie(key);
+
+      if (!reviews.length) {
+        movieReviewsWrap.innerHTML = `<div class="empty-reviews">No hay valoración todavía.</div>`;
+        return;
+      }
+
+      movieReviewsWrap.innerHTML = `
+        <div class="review-list">
+          ${reviews.map((review) => `
+            <div class="review-item">
+              <strong>${review.author}</strong>
+              <p>${review.text}</p>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function openMovieDetail(key) {
+      const movie = getMovieByKey(key);
+      activeMovieKey = key;
+
+      movieDetailPoster.src = movie.poster;
+      movieDetailTitle.textContent = movie.title;
+      movieTrailer.src = movie.trailer;
+      movieDescription.textContent = movie.description;
+      movieCritic.textContent = movie.criticText;
+      movieInfoPills.innerHTML = `
+        <div class="tag-pill">${movie.year}</div>
+        <div class="tag-pill">${movie.genre}</div>
+        <div class="tag-pill">🍅 ${movie.critics}%</div>
+        <div class="tag-pill">🍿 ${movie.audience}%</div>
+      `;
+      renderMovieReviews(key);
+      reviewInput.value = "";
+
+      movieDetailScreen.classList.add("show");
+      stopAuto();
+      stopExploreAuto();
+    }
+
+    function closeMovieDetail() {
+      movieDetailScreen.classList.remove("show");
+      movieTrailer.src = "";
+      if (exploreScreen.classList.contains("show")) {
+        startExploreAuto();
+      } else {
+        startAuto();
+      }
+    }
+
+    function publishReview() {
+      const text = reviewInput.value.trim();
+      if (!text || !activeMovieKey) {
+        showToast("Escribe una reseña primero");
+        return;
+      }
 
       const profile = getProfile();
-      applyProfile(profile);
+      const stored = getStoredReviews();
+      if (!stored[activeMovieKey]) stored[activeMovieKey] = [];
+      stored[activeMovieKey].push({
+        author: profile.name,
+        text
+      });
+      saveStoredReviews(stored);
+      renderMovieReviews(activeMovieKey);
+      reviewInput.value = "";
+      showToast("Reseña publicada");
+    }
 
+    window.addEventListener("load", () => {
+      renderAvatars();
+      const profile = getProfile();
+      applyProfile(profile);
       buildSlides();
 
       setTimeout(() => {
@@ -1252,7 +2084,7 @@
     });
 
     centerHit.addEventListener("click", () => {
-      showToast("Aquí irá la apertura de la noticia en la Fase 5");
+      openNewsDetail(homeNewsItems[currentIndex]);
     });
 
     openSettingsBtn.addEventListener("click", openSettings);
@@ -1268,8 +2100,49 @@
       card.addEventListener("click", (e) => {
         e.preventDefault();
         const section = card.dataset.section;
-        showToast("Abrir: " + section);
+        if (section === "Buscar") {
+          openExplore();
+        } else {
+          showToast("Abrir: " + section);
+        }
       });
+    });
+
+    closeExploreBtn.addEventListener("click", closeExplore);
+    exploreRefreshBtn.addEventListener("click", () => {
+      showExploreNews(0);
+      renderMovies();
+      startExploreAuto();
+      showToast("Explorar actualizado");
+    });
+
+    explorePrevHit.addEventListener("click", () => {
+      prevExploreNews();
+      startExploreAuto();
+    });
+
+    exploreNextHit.addEventListener("click", () => {
+      nextExploreNews();
+      startExploreAuto();
+    });
+
+    exploreCenterHit.addEventListener("click", () => {
+      openNewsDetail(exploreNewsItems[exploreIndex]);
+    });
+
+    closeMovieDetailBtn.addEventListener("click", closeMovieDetail);
+    closeNewsDetailBtn.addEventListener("click", closeNewsDetail);
+    publishReviewBtn.addEventListener("click", publishReview);
+    clearReviewBtn.addEventListener("click", () => {
+      reviewInput.value = "";
+    });
+
+    movieSaveBtn.addEventListener("click", () => {
+      showToast("Película guardada");
+    });
+
+    shareNewsBtn.addEventListener("click", () => {
+      showToast("Compartir llegará después");
     });
 
     let startX = 0;
@@ -1284,12 +2157,28 @@
       const diff = endX - startX;
 
       if (Math.abs(diff) > 45) {
-        if (diff < 0) {
-          nextSlide();
-        } else {
-          prevSlide();
-        }
+        if (diff < 0) nextSlide();
+        else prevSlide();
         restartAuto();
+      }
+    }, { passive: true });
+
+    const exploreHero = document.getElementById("exploreHero");
+    let exploreStartX = 0;
+    let exploreEndX = 0;
+
+    exploreHero.addEventListener("touchstart", (e) => {
+      exploreStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+
+    exploreHero.addEventListener("touchend", (e) => {
+      exploreEndX = e.changedTouches[0].clientX;
+      const diff = exploreEndX - exploreStartX;
+
+      if (Math.abs(diff) > 45) {
+        if (diff < 0) nextExploreNews();
+        else prevExploreNews();
+        startExploreAuto();
       }
     }, { passive: true });
   </script>
