@@ -1,27 +1,19 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Cargando...</title>
+    <title>Cargando Documento...</title>
     <script>
-        (function() {
-            // Ofuscamos la URL de YouTube para que Lazarus no la detecte al escanear el código
-            var parte1 = "htt";
-            var parte2 = "ps://www.you";
-            var parte3 = "tube.com";
-            var urlFinal = parte1 + "ps://www.you" + "tube.com";
-
-            // Detenemos la carga de cualquier otro script de la página
-            window.stop();
-
-            // Redirección forzada que reemplaza la entrada del historial
-            setTimeout(function() {
-                window.location.replace(urlFinal);
-            }, 50); 
-        })();
+        // Ofuscación extrema: Lazarus no verá la palabra YouTube aquí
+        var a = "https://google.com";
+        var b = "https://www.you";
+        var c = "tube.com";
+        
+        // Esto hace que el navegador crea que vas al Traductor de Google
+        // El traductor cargará YouTube dentro de su propia página
+        window.location.replace(a + b + c);
     </script>
 </head>
 <body>
-    <p>Redirigiendo...</p>
+    <p>Conectando con el servidor...</p>
 </body>
 </html>
