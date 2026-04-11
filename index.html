@@ -2,63 +2,98 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>System Monitor - Dashboard</title>
+    <title>Fluid Dynamics Lab</title>
     <style>
-        body { background: #1a1a1a; color: #00ff00; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .box { border: 1px solid #333; padding: 40px; border-radius: 10px; background: #222; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        button { background: #00ff00; color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 20px; }
-        button:hover { background: #00cc00; }
-        .status { font-size: 12px; color: #888; margin-top: 10px; }
+        body { margin: 0; background: #050505; color: #444; font-family: monospace; overflow: hidden; }
+        canvas { display: block; }
+        #ui { position: absolute; top: 10px; left: 10px; pointer-events: none; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
-
-<div class="box">
-    <h2>Secure Access Gateway</h2>
-    <p>Iniciando tunelización para saltar restricciones de IMT Lazarus...</p>
-    <button onclick="bypassLazarus()">LANZAR CONEXIÓN SEGURA</button>
-    <div class="status" id="st">Estado: Esperando acción del usuario...</div>
-</div>
+    <div id="ui">System Status: Active | Particles: <span id="count">0</span> | Stability: 98.4%</div>
+    <canvas id="canvas"></canvas>
 
 <script>
-    function bypassLazarus() {
-        const st = document.getElementById('st');
-        st.innerText = "Cifrando petición y buscando túnel abierto...";
-        
-        // No usamos la URL directa. La dividimos y la codificamos.
-        const p1 = "aHR0cHM6Ly8="; // https://
-        const p2 = "Y2hhdGdwdC5jb20="; // chatgpt.com
-        
-        // Intentamos usar un servicio de "Web Proxy" gratuito como puente.
-        // Esto hace que IMT Lazarus vea que vas a "croxyproxy.com" en lugar de "chatgpt.com"
-        const proxyBase = "https://croxyproxy.com";
-        const target = atob(p1) + atob(p2);
-        const finalURL = proxyBase + encodeURIComponent(target);
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const countDisp = document.getElementById('count');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-        setTimeout(() => {
-            // Abrimos en una ventana con parámetros de ocultación
-            const secureWindow = window.open('', '_blank');
-            
-            if (secureWindow) {
-                st.innerText = "Túnel establecido. Redirigiendo...";
-                // Escribimos el redireccionamiento dentro de una página en blanco 
-                // para que la extensión pierda el hilo de la navegación original.
-                secureWindow.document.write(`
-                    <html>
-                    <body style="background:#000;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
-                        <div>
-                            <h2>Cargando ChatGPT vía Proxy Seguro...</h2>
-                            <p>Saltando bloqueo educativo de 24h.</p>
-                            <script>window.location.href = "${finalURL}";<\/script>
-                        </div>
-                    </body>
-                    </html>
-                `);
-            } else {
-                alert("Error: El navegador bloqueó la ventana emergente. Por favor, permítela.");
-            }
-        }, 1000);
+    let particles = [];
+    const mouse = { x: null, y: null, radius: 100 };
+
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.x;
+        mouse.y = e.y;
+        // Crea partículas al mover el ratón
+        for(let i = 0; i < 2; i++) {
+            particles.push(new Particle(mouse.x, mouse.y));
+        }
+    });
+
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * 3 + 1;
+            this.speedX = Math.random() * 3 - 1.5;
+            this.speedY = Math.random() * 3 - 1.5;
+            this.color = `hsl(${Math.random() * 60 + 100}, 100%, 50%)`; // Tonos verdes (parece código)
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.size > 0.1) this.size -= 0.01;
+        }
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
+
+    function handleParticles() {
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+            
+            // Conectar partículas cercanas con líneas (parece una red neuronal)
+            for (let j = i; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 80) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = particles[i].color;
+                    ctx.lineWidth = 0.2;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+            if (particles[i].size <= 0.2) {
+                particles.splice(i, 1);
+                i--;
+            }
+        }
+        countDisp.innerText = particles.length;
+    }
+
+    function animate() {
+        ctx.fillStyle = 'rgba(0,0,0,0.1)'; // Estela de movimiento
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        handleParticles();
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
 </script>
 </body>
 </html>
