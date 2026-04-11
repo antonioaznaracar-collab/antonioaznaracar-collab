@@ -2,138 +2,103 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Neural Network Sync</title>
+    <title>Starship Cockpit v1.0</title>
     <style>
-        body { margin: 0; background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; }
-        canvas { display: block; cursor: crosshair; }
-        #stats { position: absolute; top: 10px; left: 20px; pointer-events: none; }
-        .alert { color: #ff3333; animation: blink 0.5s infinite; visibility: hidden; }
-        @keyframes blink { 50% { opacity: 0; } }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+        canvas { display: block; }
+        #ui { position: absolute; bottom: 30px; width: 100%; text-align: center; color: #0f0; text-shadow: 0 0 5px #0f0; pointer-events: none; }
+        .hud-border { position: absolute; border: 2px solid #0f0; width: 80%; height: 60%; top: 20%; left: 10%; opacity: 0.3; pointer-events: none; }
     </style>
 </head>
 <body>
-    <div id="stats">
-        DATA_SYNC: <span id="score">0</span>% | NODES: <span id="nodes">0</span> <br>
-        <span id="warning" class="alert">! COLLISION CRITICAL !</span>
+    <div id="ui">
+        [ PROPULSIÓN: <span id="pwr">0</span>% ] | [ ESTADO: ESTABLE ] | [ SISTEMA: BORDE EXTERIOR ]
     </div>
-    <canvas id="canvas"></canvas>
+    <div class="hud-border"></div>
+    <canvas id="space"></canvas>
 
 <script>
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('space');
     const ctx = canvas.getContext('2d');
-    const scoreDisp = document.getElementById('score');
-    const nodesDisp = document.getElementById('nodes');
-    const warning = document.getElementById('warning');
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let particles = [];
-    let targets = [];
-    let score = 0;
-    const mouse = { x: canvas.width/2, y: canvas.height/2 };
+    let stars = [];
+    let numStars = 400;
+    let speed = 0;
+    let targetSpeed = 0;
+    let mouseX = canvas.width / 2;
+    let mouseY = canvas.height / 2;
+
+    // Crear estrellas iniciales
+    for(let i = 0; i < numStars; i++) {
+        stars.push({
+            x: Math.random() * canvas.width - canvas.width/2,
+            y: Math.random() * canvas.height - canvas.height/2,
+            z: Math.random() * canvas.width
+        });
+    }
 
     window.addEventListener('mousemove', (e) => {
-        mouse.x = e.x;
-        mouse.y = e.y;
+        mouseX = e.clientX - canvas.width / 2;
+        mouseY = e.clientY - canvas.height / 2;
     });
 
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = 0;
-            this.vy = 0;
-            this.acc = 0.5;
-            this.friction = 0.96;
-            this.color = '#00ff41';
-        }
-        update() {
-            // Persiguen el ratón como un enjambre
-            let dx = mouse.x - this.x;
-            let dy = mouse.y - this.y;
-            let angle = Math.atan2(dy, dx);
-            
-            this.vx += Math.cos(angle) * this.acc;
-            this.vy += Math.sin(angle) * this.acc;
-            
-            this.vx *= this.friction;
-            this.vy *= this.friction;
-            
-            this.x += this.vx;
-            this.y += this.vy;
+    window.addEventListener('keydown', (e) => {
+        if(e.key === 'w' || e.key === 'ArrowUp') targetSpeed = 20;
+        if(e.key === 's' || e.key === 'ArrowDown') targetSpeed = 0;
+    });
 
-            // Perder si tocan los bordes (vuelven al centro)
-            if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-                this.x = canvas.width/2;
-                this.y = canvas.height/2;
-                score = Math.max(0, score - 5);
-                warning.style.visibility = 'visible';
-                setTimeout(() => warning.style.visibility = 'hidden', 1000);
-            }
-        }
-        draw() {
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function spawnTarget() {
-        targets.push({
-            x: Math.random() * (canvas.width - 100) + 50,
-            y: Math.random() * (canvas.height - 100) + 50,
-            size: 15
-        });
-    }
-
-    // Inicializar 50 partículas
-    for(let i=0; i<50; i++) particles.push(new Particle());
-    spawnTarget();
-
-    function animate() {
-        ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
+    function draw() {
+        ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Suavizar aceleración
+        speed += (targetSpeed - speed) * 0.05;
+        document.getElementById('pwr').innerText = Math.round((speed/20)*100);
 
-        targets.forEach((t, index) => {
-            ctx.strokeStyle = '#ff3333';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(t.x - t.size/2, t.y - t.size/2, t.size, t.size);
-            
-            // Check colisión con partículas
-            particles.forEach(p => {
-                let dx = p.x - t.x;
-                let dy = p.y - t.y;
-                if(Math.sqrt(dx*dx + dy*dy) < t.size) {
-                    targets.splice(index, 1);
-                    score += 1;
-                    spawnTarget();
-                    if(score % 10 === 0) spawnTarget(); // Más dificultad
-                }
-            });
-        });
+        ctx.save();
+        ctx.translate(canvas.width/2, canvas.height/2);
 
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-            // Dibujar líneas entre el ratón y las partículas cercanas
-            let dx = mouse.x - p.x;
-            let dy = mouse.y - p.y;
-            if(Math.sqrt(dx*dx + dy*dy) < 100) {
-                ctx.strokeStyle = 'rgba(0, 255, 65, 0.1)';
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(mouse.x, mouse.y);
-                ctx.stroke();
+        stars.forEach(s => {
+            s.z -= speed; // Mover hacia adelante
+
+            // Si la estrella pasa al piloto, se resetea al fondo
+            if (s.z <= 0) {
+                s.z = canvas.width;
+                s.x = Math.random() * canvas.width - canvas.width/2;
+                s.y = Math.random() * canvas.height - canvas.height/2;
             }
+
+            // Proyección 3D a 2D simple
+            let px = (s.x - mouseX * 0.5) * (canvas.width / s.z);
+            let py = (s.y - mouseY * 0.5) * (canvas.width / s.z);
+            let size = (1 - s.z / canvas.width) * 3;
+
+            ctx.fillStyle = `rgba(255, 255, 255, ${1 - s.z/canvas.width})`;
+            ctx.beginPath();
+            ctx.arc(px, py, size, 0, Math.PI * 2);
+            ctx.fill();
         });
 
-        scoreDisp.innerText = score;
-        nodesDisp.innerText = targets.length;
-        requestAnimationFrame(animate);
+        // Mira de la nave (HUD)
+        ctx.strokeStyle = '#0f0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-20, 0); ctx.lineTo(20, 0);
+        ctx.moveTo(0, -20); ctx.lineTo(0, 20);
+        ctx.stroke();
+        
+        ctx.restore();
+
+        // Marco de la cabina (Simulado)
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 40;
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+        requestAnimationFrame(draw);
     }
-    animate();
+    draw();
 </script>
 </body>
 </html>
