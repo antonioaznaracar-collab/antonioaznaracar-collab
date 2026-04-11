@@ -2,78 +2,198 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>My Melon Sandbox Clone</title>
+    <title>MELON CINEMA STUDIO - ULTRA</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #121212; color: white; font-family: sans-serif; }
-        #ui { position: absolute; top: 10px; left: 10px; pointer-events: none; }
-        canvas { display: block; }
+        body { margin: 0; overflow: hidden; background: #0f0f0f; font-family: 'Arial', sans-serif; color: #eee; }
+        #gui { position: absolute; left: 0; top: 0; bottom: 0; width: 220px; background: #1a1a1a; border-right: 2px solid #333; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; z-index: 100; }
+        .section { margin-bottom: 20px; }
+        h3 { font-size: 12px; color: #4caf50; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        button { background: #2a2a2a; border: 1px solid #444; color: #ccc; width: 100%; padding: 8px; margin: 3px 0; cursor: pointer; text-align: left; font-size: 11px; }
+        button:hover { background: #3a3a3a; color: white; border-color: #4caf50; }
+        #canvas-container { margin-left: 220px; width: calc(100% - 220px); height: 100vh; }
+        .hint { position: absolute; bottom: 10px; right: 10px; font-size: 10px; color: #666; pointer-events: none; }
     </style>
 </head>
 <body>
-    <div id="ui">
-        <h1>🍈 Mini Sandbox</h1>
-        <p>Haz clic para spawnear objetos | Arrástralos para moverlos</p>
+
+<div id="gui">
+    <h2 style="color: #4caf50; font-size: 18px;">🎬 MOVIE ENGINE</h2>
+    
+    <div class="section">
+        <h3>👥 Actores y Vestimenta</h3>
+        <button onclick="spawnHuman('#4caf50', 'Melón')">🍈 Melón Standard</button>
+        <button onclick="spawnHuman('#f44336', 'Manzana')">🍎 Manzana Roja</button>
+        <button onclick="spawnHuman('#ffeb3b', 'Maíz')">🌽 Maíz Amarillo</button>
+        <button onclick="spawnHuman('#333', 'Soldado', '#555')">💂 Soldado (Vestido)</button>
     </div>
 
-    <!-- Cargamos el motor de físicas Matter.js desde un CDN -->
-    <script src="https://cloudflare.com"></script>
-    
-    <script>
-        // 1. Configuración del motor de físicas
-        const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
-        const engine = Engine.create();
-        const world = engine.world;
+    <div class="section">
+        <h3>🏢 Escenarios y Mapas</h3>
+        <button onclick="spawnMap('skyline')">🌆 Edificios Altos</button>
+        <button onclick="spawnMap('lava_pit')">🌋 Foso de Lava</button>
+        <button onclick="spawnMap('pool')">🌊 Piscina de Agua</button>
+    </div>
 
-        // 2. Crear el lienzo (Canvas)
-        const render = Render.create({
-            element: document.body,
-            engine: engine,
-            options: {
-                width: window.innerWidth,
-                height: window.innerHeight,
-                wireframes: false, // Desactivar para ver colores
-                background: '#1a1a1a'
-            }
-        });
+    <div class="section">
+        <h3>⚔️ Armas y Objetos</h3>
+        <button onclick="spawnWeapon('knife')">🔪 Cuchillo de Combate</button>
+        <button onclick="spawnWeapon('sword')">⚔️ Espada Pesada</button>
+        <button onclick="spawnWeapon('spear')">🔱 Lanza Larga</button>
+        <button onclick="spawnWeapon('potion')">🧪 Poción de Fuerza</button>
+    </div>
 
-        Render.run(render);
-        Runner.run(Runner.create(), engine);
+    <div class="section">
+        <h3>⚙️ Herramientas</h3>
+        <button onclick="toggleGravity()" style="background:#224;">🌌 Gravedad Cero</button>
+        <button onclick="resetAll()" style="background:#422;">🗑️ Limpiar Escena</button>
+    </div>
+</div>
 
-        // 3. Crear suelo y paredes (objetos estáticos)
-        const ground = Bodies.rectangle(window.innerWidth/2, window.innerHeight + 25, window.innerWidth, 60, { isStatic: true });
-        const leftWall = Bodies.rectangle(-25, window.innerHeight/2, 60, window.innerHeight, { isStatic: true });
-        const rightWall = Bodies.rectangle(window.innerWidth + 25, window.innerHeight/2, 60, window.innerHeight, { isStatic: true });
-        Composite.add(world, [ground, leftWall, rightWall]);
+<div id="canvas-container" id="game-canvas"></div>
+<div class="hint">Usa el ratón para mover | Clic derecho para cámara lenta | SHIFT + Clic para borrar</div>
 
-        // 4. Función para crear "Melones" (Cajas verdes)
-        function spawnBox(x, y) {
-            const box = Bodies.rectangle(x, y, 40, 40, {
-                render: { fillStyle: '#4caf50', strokeStyle: '#2e7d32', lineWidth: 3 }
-            });
-            Composite.add(world, box);
+<script src="https://cloudflare.com"></script>
+
+<script>
+    const { Engine, Render, Runner, Bodies, Composite, Constraint, Mouse, MouseConstraint, Vector, Body, Events } = Matter;
+    const engine = Engine.create();
+    const world = engine.world;
+    let isSlowMo = false;
+
+    const render = Render.create({
+        element: document.getElementById('canvas-container'),
+        engine: engine,
+        options: { 
+            width: window.innerWidth - 220, 
+            height: window.innerHeight, 
+            wireframes: false, 
+            background: '#111' 
         }
+    });
 
-        // 5. Interacción: Clic para crear y Mouse para arrastrar
-        window.addEventListener('mousedown', (e) => {
-            // Solo spawnea si no estamos arrastrando algo
-            if (!mouseConstraint.body) {
-                spawnBox(e.clientX, e.clientY);
+    Render.run(render);
+    const runner = Runner.run(Runner.create(), engine);
+
+    // Límites del mundo
+    const ground = Bodies.rectangle((window.innerWidth-220)/2, window.innerHeight-10, 2000, 40, { isStatic: true, render: { fillStyle: '#222' } });
+    Composite.add(world, ground);
+
+    // --- GENERADOR DE HUMANOS (SISTEMA DE TRAPO) ---
+    function spawnHuman(color, label, shirtColor = null) {
+        const x = Math.random() * 400 + 300;
+        const y = 100;
+        const group = Body.nextGroup(true);
+
+        const head = Bodies.circle(x, y-50, 15, { collisionFilter: { group: group }, render: { fillStyle: color } });
+        const chest = Bodies.rectangle(x, y, 30, 50, { collisionFilter: { group: group }, render: { fillStyle: shirtColor || '#333' } });
+        const armL = Bodies.rectangle(x-25, y, 10, 40, { collisionFilter: { group: group }, render: { fillStyle: color } });
+        const armR = Bodies.rectangle(x+25, y, 10, 40, { collisionFilter: { group: group }, render: { fillStyle: color } });
+        const legL = Bodies.rectangle(x-10, y+45, 12, 45, { collisionFilter: { group: group }, render: { fillStyle: '#222' } });
+        const legR = Bodies.rectangle(x+10, y+45, 12, 45, { collisionFilter: { group: group }, render: { fillStyle: '#222' } });
+
+        const joints = [
+            Constraint.create({ bodyA: head, bodyB: chest, pointA: {x:0, y:12}, pointB: {x:0, y:-22}, stiffness: 0.4 }),
+            Constraint.create({ bodyA: armL, bodyB: chest, pointA: {x:0, y:-15}, pointB: {x:-15, y:-20}, stiffness: 0.4 }),
+            Constraint.create({ bodyA: armR, bodyB: chest, pointA: {x:0, y:-15}, pointB: {x:15, y:-20}, stiffness: 0.4 }),
+            Constraint.create({ bodyA: legL, bodyB: chest, pointA: {x:0, y:-20}, pointB: {x:-10, y:20}, stiffness: 0.4 }),
+            Constraint.create({ bodyA: legR, bodyB: chest, pointA: {x:0, y:-20}, pointB: {x:10, y:20}, stiffness: 0.4 })
+        ];
+
+        Composite.add(world, [head, chest, armL, armR, legL, legR, ...joints]);
+    }
+
+    // --- MAPAS ---
+    function spawnMap(type) {
+        if(type === 'skyline') {
+            for(let i=0; i<3; i++) {
+                const h = 300 + (i*100);
+                const building = Bodies.rectangle(400 + (i*250), window.innerHeight - h/2 - 20, 120, h, { 
+                    render: { fillStyle: '#2a2a2a', strokeStyle: '#444', lineWidth: 2 } 
+                });
+                Composite.add(world, building);
+            }
+        } else if(type === 'lava_pit') {
+            const lava = Bodies.rectangle(700, window.innerHeight - 20, 600, 40, { 
+                isStatic: true, isSensor: true, label: 'LAVA',
+                render: { fillStyle: '#ff4500', glow: '20px #f00' } 
+            });
+            Composite.add(world, lava);
+        } else if(type === 'pool') {
+            const water = Bodies.rectangle(700, window.innerHeight - 50, 500, 100, { 
+                isStatic: true, isSensor: true, label: 'WATER',
+                render: { fillStyle: 'rgba(0, 150, 255, 0.4)' } 
+            });
+            Composite.add(world, water);
+        }
+    }
+
+    // --- ARMAS ---
+    function spawnWeapon(type) {
+        const x = 500, y = 50;
+        let w;
+        if(type === 'knife') w = Bodies.rectangle(x, y, 5, 25, { render: { fillStyle: '#aaa' }, friction: 0.1 });
+        if(type === 'sword') w = Bodies.rectangle(x, y, 10, 70, { render: { fillStyle: '#eee' }, density: 0.02 });
+        if(type === 'spear') w = Bodies.rectangle(x, y, 6, 150, { render: { fillStyle: '#852' } });
+        if(type === 'potion') w = Bodies.circle(x, y, 10, { label: 'POTION', render: { fillStyle: '#e040fb' } });
+        Composite.add(world, w);
+    }
+
+    // --- LÓGICA DE FÍSICAS AVANZADAS ---
+    Events.on(engine, 'collisionStart', (event) => {
+        event.pairs.forEach(pair => {
+            const labels = [pair.bodyA.label, pair.bodyB.label];
+            if(labels.includes('LAVA')) {
+                const victim = pair.bodyA.label === 'LAVA' ? pair.bodyB : pair.bodyA;
+                if(!victim.isStatic) {
+                    victim.render.opacity = 0.5;
+                    setTimeout(() => Composite.remove(world, victim), 500);
+                }
+            }
+            if(labels.includes('POTION')) {
+                const pot = pair.bodyA.label === 'POTION' ? pair.bodyA : pair.bodyB;
+                const other = pair.bodyA.label === 'POTION' ? pair.bodyB : pair.bodyA;
+                Body.scale(other, 1.5, 1.5);
+                Composite.remove(world, pot);
             }
         });
+    });
 
-        const mouse = Mouse.create(render.canvas);
-        const mouseConstraint = MouseConstraint.create(engine, {
-            mouse: mouse,
-            constraint: { stiffness: 0.2, render: { visible: false } }
-        });
-        Composite.add(world, mouseConstraint);
+    // --- CONTROLES ---
+    const mouse = Mouse.create(render.canvas);
+    const mouseConstraint = MouseConstraint.create(engine, {
+        mouse: mouse, constraint: { stiffness: 0.2, render: { visible: false } }
+    });
+    Composite.add(world, mouseConstraint);
 
-        // Ajustar al cambiar el tamaño de ventana
-        window.addEventListener('resize', () => {
-            render.canvas.width = window.innerWidth;
-            render.canvas.height = window.innerHeight;
-        });
-    </script>
+    window.addEventListener('keydown', (e) => {
+        if(e.shiftKey) { /* Borrado activado por clic */ }
+    });
+
+    window.addEventListener('mousedown', (e) => {
+        if(e.button === 2) { // Clic derecho SlowMo
+            isSlowMo = true;
+            engine.timing.timeScale = 0.2;
+        }
+        if(e.shiftKey) {
+            const bodies = Composite.allBodies(world);
+            bodies.forEach(b => {
+                if(!b.isStatic && Matter.Bounds.contains(b.bounds, {x: e.clientX-220, y: e.clientY})) {
+                    Composite.remove(world, b);
+                }
+            });
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isSlowMo = false;
+        engine.timing.timeScale = 1;
+    });
+
+    window.oncontextmenu = (e) => e.preventDefault();
+
+    function toggleGravity() { engine.gravity.y = engine.gravity.y === 0 ? 1 : 0; }
+    function resetAll() { Composite.clear(world, true); Composite.add(world, ground); }
+
+</script>
 </body>
 </html>
-
