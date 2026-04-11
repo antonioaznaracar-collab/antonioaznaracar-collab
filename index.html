@@ -2,19 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Starship Cockpit v1.0</title>
+    <title>Starship Commander v2.0</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
         canvas { display: block; }
-        #ui { position: absolute; bottom: 30px; width: 100%; text-align: center; color: #0f0; text-shadow: 0 0 5px #0f0; pointer-events: none; }
-        .hud-border { position: absolute; border: 2px solid #0f0; width: 80%; height: 60%; top: 20%; left: 10%; opacity: 0.3; pointer-events: none; }
+        #hud { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; color: #0f0; pointer-events: none; text-shadow: 0 0 5px #0f0; }
+        #cockpit-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 50px solid #111; box-sizing: border-box; pointer-events: none; border-bottom-width: 100px; }
+        .stats { background: rgba(0, 40, 0, 0.5); padding: 10px; border: 1px solid #0f0; }
     </style>
 </head>
 <body>
-    <div id="ui">
-        [ PROPULSIÓN: <span id="pwr">0</span>% ] | [ ESTADO: ESTABLE ] | [ SISTEMA: BORDE EXTERIOR ]
+    <div id="hud">
+        <div class="stats">AMMO: <span id="ammo">100</span>%</div>
+        <div class="stats">PWR: <span id="pwr">0</span>%</div>
+        <div class="stats">KILLS: <span id="kills">0</span></div>
     </div>
-    <div class="hud-border"></div>
+    <div id="cockpit-overlay"></div>
     <canvas id="space"></canvas>
 
 <script>
@@ -23,79 +26,94 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let stars = [];
-    let numStars = 400;
-    let speed = 0;
-    let targetSpeed = 0;
-    let mouseX = canvas.width / 2;
-    let mouseY = canvas.height / 2;
+    let stars = [], lasers = [], asteroids = [];
+    let speed = 0, targetSpeed = 0, kills = 0, shake = 0;
+    let mouseX = 0, mouseY = 0;
 
-    // Crear estrellas iniciales
-    for(let i = 0; i < numStars; i++) {
-        stars.push({
-            x: Math.random() * canvas.width - canvas.width/2,
-            y: Math.random() * canvas.height - canvas.height/2,
-            z: Math.random() * canvas.width
-        });
+    for(let i=0; i<400; i++) stars.push({x: Math.random()*2000-1000, y: Math.random()*2000-1000, z: Math.random()*2000});
+
+    window.onmousemove = e => { mouseX = e.clientX - canvas.width/2; mouseY = e.clientY - canvas.height/2; };
+    window.onmousedown = () => { 
+        lasers.push({x: 0, y: 50, z: 10, side: 1}, {x: 0, y: 50, z: 10, side: -1});
+        shake = 5;
+    };
+    window.onkeydown = e => {
+        if(e.key === 'w') targetSpeed = 30;
+        if(e.key === 's') targetSpeed = 0;
+    };
+
+    function spawnAsteroid() {
+        if(asteroids.length < 5) asteroids.push({x: Math.random()*1000-500, y: Math.random()*1000-500, z: 2000, r: 40 + Math.random()*60});
     }
-
-    window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX - canvas.width / 2;
-        mouseY = e.clientY - canvas.height / 2;
-    });
-
-    window.addEventListener('keydown', (e) => {
-        if(e.key === 'w' || e.key === 'ArrowUp') targetSpeed = 20;
-        if(e.key === 's' || e.key === 'ArrowDown') targetSpeed = 0;
-    });
 
     function draw() {
         ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0,0, canvas.width, canvas.height);
         
-        // Suavizar aceleración
         speed += (targetSpeed - speed) * 0.05;
-        document.getElementById('pwr').innerText = Math.round((speed/20)*100);
-
+        if(shake > 0) shake *= 0.9;
+        
         ctx.save();
-        ctx.translate(canvas.width/2, canvas.height/2);
+        ctx.translate(canvas.width/2 + (Math.random()-.5)*shake, canvas.height/2 + (Math.random()-.5)*shake);
 
+        // Estrellas
         stars.forEach(s => {
-            s.z -= speed; // Mover hacia adelante
-
-            // Si la estrella pasa al piloto, se resetea al fondo
-            if (s.z <= 0) {
-                s.z = canvas.width;
-                s.x = Math.random() * canvas.width - canvas.width/2;
-                s.y = Math.random() * canvas.height - canvas.height/2;
-            }
-
-            // Proyección 3D a 2D simple
-            let px = (s.x - mouseX * 0.5) * (canvas.width / s.z);
-            let py = (s.y - mouseY * 0.5) * (canvas.width / s.z);
-            let size = (1 - s.z / canvas.width) * 3;
-
-            ctx.fillStyle = `rgba(255, 255, 255, ${1 - s.z/canvas.width})`;
-            ctx.beginPath();
-            ctx.arc(px, py, size, 0, Math.PI * 2);
-            ctx.fill();
+            s.z -= speed;
+            if(s.z <= 0) s.z = 2000;
+            let px = (s.x - mouseX*0.3) * (1000/s.z);
+            let py = (s.y - mouseY*0.3) * (1000/s.z);
+            ctx.fillStyle = `rgba(255,255,255,${1 - s.z/2000})`;
+            ctx.fillRect(px, py, 2, 2);
         });
 
-        // Mira de la nave (HUD)
+        // Asteroides
+        spawnAsteroid();
+        asteroids.forEach((a, i) => {
+            a.z -= speed + 5;
+            let ax = (a.x - mouseX*0.3) * (1000/a.z);
+            let ay = (a.y - mouseY*0.3) * (1000/a.z);
+            let size = a.r * (1000/a.z);
+            
+            ctx.strokeStyle = '#855';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(ax-size/2, ay-size/2, size, size); // Estilo radar
+            
+            if(a.z <= 0) asteroids.splice(i, 1);
+            
+            // Colisión con láser
+            lasers.forEach((l, li) => {
+                if(Math.abs(ax) < size && Math.abs(ay) < size && a.z < 500) {
+                    asteroids.splice(i, 1);
+                    lasers.splice(li, 1);
+                    kills++;
+                    shake = 15;
+                }
+            });
+        });
+
+        // Láseres
+        ctx.strokeStyle = '#f00';
+        ctx.lineWidth = 4;
+        lasers.forEach((l, i) => {
+            l.z += 50;
+            let lx = (l.side * 200 - mouseX*0.3) * (1000/l.z);
+            let ly = (300 - mouseY*0.3) * (1000/l.z);
+            ctx.beginPath();
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(lx, ly - 20);
+            ctx.stroke();
+            if(l.z > 2000) lasers.splice(i, 1);
+        });
+
+        // Mira central
         ctx.strokeStyle = '#0f0';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-20, 0); ctx.lineTo(20, 0);
-        ctx.moveTo(0, -20); ctx.lineTo(0, 20);
-        ctx.stroke();
-        
+        ctx.strokeRect(-15, -15, 30, 30);
+        ctx.beginPath(); ctx.moveTo(0,-25); ctx.lineTo(0,25); ctx.moveTo(-25,0); ctx.lineTo(25,0); ctx.stroke();
+
         ctx.restore();
 
-        // Marco de la cabina (Simulado)
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 40;
-        ctx.strokeRect(0, 0, canvas.width, canvas.height);
-
+        document.getElementById('pwr').innerText = Math.round((speed/30)*100);
+        document.getElementById('kills').innerText = kills;
         requestAnimationFrame(draw);
     }
     draw();
