@@ -2,198 +2,315 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mario vs DK: Barrel Jump (Dificultad Progresiva)</title>
+    <title>Donkey Kong Arcade Retro - Edición Extendida</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
+            background-color: #000;
+            color: #fff;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            background-color: #222;
+            margin: 0;
             font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
         }
         canvas {
-            border: 4px solid #fff;
-            background-color: #000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            border: 4px solid #333;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
         }
-        #ui {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            text-align: center;
-            pointer-events: none;
-        }
+        .info { margin-top: 10px; text-align: center; }
+        .controls { color: #f00; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="ui">
-        <h1 id="score">Puntos: 0</h1>
-        <p id="level">Dificultad: Normal</p>
+        <h2 id="score">SCORE: 000000</h2>
+        <h3 id="levelDisplay">L=01</h3>
     </div>
+    
     <canvas id="gameCanvas"></canvas>
 
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const scoreElement = document.getElementById("score");
-        const levelElement = document.getElementById("level");
+    <div class="info">
+        <p>MOVER: <span class="controls">FLECHAS</span> | SALTAR: <span class="controls">ESPACIO</span></p>
+        <p>SUBIR ESCALERAS: <span class="controls">FLECHA ARRIBA</span></p>
+    </div>
 
-        // Configuración inicial
-        canvas.width = 800;
-        canvas.height = 400;
+<script>
+/**
+ * DONKEY KONG RETRO ENGINE
+ * Un motor de juego estructurado con dificultad progresiva
+ */
 
-        // Variables de juego
-        let score = 0;
-        let gameActive = true;
-        let frameCount = 0;
-        let difficultyFactor = 1; // Aumenta con el tiempo
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-        // Propiedades del Jugador (Mario)
-        const player = {
-            x: 50,
-            y: 330,
-            width: 30,
-            height: 40,
-            color: "#ff0000",
-            dy: 0,
-            jumpForce: 12,
-            gravity: 0.6,
-            grounded: false
-        };
+// --- CONFIGURACIÓN TÉCNICA ---
+canvas.width = 480;
+canvas.height = 600;
 
-        // Obstáculos (Barriles)
-        const barrels = [];
-        let barrelSpeed = 5;
-        let spawnRate = 90; // Frames entre cada barril
+const COLORS = {
+    mario: "#ff0000",
+    dk: "#964b00",
+    girder: "#ff3131", // Rojo de las vigas
+    ladder: "#00ffff", // Cian de las escaleras
+    barrel: "#eead0e",
+    pauline: "#ff69b4"
+};
 
-        // Control de teclado
-        window.addEventListener("keydown", (e) => {
-            if (e.code === "Space" && player.grounded) {
-                player.dy = -player.jumpForce;
-                player.grounded = false;
-            }
-            if (!gameActive && e.code === "Enter") {
-                location.reload(); // Reiniciar juego
+// --- ESTADO DEL JUEGO ---
+let gameState = {
+    score: 0,
+    level: 1,
+    frame: 0,
+    active: true,
+    difficulty: 1.0
+};
+
+// --- CLASES DEL MOTOR ---
+
+class GameObject {
+    constructor(x, y, w, h, color) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.color = color;
+    }
+}
+
+class Player extends GameObject {
+    constructor() {
+        super(50, 540, 20, 24, COLORS.mario);
+        this.vx = 0;
+        this.vy = 0;
+        this.speed = 3;
+        this.jumpPower = -8;
+        this.gravity = 0.4;
+        this.isGrounded = false;
+        this.isClimbing = false;
+    }
+
+    update(platforms, ladders) {
+        if (!this.isClimbing) {
+            this.vy += this.gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+        }
+
+        this.isGrounded = false;
+        let canClimb = false;
+
+        // Colisión con vigas (Plataformas)
+        platforms.forEach(p => {
+            if (this.x + this.w > p.x && this.x < p.x + p.w &&
+                this.y + this.h > p.y && this.y + this.h < p.y + 15 && this.vy >= 0) {
+                this.y = p.y - this.h;
+                this.vy = 0;
+                this.isGrounded = true;
             }
         });
 
-        function drawPlayer() {
-            ctx.fillStyle = player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // "Gorra" de Mario
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(player.x + 5, player.y + 5, 20, 5);
-        }
+        // Lógica de escaleras
+        ladders.forEach(l => {
+            if (this.x + this.w/2 > l.x && this.x + this.w/2 < l.x + l.w &&
+                this.y + this.h > l.y && this.y < l.y + l.h) {
+                canClimb = true;
+            }
+        });
 
-        function drawBarrels() {
-            barrels.forEach((barrel, index) => {
-                ctx.fillStyle = "#8B4513"; // Marrón barril
-                ctx.beginPath();
-                ctx.arc(barrel.x, barrel.y + 15, 15, 0, Math.PI * 2);
-                ctx.fill();
+        if (!canClimb) this.isClimbing = false;
+    }
+
+    draw() {
+        // Cuerpo de Mario
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.w, this.h);
+        // Gorra
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(this.x, this.y, this.w, 4);
+        // Ojos
+        ctx.fillStyle = "#000";
+        ctx.fillRect(this.x + 12, this.y + 6, 4, 4);
+    }
+}
+
+class Barrel extends GameObject {
+    constructor(x, y, speed) {
+        super(x, y, 16, 16, COLORS.barrel);
+        this.vx = speed;
+        this.vy = 0;
+        this.rotation = 0;
+    }
+
+    update(platforms) {
+        this.vy += 0.3;
+        this.x += this.vx;
+        this.y += this.vy;
+
+        platforms.forEach(p => {
+            if (this.x + this.w > p.x && this.x < p.x + p.w &&
+                this.y + this.h > p.y && this.y + this.h < p.y + 10) {
+                this.y = p.y - this.h;
+                this.vy = 0;
                 
-                // Efecto de rotación (líneas del barril)
-                ctx.strokeStyle = "#4d260a";
-                ctx.lineWidth = 3;
-                ctx.stroke();
-
-                barrel.x -= barrel.speed;
-
-                // Colisión simple (AABB)
-                if (
-                    player.x < barrel.x + 15 &&
-                    player.x + player.width > barrel.x - 15 &&
-                    player.y < barrel.y + 30 &&
-                    player.y + player.height > barrel.y
-                ) {
-                    gameOver();
+                // Si llega al borde de la viga, cae y cambia dirección
+                if (this.x + this.w > p.x + p.w || this.x < p.x) {
+                    this.vx *= -1;
                 }
-
-                // Eliminar barriles fuera de pantalla
-                if (barrel.x < -50) {
-                    barrels.splice(index, 1);
-                    score += 10;
-                }
-            });
-        }
-
-        function updateDifficulty() {
-            frameCount++;
-            
-            // Cada 500 frames (aprox 8 seg), sube la dificultad
-            if (frameCount % 500 === 0) {
-                difficultyFactor += 0.2;
-                barrelSpeed += 1;
-                spawnRate = Math.max(30, spawnRate - 5);
-                levelElement.innerText = `Dificultad: x${difficultyFactor.toFixed(1)}`;
-                levelElement.style.color = "yellow";
             }
+        });
+        this.rotation += 0.2;
+    }
 
-            // Generar barriles
-            if (frameCount % Math.floor(spawnRate) === 0) {
-                barrels.push({
-                    x: canvas.width + 50,
-                    y: 340,
-                    speed: barrelSpeed + Math.random() * 2 // Variación de velocidad
-                });
-            }
+    draw() {
+        ctx.save();
+        ctx.translate(this.x + 8, this.y + 8);
+        ctx.rotate(this.rotation);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#000";
+        ctx.strokeRect(-8, -8, 16, 16);
+        ctx.restore();
+    }
+}
+
+// --- INSTANCIACIÓN DE NIVEL ---
+
+const platforms = [
+    new GameObject(0, 570, 480, 20, COLORS.girder),    // Base
+    new GameObject(40, 480, 440, 15, COLORS.girder),   // Nivel 1
+    new GameObject(0, 390, 440, 15, COLORS.girder),    // Nivel 2
+    new GameObject(40, 300, 440, 15, COLORS.girder),   // Nivel 3
+    new GameObject(0, 210, 440, 15, COLORS.girder),    // Nivel 4
+    new GameObject(180, 120, 120, 15, COLORS.girder)   // Cima (Pauline)
+];
+
+const ladders = [
+    new GameObject(400, 480, 25, 90, COLORS.ladder),
+    new GameObject(60, 390, 25, 90, COLORS.ladder),
+    new GameObject(400, 300, 25, 90, COLORS.ladder),
+    new GameObject(60, 210, 25, 90, COLORS.ladder),
+    new GameObject(230, 120, 25, 90, COLORS.ladder)
+];
+
+const player = new Player();
+const barrels = [];
+
+// --- BUCLE PRINCIPAL (ENGINE) ---
+
+function gameLoop() {
+    if (!gameState.active) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gameState.frame++;
+
+    // 1. Dificultad Progresiva: Cada 15 segundos sube el nivel
+    if (gameState.frame % 900 === 0) {
+        gameState.difficulty += 0.3;
+        gameState.level++;
+        document.getElementById("levelDisplay").innerText = "L=" + (gameState.level < 10 ? "0"+gameState.level : gameState.level);
+    }
+
+    // 2. Generar Barriles basado en la dificultad
+    let currentSpawnRate = Math.max(30, 120 - (gameState.level * 5));
+    if (gameState.frame % currentSpawnRate === 0) {
+        barrels.push(new Barrel(190, 100, 2 * gameState.difficulty));
+    }
+
+    // 3. Dibujar Escenario
+    ladders.forEach(l => {
+        ctx.fillStyle = l.color;
+        ctx.fillRect(l.x, l.y, l.w, l.h);
+        // Peldaños
+        ctx.strokeStyle = "#000";
+        for(let i=0; i<l.h; i+=10) ctx.strokeRect(l.x, l.y+i, l.w, 2);
+    });
+
+    platforms.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        // Patrón de vigas
+        ctx.strokeStyle = "#900";
+        for(let i=0; i<p.w; i+=30) ctx.strokeRect(p.x+i, p.y, 10, p.h);
+    });
+
+    // 4. Dibujar Personajes Estáticos (DK y Pauline)
+    ctx.fillStyle = COLORS.dk;
+    ctx.fillRect(180, 60, 50, 60); // Donkey Kong
+    ctx.fillStyle = COLORS.pauline;
+    ctx.fillRect(230, 90, 15, 30); // Pauline
+
+    // 5. Actualizar y Dibujar Jugador
+    player.update(platforms, ladders);
+    player.draw();
+
+    // 6. Actualizar y Dibujar Barriles + Colisiones
+    barrels.forEach((b, index) => {
+        b.update(platforms);
+        b.draw();
+
+        // Colisión con Mario
+        if (player.x < b.x + b.w && player.x + player.w > b.x &&
+            player.y < b.y + b.h && player.y + player.h > b.y) {
+            gameOver();
         }
 
-        function updatePlayer() {
-            player.dy += player.gravity;
-            player.y += player.dy;
+        // Eliminar barriles antiguos
+        if (b.y > canvas.height) barrels.splice(index, 1);
+    });
 
-            // Colisión con suelo
-            if (player.y > 340) {
-                player.y = 340;
-                player.dy = 0;
-                player.grounded = true;
-            }
-        }
+    // Puntaje progresivo
+    gameState.score += 1;
+    document.getElementById("score").innerText = "SCORE: " + String(Math.floor(gameState.score/10)).padStart(6, '0');
 
-        function drawGround() {
-            ctx.fillStyle = "#0000ff"; // Suelo azul clásico
-            ctx.fillRect(0, 380, canvas.width, 20);
-        }
+    requestAnimationFrame(gameLoop);
+}
 
-        function gameOver() {
-            gameActive = false;
-            ctx.fillStyle = "rgba(0,0,0,0.7)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            ctx.font = "40px Courier New";
-            ctx.textAlign = "center";
-            ctx.fillText("¡GAME OVER!", canvas.width / 2, canvas.height / 2);
-            ctx.font = "20px Courier New";
-            ctx.fillText("Presiona ENTER para reintentar", canvas.width / 2, canvas.height / 2 + 50);
-        }
+// --- SISTEMA DE CONTROL ---
 
-        function gameLoop() {
-            if (!gameActive) return;
+window.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") player.vx = -player.speed;
+    if (e.key === "ArrowRight") player.vx = player.speed;
+    if (e.key === "ArrowUp" && !player.isGrounded) {
+        player.isClimbing = true;
+        player.vy = -player.speed;
+    }
+    if (e.key === "ArrowDown" && player.isClimbing) {
+        player.vy = player.speed;
+    }
+    if (e.key === " " && player.isGrounded) {
+        player.vy = player.jumpPower;
+        player.isGrounded = false;
+    }
+});
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+window.addEventListener("keyup", e => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") player.vx = 0;
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        if (player.isClimbing) player.vy = 0;
+    }
+});
 
-            drawGround();
-            updatePlayer();
-            drawPlayer();
-            updateDifficulty();
-            drawBarrels();
+function gameOver() {
+    gameState.active = false;
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillRect(0,0, canvas.width, canvas.height);
+    ctx.fillStyle = "red";
+    ctx.font = "bold 40px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText("F5 para Reintentar", canvas.width/2, canvas.height/2 + 50);
+}
 
-            scoreElement.innerText = `Puntos: ${score}`;
+// Iniciar
+gameLoop();
 
-            requestAnimationFrame(gameLoop);
-        }
-
-        gameLoop();
-    </script>
+</script>
 </body>
 </html>
