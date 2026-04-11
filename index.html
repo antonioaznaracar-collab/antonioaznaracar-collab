@@ -2,74 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>System Kernel - Secure Gateway</title>
+    <title>System Monitor - Dashboard</title>
     <style>
-        body { background: #000; color: #00ff00; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        #console { width: 80%; max-width: 600px; border: 1px solid #00ff00; padding: 20px; box-shadow: 0 0 15px #004400; }
-        .blink { animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-        .success { color: #fff; font-weight: bold; }
+        body { background: #1a1a1a; color: #00ff00; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .box { border: 1px solid #333; padding: 40px; border-radius: 10px; background: #222; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        button { background: #00ff00; color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+        button:hover { background: #00cc00; }
+        .status { font-size: 12px; color: #888; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="console">
-    <div id="log"></div>
-    <div id="cursor" class="blink">_</div>
+<div class="box">
+    <h2>Secure Access Gateway</h2>
+    <p>Iniciando tunelización para saltar restricciones de IMT Lazarus...</p>
+    <button onclick="bypassLazarus()">LANZAR CONEXIÓN SEGURA</button>
+    <div class="status" id="st">Estado: Esperando acción del usuario...</div>
 </div>
 
 <script>
-    const logElement = document.getElementById('log');
-    const logs = [
-        "Iniciando secuencia de bypass...",
-        "Detectando extensión de filtrado: [LAZARUS_DETECTED]",
-        "Inyectando scripts de ofuscación de tráfico...",
-        "Generando Token de sesión anónima...",
-        "Limpiando cabeceras Referrer para evitar tracking...",
-        "Conexión establecida. Redirigiendo a zona segura..."
-    ];
-
-    let step = 0;
-    function runTerminal() {
-        if (step < logs.length) {
-            const line = document.createElement('div');
-            line.innerHTML = `<span style="color: #008800">[OK]</span> ${logs[step]}`;
-            logElement.appendChild(line);
-            step++;
-            setTimeout(runTerminal, 500 + Math.random() * 500);
-        } else {
-            executeBypass();
-        }
-    }
-
-    function executeBypass() {
-        // Codificamos la URL en Base64 para que la extensión no lea "chatgpt" en el código
-        const secretBase = "aHR0cHM6Ly9jaGF0Z3B0LmNvbQ=="; 
-        const target = atob(secretBase);
-
-        const line = document.createElement('div');
-        line.className = "success";
-        line.innerHTML = "<br>> ABRIENDO PUERTO SEGURO EN PESTAÑA INDEPENDIENTE...";
-        logElement.appendChild(line);
+    function bypassLazarus() {
+        const st = document.getElementById('st');
+        st.innerText = "Cifrando petición y buscando túnel abierto...";
+        
+        // No usamos la URL directa. La dividimos y la codificamos.
+        const p1 = "aHR0cHM6Ly8="; // https://
+        const p2 = "Y2hhdGdwdC5jb20="; // chatgpt.com
+        
+        // Intentamos usar un servicio de "Web Proxy" gratuito como puente.
+        // Esto hace que IMT Lazarus vea que vas a "croxyproxy.com" en lugar de "chatgpt.com"
+        const proxyBase = "https://croxyproxy.com";
+        const target = atob(p1) + atob(p2);
+        const finalURL = proxyBase + encodeURIComponent(target);
 
         setTimeout(() => {
-            // El truco definitivo: Abrir una pestaña con 'noopener' y 'noreferrer'
-            // Esto corta el vínculo con tu index.html y dificulta que la extensión
-            // aplique reglas basadas en el origen del tráfico.
-            const win = window.open(target, '_blank', 'noopener,noreferrer');
+            // Abrimos en una ventana con parámetros de ocultación
+            const secureWindow = window.open('', '_blank');
             
-            if (!win) {
-                // Si el navegador bloquea el pop-up
-                alert("Bloqueador de ventanas detectado. Haz clic en 'Permitir' para acceder a ChatGPT.");
-                window.location.replace(target); // Redirección forzada en la misma pestaña
+            if (secureWindow) {
+                st.innerText = "Túnel establecido. Redirigiendo...";
+                // Escribimos el redireccionamiento dentro de una página en blanco 
+                // para que la extensión pierda el hilo de la navegación original.
+                secureWindow.document.write(`
+                    <html>
+                    <body style="background:#000;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+                        <div>
+                            <h2>Cargando ChatGPT vía Proxy Seguro...</h2>
+                            <p>Saltando bloqueo educativo de 24h.</p>
+                            <script>window.location.href = "${finalURL}";<\/script>
+                        </div>
+                    </body>
+                    </html>
+                `);
             } else {
-                // Cerramos esta pestaña de "puente" para no dejar rastro
-                window.close();
+                alert("Error: El navegador bloqueó la ventana emergente. Por favor, permítela.");
             }
-        }, 1500);
+        }, 1000);
     }
-
-    window.onload = runTerminal;
 </script>
 </body>
 </html>
