@@ -2,98 +2,138 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Fluid Dynamics Lab</title>
+    <title>Neural Network Sync</title>
     <style>
-        body { margin: 0; background: #050505; color: #444; font-family: monospace; overflow: hidden; }
-        canvas { display: block; }
-        #ui { position: absolute; top: 10px; left: 10px; pointer-events: none; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        body { margin: 0; background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; }
+        canvas { display: block; cursor: crosshair; }
+        #stats { position: absolute; top: 10px; left: 20px; pointer-events: none; }
+        .alert { color: #ff3333; animation: blink 0.5s infinite; visibility: hidden; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
-    <div id="ui">System Status: Active | Particles: <span id="count">0</span> | Stability: 98.4%</div>
+    <div id="stats">
+        DATA_SYNC: <span id="score">0</span>% | NODES: <span id="nodes">0</span> <br>
+        <span id="warning" class="alert">! COLLISION CRITICAL !</span>
+    </div>
     <canvas id="canvas"></canvas>
 
 <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    const countDisp = document.getElementById('count');
-    
+    const scoreDisp = document.getElementById('score');
+    const nodesDisp = document.getElementById('nodes');
+    const warning = document.getElementById('warning');
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     let particles = [];
-    const mouse = { x: null, y: null, radius: 100 };
+    let targets = [];
+    let score = 0;
+    const mouse = { x: canvas.width/2, y: canvas.height/2 };
 
     window.addEventListener('mousemove', (e) => {
         mouse.x = e.x;
         mouse.y = e.y;
-        // Crea partículas al mover el ratón
-        for(let i = 0; i < 2; i++) {
-            particles.push(new Particle(mouse.x, mouse.y));
-        }
     });
 
     class Particle {
-        constructor(x, y) {
-            this.x = x;
-            this.y = y;
-            this.size = Math.random() * 3 + 1;
-            this.speedX = Math.random() * 3 - 1.5;
-            this.speedY = Math.random() * 3 - 1.5;
-            this.color = `hsl(${Math.random() * 60 + 100}, 100%, 50%)`; // Tonos verdes (parece código)
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = 0;
+            this.vy = 0;
+            this.acc = 0.5;
+            this.friction = 0.96;
+            this.color = '#00ff41';
         }
         update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.size > 0.1) this.size -= 0.01;
+            // Persiguen el ratón como un enjambre
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let angle = Math.atan2(dy, dx);
+            
+            this.vx += Math.cos(angle) * this.acc;
+            this.vy += Math.sin(angle) * this.acc;
+            
+            this.vx *= this.friction;
+            this.vy *= this.friction;
+            
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Perder si tocan los bordes (vuelven al centro)
+            if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                this.x = canvas.width/2;
+                this.y = canvas.height/2;
+                score = Math.max(0, score - 5);
+                warning.style.visibility = 'visible';
+                setTimeout(() => warning.style.visibility = 'hidden', 1000);
+            }
         }
         draw() {
             ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
             ctx.fill();
         }
     }
 
-    function handleParticles() {
-        for (let i = 0; i < particles.length; i++) {
-            particles[i].update();
-            particles[i].draw();
-            
-            // Conectar partículas cercanas con líneas (parece una red neuronal)
-            for (let j = i; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 80) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = particles[i].color;
-                    ctx.lineWidth = 0.2;
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.stroke();
-                }
-            }
-            if (particles[i].size <= 0.2) {
-                particles.splice(i, 1);
-                i--;
-            }
-        }
-        countDisp.innerText = particles.length;
+    function spawnTarget() {
+        targets.push({
+            x: Math.random() * (canvas.width - 100) + 50,
+            y: Math.random() * (canvas.height - 100) + 50,
+            size: 15
+        });
     }
 
+    // Inicializar 50 partículas
+    for(let i=0; i<50; i++) particles.push(new Particle());
+    spawnTarget();
+
     function animate() {
-        ctx.fillStyle = 'rgba(0,0,0,0.1)'; // Estela de movimiento
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        handleParticles();
+
+        targets.forEach((t, index) => {
+            ctx.strokeStyle = '#ff3333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(t.x - t.size/2, t.y - t.size/2, t.size, t.size);
+            
+            // Check colisión con partículas
+            particles.forEach(p => {
+                let dx = p.x - t.x;
+                let dy = p.y - t.y;
+                if(Math.sqrt(dx*dx + dy*dy) < t.size) {
+                    targets.splice(index, 1);
+                    score += 1;
+                    spawnTarget();
+                    if(score % 10 === 0) spawnTarget(); // Más dificultad
+                }
+            });
+        });
+
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+            // Dibujar líneas entre el ratón y las partículas cercanas
+            let dx = mouse.x - p.x;
+            let dy = mouse.y - p.y;
+            if(Math.sqrt(dx*dx + dy*dy) < 100) {
+                ctx.strokeStyle = 'rgba(0, 255, 65, 0.1)';
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.stroke();
+            }
+        });
+
+        scoreDisp.innerText = score;
+        nodesDisp.innerText = targets.length;
         requestAnimationFrame(animate);
     }
     animate();
-
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
 </script>
 </body>
 </html>
