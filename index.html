@@ -2,121 +2,259 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Starship Commander v2.0</title>
+    <title>STAR WARS: GALAXY AT WAR | GITHUB EDITION</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
-        canvas { display: block; }
-        #hud { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; color: #0f0; pointer-events: none; text-shadow: 0 0 5px #0f0; }
-        #cockpit-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 50px solid #111; box-sizing: border-box; pointer-events: none; border-bottom-width: 100px; }
-        .stats { background: rgba(0, 40, 0, 0.5); padding: 10px; border: 1px solid #0f0; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Consolas', monospace; color: #0cf; }
+        canvas { display: block; filter: contrast(1.2) brightness(1.1); }
+        #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .panel { position: absolute; border: 2px solid rgba(0, 204, 255, 0.4); background: rgba(0, 10, 20, 0.7); padding: 15px; border-radius: 5px; box-shadow: 0 0 20px rgba(0, 204, 255, 0.2); }
+        #top-info { top: 20px; left: 50%; transform: translateX(-50%); text-align: center; width: 300px; }
+        #left-vitals { bottom: 50px; left: 50px; width: 200px; }
+        #right-vitals { bottom: 50px; right: 50px; width: 200px; text-align: right; }
+        .bar { height: 10px; background: #222; margin-top: 5px; border: 1px solid #0cf; overflow: hidden; }
+        .fill { height: 100%; background: #0cf; transition: width 0.3s; }
+        .warning { color: #f00; font-weight: bold; animation: blink 0.5s infinite; text-align: center; display: none; }
+        @keyframes blink { 50% { opacity: 0; } }
+        #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border: 1px solid rgba(255,0,0,0.5); border-radius: 50%; }
+        #crosshair::before { content: ''; position: absolute; top: 50%; left: -20px; width: 100px; height: 1px; background: red; }
+        #crosshair::after { content: ''; position: absolute; left: 50%; top: -20px; width: 1px; height: 100px; background: red; }
     </style>
 </head>
 <body>
-    <div id="hud">
-        <div class="stats">AMMO: <span id="ammo">100</span>%</div>
-        <div class="stats">PWR: <span id="pwr">0</span>%</div>
-        <div class="stats">KILLS: <span id="kills">0</span></div>
+    <div id="ui">
+        <div id="top-info" class="panel">
+            <div id="sector">SECTOR: EXTERIOR RIM</div>
+            <div id="warn" class="warning">! ENEMY LOCK-ON !</div>
+        </div>
+        <div id="left-vitals" class="panel">
+            SHIELDS
+            <div class="bar"><div id="shield-fill" class="fill" style="width: 100%"></div></div>
+            ENERGY
+            <div class="bar"><div id="energy-fill" class="fill" style="width: 80%; background: #f0f"></div></div>
+        </div>
+        <div id="right-vitals" class="panel">
+            KILLS: <span id="kill-count">0</span><br>
+            THRUST: <span id="speed-val">0</span>%<br>
+            RADAR: ONLINE
+        </div>
+        <div id="crosshair"></div>
     </div>
-    <div id="cockpit-overlay"></div>
-    <canvas id="space"></canvas>
+    <canvas id="star-canvas"></canvas>
 
 <script>
-    const canvas = document.getElementById('space');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+/** 
+ * STAR WARS: GALAXY AT WAR ENGINE v4.2
+ * Desarrollado para simulación de combate espacial inmersivo.
+ */
 
-    let stars = [], lasers = [], asteroids = [];
-    let speed = 0, targetSpeed = 0, kills = 0, shake = 0;
-    let mouseX = 0, mouseY = 0;
+const canvas = document.getElementById('star-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    for(let i=0; i<400; i++) stars.push({x: Math.random()*2000-1000, y: Math.random()*2000-1000, z: Math.random()*2000});
+// --- CONFIGURACIÓN GLOBAL ---
+const CONFIG = {
+    STAR_COUNT: 600,
+    ENEMY_LIMIT: 8,
+    LASER_SPEED: 120,
+    FRICTION: 0.97,
+    ROLL_STRENGTH: 0.05
+};
 
-    window.onmousemove = e => { mouseX = e.clientX - canvas.width/2; mouseY = e.clientY - canvas.height/2; };
-    window.onmousedown = () => { 
-        lasers.push({x: 0, y: 50, z: 10, side: 1}, {x: 0, y: 50, z: 10, side: -1});
-        shake = 5;
-    };
-    window.onkeydown = e => {
-        if(e.key === 'w') targetSpeed = 30;
-        if(e.key === 's') targetSpeed = 0;
-    };
+// --- ESTADOS DEL JUEGO ---
+let state = {
+    mx: 0, my: 0, 
+    pitch: 0, yaw: 0, roll: 0,
+    speed: 15, targetSpeed: 15,
+    score: 0, health: 100,
+    frame: 0
+};
 
-    function spawnAsteroid() {
-        if(asteroids.length < 5) asteroids.push({x: Math.random()*1000-500, y: Math.random()*1000-500, z: 2000, r: 40 + Math.random()*60});
+// --- CLASES DEL MOTOR ---
+
+class Particle {
+    constructor(x, y, z, color = '#fff') {
+        this.x = x; this.y = y; this.z = z;
+        this.color = color;
+        this.life = 1.0;
     }
-
-    function draw() {
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0,0, canvas.width, canvas.height);
-        
-        speed += (targetSpeed - speed) * 0.05;
-        if(shake > 0) shake *= 0.9;
-        
-        ctx.save();
-        ctx.translate(canvas.width/2 + (Math.random()-.5)*shake, canvas.height/2 + (Math.random()-.5)*shake);
-
-        // Estrellas
-        stars.forEach(s => {
-            s.z -= speed;
-            if(s.z <= 0) s.z = 2000;
-            let px = (s.x - mouseX*0.3) * (1000/s.z);
-            let py = (s.y - mouseY*0.3) * (1000/s.z);
-            ctx.fillStyle = `rgba(255,255,255,${1 - s.z/2000})`;
-            ctx.fillRect(px, py, 2, 2);
-        });
-
-        // Asteroides
-        spawnAsteroid();
-        asteroids.forEach((a, i) => {
-            a.z -= speed + 5;
-            let ax = (a.x - mouseX*0.3) * (1000/a.z);
-            let ay = (a.y - mouseY*0.3) * (1000/a.z);
-            let size = a.r * (1000/a.z);
-            
-            ctx.strokeStyle = '#855';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(ax-size/2, ay-size/2, size, size); // Estilo radar
-            
-            if(a.z <= 0) asteroids.splice(i, 1);
-            
-            // Colisión con láser
-            lasers.forEach((l, li) => {
-                if(Math.abs(ax) < size && Math.abs(ay) < size && a.z < 500) {
-                    asteroids.splice(i, 1);
-                    lasers.splice(li, 1);
-                    kills++;
-                    shake = 15;
-                }
-            });
-        });
-
-        // Láseres
-        ctx.strokeStyle = '#f00';
-        ctx.lineWidth = 4;
-        lasers.forEach((l, i) => {
-            l.z += 50;
-            let lx = (l.side * 200 - mouseX*0.3) * (1000/l.z);
-            let ly = (300 - mouseY*0.3) * (1000/l.z);
-            ctx.beginPath();
-            ctx.moveTo(lx, ly);
-            ctx.lineTo(lx, ly - 20);
-            ctx.stroke();
-            if(l.z > 2000) lasers.splice(i, 1);
-        });
-
-        // Mira central
-        ctx.strokeStyle = '#0f0';
-        ctx.strokeRect(-15, -15, 30, 30);
-        ctx.beginPath(); ctx.moveTo(0,-25); ctx.lineTo(0,25); ctx.moveTo(-25,0); ctx.lineTo(25,0); ctx.stroke();
-
-        ctx.restore();
-
-        document.getElementById('pwr').innerText = Math.round((speed/30)*100);
-        document.getElementById('kills').innerText = kills;
-        requestAnimationFrame(draw);
+    update(speedMult) {
+        this.z -= (state.speed * speedMult);
+        if (this.z < 1) {
+            this.z = 2000;
+            this.x = Math.random() * 4000 - 2000;
+            this.y = Math.random() * 4000 - 2000;
+        }
     }
-    draw();
+}
+
+class Projectile {
+    constructor(x, y, z, vx, vy, color) {
+        this.x = x; this.y = y; this.z = z;
+        this.vx = vx; this.vy = vy;
+        this.color = color;
+        this.active = true;
+    }
+    update() {
+        this.z += CONFIG.LASER_SPEED;
+        if (this.z > 3000) this.active = false;
+    }
+    draw() {
+        let f = 1000 / this.z;
+        let x = (this.x - state.yaw) * f;
+        let y = (this.y - state.pitch) * f;
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 4 * f;
+        ctx.shadowBlur = 15; ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x, y - 50 * f);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+}
+
+class Fighter {
+    constructor() { this.spawn(); }
+    spawn() {
+        this.x = Math.random() * 2000 - 1000;
+        this.y = Math.random() * 2000 - 1000;
+        this.z = 2500;
+        this.vx = (Math.random() - 0.5) * 10;
+        this.vy = (Math.random() - 0.5) * 10;
+        this.r = 40;
+    }
+    update() {
+        this.z -= (state.speed + 15);
+        this.x += this.vx; this.y += this.vy;
+        if (this.z < 10) this.spawn();
+    }
+    draw() {
+        let f = 1000 / this.z;
+        let x = (this.x - state.yaw) * f;
+        let y = (this.y - state.pitch) * f;
+        let s = this.r * f;
+
+        ctx.strokeStyle = '#f44'; ctx.lineWidth = 2;
+        // TIE Fighter Vector Design
+        ctx.beginPath();
+        ctx.moveTo(ex - s, ey - s); ctx.lineTo(ex - s, ey + s); // H-Wing wings
+        ctx.moveTo(ex + s, ey - s); ctx.lineTo(ex + s, ey + s);
+        ctx.moveTo(ex - s, ey); ctx.lineTo(ex + s, ey);
+        ctx.stroke();
+        ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(x, y, s/2, 0, Math.PI*2); ctx.fill();
+        ctx.stroke();
+    }
+}
+
+// --- GESTIÓN DE OBJETOS ---
+const stars = Array.from({length: CONFIG.STAR_COUNT}, () => new Particle(Math.random()*4000-2000, Math.random()*4000-2000, Math.random()*2000));
+const enemies = Array.from({length: CONFIG.ENEMY_LIMIT}, () => new Fighter());
+let projectiles = [];
+let explosions = [];
+
+// --- ENTRADA DE USUARIO ---
+window.addEventListener('mousemove', (e) => {
+    state.mx = (e.clientX - canvas.width / 2);
+    state.my = (e.clientY - canvas.height / 2);
+});
+
+window.addEventListener('mousedown', () => {
+    // Sonido visual y creación de disparos dobles
+    projectiles.push(new Projectile(state.yaw - 200, state.pitch + 200, 20, 0, 0, '#0f0'));
+    projectiles.push(new Projectile(state.yaw + 200, state.pitch + 200, 20, 0, 0, '#0f0'));
+});
+
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') state.targetSpeed = 60;
+    if (e.key === 'a') state.roll = -0.5;
+    if (e.key === 'd') state.roll = 0.5;
+});
+
+window.addEventListener('keyup', () => {
+    state.targetSpeed = 15;
+    state.roll = 0;
+});
+
+// --- BUCLE PRINCIPAL (ENGINE) ---
+function gameLoop() {
+    state.frame++;
+    ctx.fillStyle = '#00020a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Suavizado de cámara y física
+    state.yaw += (state.mx - state.yaw) * 0.05;
+    state.pitch += (state.my - state.pitch) * 0.05;
+    state.speed += (state.targetSpeed - state.speed) * 0.03;
+
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(state.mx * 0.0002); // Efecto de inclinación lateral
+
+    // Dibujar Galaxia
+    stars.forEach(s => {
+        s.update(1);
+        let f = 1000 / s.z;
+        let x = (s.x - state.yaw * 0.5) * f;
+        let y = (s.y - state.pitch * 0.5) * f;
+        ctx.fillStyle = `rgba(255,255,255,${1 - s.z/2000})`;
+        // Efecto warp cuando aceleras
+        let length = state.speed > 30 ? (state.speed * 0.5) : 2;
+        ctx.fillRect(x, y, 1, length * f);
+    });
+
+    // Dibujar Naves Nodrizas de fondo (Scale de batalla)
+    ctx.fillStyle = '#111';
+    let cruiserZ = 3000 - (state.frame % 3000);
+    let cf = 1000 / cruiserZ;
+    ctx.beginPath();
+    ctx.moveTo((-1500 - state.yaw)*cf, (-500 - state.pitch)*cf);
+    ctx.lineTo((-500 - state.yaw)*cf, (-200 - state.pitch)*cf);
+    ctx.lineTo((-1500 - state.yaw)*cf, (100 - state.pitch)*cf);
+    ctx.fill();
+
+    // Actualizar Enemigos e IA
+    enemies.forEach((en, index) => {
+        en.update();
+        let f = 1000 / en.z;
+        let ex = (en.x - state.yaw) * f;
+        let ey = (en.y - state.pitch) * f;
+        let s = en.r * f;
+
+        // Renderizado del enemigo
+        ctx.strokeStyle = '#f44'; ctx.lineWidth = 2;
+        ctx.strokeRect(ex - s, ey - s, s * 2, s * 2);
+        ctx.fillStyle = '#200'; ctx.fillRect(ex - s/2, ey - s/2, s, s);
+
+        // Colisión con proyectiles
+        projectiles.forEach((p, pIdx) => {
+            let dist = Math.hypot(ex - ((p.x - state.yaw)*(1000/p.z)), ey - ((p.y - state.pitch)*(1000/p.z)));
+            if (dist < s && Math.abs(p.z - en.z) < 150) {
+                state.score++;
+                en.spawn();
+                projectiles.splice(pIdx, 1);
+            }
+        });
+    });
+
+    // Actualizar Proyectiles
+    projectiles = projectiles.filter(p => p.active);
+    projectiles.forEach(p => { p.update(); p.draw(); });
+
+    ctx.restore();
+
+    // Actualizar Interfaz (UI)
+    document.getElementById('kill-count').innerText = state.score;
+    document.getElementById('speed-val').innerText = Math.round((state.speed / 60) * 100);
+    document.getElementById('shield-fill').style.width = (100 - (state.frame % 20) / 2) + "%";
+
+    requestAnimationFrame(gameLoop);
+}
+
+// Iniciar Motor
+gameLoop();
+
 </script>
 </body>
 </html>
+
