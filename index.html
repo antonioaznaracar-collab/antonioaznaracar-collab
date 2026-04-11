@@ -2,95 +2,122 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Physics Lab Studio</title>
+    <title>Simulador Orbital v4.0 - Laboratorio de Astrofísica</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: sans-serif; color: white; }
-        #menu { position: absolute; left: 0; top: 0; width: 200px; height: 100%; background: #111; border-right: 2px solid #4caf50; padding: 15px; z-index: 10; }
-        button { background: #333; border: 1px solid #444; color: #eee; width: 100%; padding: 10px; margin: 5px 0; cursor: pointer; border-radius: 4px; text-align: left; font-size: 13px; }
-        button:hover { background: #4caf50; color: black; }
-        #view { margin-left: 200px; width: calc(100% - 200px); height: 100vh; cursor: crosshair; }
-        .hint { position: absolute; bottom: 10px; right: 10px; color: #666; font-size: 12px; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; color: #0f0; }
+        #ui { position: absolute; top: 20px; left: 20px; pointer-events: none; background: rgba(0,20,0,0.8); padding: 15px; border: 1px solid #0f0; border-radius: 8px; }
+        canvas { display: block; }
+        .key { color: #fff; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="menu">
-    <h2 style="color:#4caf50">🍈 LAB PRO</h2>
-    <p style="font-size:10px">CLIC EN EL FONDO PARA CREAR</p>
-    <button onclick="setMode('melon')">🟢 Sujeto Melón</button>
-    <button onclick="setMode('apple')">🔴 Sujeto Manzana</button>
-    <button onclick="setMode('box')">📦 Caja Pesada</button>
-    <button onclick="setMode('sword')">⚔️ Espada</button>
-    <button onclick="setMode('bomb')">💣 Explosivo</button>
-    <hr style="border:0; border-top:1px solid #333">
-    <button onclick="toggleGravity()">🌌 Gravedad ON/OFF</button>
-    <button onclick="clearAll()" style="color:#ff4444">🗑️ Limpiar Todo</button>
+<div id="ui">
+    <h2 style="margin:0">🌌 COSMOS CHAOS</h2>
+    <p>• [CLIC IZQ] Crear Planeta</p>
+    <p>• [CLIC DER] Crear Agujero Negro</p>
+    <p>• [ESPACIO] Limpiar Galaxia</p>
+    <p>• [MANTENER] Arrastrar para lanzar</p>
 </div>
-
-<div id="view"></div>
-<div class="hint">Shift + Clic para borrar | R para rotar</div>
 
 <script src="https://cloudflare.com"></script>
 
 <script>
-    const { Engine, Render, Runner, Bodies, Composite, Constraint, Mouse, MouseConstraint, Body, Vector } = Matter;
+    const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint, Vector, Body, Events } = Matter;
+    
     const engine = Engine.create();
+    engine.gravity.y = 0; // Gravedad cero para espacio exterior
     const world = engine.world;
-    let mode = 'melon';
 
     const render = Render.create({
-        element: document.getElementById('view'),
+        element: document.body,
         engine: engine,
-        options: { width: window.innerWidth - 200, height: window.innerHeight, wireframes: false, background: '#0d0d0d' }
+        options: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            wireframes: false,
+            background: '#050508'
+        }
     });
 
     Render.run(render);
     Runner.run(Runner.create(), engine);
 
-    // Suelo y Peligros
-    const ground = Bodies.rectangle(1000, window.innerHeight - 10, 4000, 20, { isStatic: true, render: { fillStyle: '#222' } });
-    const lava = Bodies.rectangle(500, window.innerHeight - 5, 600, 10, { isStatic: true, isSensor: true, label: 'LAVA', render: { fillStyle: '#f40' } });
-    Composite.add(world, [ground, lava]);
+    let blackHoles = [];
 
-    function setMode(m) { mode = m; }
+    // Función para crear planetas de colores aleatorios
+    function createPlanet(x, y) {
+        const size = Math.random() * 15 + 5;
+        const planet = Bodies.circle(x, y, size, {
+            restitution: 0.8,
+            frictionAir: 0.01,
+            render: {
+                fillStyle: `hsl(${Math.random() * 360}, 70%, 50%)`,
+                strokeStyle: '#fff',
+                lineWidth: 1
+            }
+        });
+        Composite.add(world, planet);
+    }
 
+    // Función para crear Agujero Negro (Punto de gravedad masiva)
+    function createBlackHole(x, y) {
+        const bh = Bodies.circle(x, y, 20, {
+            isStatic: true,
+            isSensor: true,
+            render: {
+                fillStyle: '#000',
+                strokeStyle: '#f0f',
+                lineWidth: 4,
+                sprite: { strokeStyle: '#f0f' }
+            }
+        });
+        blackHoles.push(bh);
+        Composite.add(world, bh);
+    }
+
+    // Lógica de atracción gravitatoria constante
+    Events.on(engine, 'beforeUpdate', () => {
+        const bodies = Composite.allBodies(world);
+        blackHoles.forEach(bh => {
+            bodies.forEach(body => {
+                if (body === bh || body.isStatic) return;
+                
+                const forceVector = Vector.sub(bh.position, body.position);
+                const distanceSq = Vector.magnitudeSquared(forceVector);
+                const forceMagnitude = 0.001 * body.mass; // Intensidad de succión
+
+                if (distanceSq < 1000) { // Si entra al centro, desaparece
+                    Composite.remove(world, body);
+                } else {
+                    Body.applyForce(body, body.position, Vector.mult(Vector.normalise(forceVector), forceMagnitude));
+                }
+            });
+        });
+    });
+
+    // Controles de interacción
     window.addEventListener('mousedown', (e) => {
-        if(e.clientX < 200) return;
-        const x = e.clientX - 200;
-        const y = e.clientY;
+        if (e.button === 0) createPlanet(e.clientX, e.clientY);
+        if (e.button === 2) createBlackHole(e.clientX, e.clientY);
+    });
 
-        if(mode === 'melon' || mode === 'apple') {
-            const c = mode === 'melon' ? '#4caf50' : '#f44336';
-            const head = Bodies.circle(x, y, 15, { render: { fillStyle: c } });
-            const body = Bodies.rectangle(x, y + 40, 25, 45, { render: { fillStyle: '#333' } });
-            const neck = Constraint.create({ bodyA: head, bodyB: body, pointA: {x:0, y:15}, pointB: {x:0, y:-25}, stiffness: 0.4 });
-            Composite.add(world, [head, body, neck]);
-        } else if(mode === 'box') {
-            Composite.add(world, Bodies.rectangle(x, y, 50, 50, { render: { fillStyle: '#852' } }));
-        } else if(mode === 'sword') {
-            Composite.add(world, Bodies.rectangle(x, y, 10, 80, { render: { fillStyle: '#ddd' } }));
-        } else if(mode === 'bomb') {
-            const bomb = Bodies.circle(x, y, 15, { render: { fillStyle: '#f00' }, label: 'BOMB' });
-            Composite.add(world, bomb);
-            setTimeout(() => {
-                const bodies = Composite.allBodies(world);
-                bodies.forEach(b => {
-                    if(!b.isStatic) Body.applyForce(b, b.position, Vector.mult(Vector.normalise(Vector.sub(b.position, bomb.position)), 0.1));
-                });
-                Composite.remove(world, bomb);
-            }, 2000);
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            Composite.clear(world, false);
+            blackHoles = [];
         }
     });
 
+    const mouse = Mouse.create(render.canvas);
     const mouseConstraint = MouseConstraint.create(engine, {
-        mouse: Mouse.create(render.canvas),
+        mouse: mouse,
         constraint: { stiffness: 0.1, render: { visible: false } }
     });
     Composite.add(world, mouseConstraint);
 
-    function toggleGravity() { engine.gravity.y = engine.gravity.y === 0 ? 1 : 0; }
-    function clearAll() { Composite.clear(world, true); Composite.add(world, [ground, lava]); }
+    // Evitar menú contextual
+    window.oncontextmenu = (e) => e.preventDefault();
 </script>
 </body>
 </html>
-
